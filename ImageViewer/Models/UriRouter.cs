@@ -3,11 +3,10 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
-using System.Web.Script.Serialization;
 
-namespace ImageViewer
+namespace ImageViewer.Models
 {
-    internal static class UriResolver
+    internal static class UriRouter
     {
         private static readonly List<string> IsImageList = new List<string>
         {
@@ -16,7 +15,7 @@ namespace ImageViewer
             ".jpg",
             ".bmp",
             ".png",
-            ".gif",
+            ".gif"
         };
 
         public static bool IsImageUri(string uri, out string imageUri)
@@ -48,9 +47,9 @@ namespace ImageViewer
 
         private static bool GetAzyobuziApiResult(string uri, out string resultUri)
         {
-            const string ApiBaseUri = @"http://img.azyobuzi.net/api/all_sizes.json?uri=";
+            const string apiBaseUri = @"http://img.azyobuzi.net/api/all_sizes.json?uri=";
 
-            var req = WebRequest.Create(ApiBaseUri + uri);
+            var req = WebRequest.Create(apiBaseUri + uri);
             req.Timeout = 3000;
 
             try
@@ -62,7 +61,9 @@ namespace ImageViewer
                     using (var sr = new StreamReader(resStream, Encoding.UTF8))
                     {
                         var resBody = sr.ReadToEnd();
-                        resultUri = GetImageUriOfApiResult(resBody);
+                        var resJson = new JsonList(resBody);
+                        resultUri =
+                            resJson.Where(x => x.Name.Contains("full")).Where(x => x.Value != null).ToList().ToString();
                         return true;
                     }
                 }
@@ -74,22 +75,6 @@ namespace ImageViewer
                 resultUri = null;
                 return false;
             }
-        }
-
-        private static string GetImageUriOfApiResult(string resultJson)
-        {
-            var jsonValue = new List<Json>();
-            var jsonRoot = new JavaScriptSerializer().Deserialize<Dictionary<string, object>>(resultJson);
-            jsonRoot.ToList()
-                .ForEach(x => jsonValue.Add(new Json {Name = x.Key, Value = x.Value == null ? "" : x.Value.ToString()}));
-            return jsonValue.Where(x => x.Name == "full").ToList()[0].Value;
-        }
-
-        private class Json
-        {
-            public string Name { get; set; }
-
-            public string Value { get; set; }
         }
     }
 }
