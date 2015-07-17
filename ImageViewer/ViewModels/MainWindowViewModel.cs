@@ -195,8 +195,11 @@ namespace ImageViewer.ViewModels
 
         public void SaveImage()
         {
-            var fileName = Path.GetFileNameWithoutExtension(FallbackImageUri);
-            var ext = Path.GetExtension(FallbackImageUri);
+            var uri = FallbackImageUri.EndsWith(":orig")
+                ? FallbackImageUri.Substring(0, FallbackImageUri.Length - ":orig".Length)
+                : FallbackImageUri;
+            var fileName = Path.GetFileNameWithoutExtension(uri);
+            var ext = Path.GetExtension(uri);
 
             var tmpList = new List<string>
             {
@@ -218,8 +221,8 @@ namespace ImageViewer.ViewModels
             var message = new SavingFileSelectionMessage("Save")
             {
                 AddExtension = true,
-                FileName = Path.GetFileName(FallbackImageUri),
-                Filter = filter
+                FileName = fileName + ext,
+                Filter = filter,
             };
             Messenger.Raise(message);
             if (message.Response == null)
