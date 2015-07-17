@@ -50,8 +50,34 @@ namespace ImageViewer.Views
                             var pixels = new byte[image.PixelHeight*stride];
                             image.CopyPixels(pixels, stride, 0);
 
-                            VM.FallbackImage = BitmapSource.Create(image.PixelWidth, image.PixelHeight, image.DpiX,
-                                image.DpiY, image.Format, null, pixels, stride);
+                            try
+                            {
+                                VM.FallbackImage = BitmapSource.Create(
+                                    image.PixelWidth,
+                                    image.PixelHeight,
+                                    image.DpiX,
+                                    image.DpiY,
+                                    image.Format,
+                                    null,
+                                    pixels,
+                                    stride);
+                            }
+                            catch
+                            {
+                                try
+                                {
+                                    VM.FallbackImage = BitmapSource.Create(
+                                    image.PixelWidth,
+                                    image.PixelHeight,
+                                    image.DpiX,
+                                    image.DpiY,
+                                    image.Format,
+                                    new BitmapPalette(image, Convert.ToInt32(Math.Pow(2, image.Format.BitsPerPixel))),
+                                    pixels,
+                                    stride);
+                                }
+                                catch { }
+                            }
                             VM.FallbackImageUri = imageUri;
                         }
                     }
