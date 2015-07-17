@@ -79,17 +79,25 @@
         </Grid>
         <Grid Grid.Row="1">
             <Image Name="Image" Source="{Binding ImageUri, IsAsync=True, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" RenderOptions.BitmapScalingMode="Fant" />
-            <Button Command="{Binding SaveImageCommand}" VerticalAlignment="Bottom" HorizontalAlignment="Left" Template="{DynamicResource TransparentButton}">
-                <Image Source="/Resources/IcoMoon/save.png" Width="24" Height="24" />
-            </Button>
+            <WrapPanel HorizontalAlignment="Left" VerticalAlignment="Bottom">
+                <Button Command="{Binding SaveImageCommand}" VerticalAlignment="Bottom" HorizontalAlignment="Left" Template="{DynamicResource TransparentButton}">
+                    <Image Source="/Resources/IcoMoon/save.png" Width="24" Height="24" />
+                </Button>
+                <Button Command="{Binding CopyToClipboardCommand}" VerticalAlignment="Bottom" HorizontalAlignment="Left" Template="{DynamicResource TransparentButton}">
+                    <Image Source="/ImageViewer;component/Resources/IcoMoon/copy.png" Width="24" Height="24" />
+                </Button>
+                <Button Command="{Binding OpenInBrowserCommand}" VerticalAlignment="Bottom" HorizontalAlignment="Left" Template="{DynamicResource TransparentButton}">
+                    <Image Source="/ImageViewer;component/Resources/IcoMoon/open.png" Width="24" Height="24" />
+                </Button>
+            </WrapPanel>
         </Grid>
         <Grid Grid.Row="2" Background="#FF338ECC">
             <WrapPanel x:Name="StatusBarElements" HorizontalAlignment="Left">
                 <Label Content="" Padding="0,5" />
                 <Label Content="Render:" Padding="5,0" VerticalAlignment="Center" />
-                <Label Content="{Binding ImageRenderWidth}" Padding="0" VerticalAlignment="Center" />
+                <Label Content="{Binding ImageRenderWidth, FallbackValue=0}" Padding="0" VerticalAlignment="Center" />
                 <Label Content="x" Padding="2,0" VerticalAlignment="Center" />
-                <Label Content="{Binding ImageRenderHeight}" Padding="0" VerticalAlignment="Center" />
+                <Label Content="{Binding ImageRenderHeight, FallbackValue=0}" Padding="0" VerticalAlignment="Center" />
                 <Label Content="px" Padding="5,0" VerticalAlignment="Center"/>
 
                 <Label Content="Image:" Padding="5,0" VerticalAlignment="Center" />
@@ -99,7 +107,7 @@
                 <Label Content="px" Padding="5,0" VerticalAlignment="Center"/>
 
                 <Label Content="Zoom:" Padding="5,0" VerticalAlignment="Center"/>
-                <Label Content="{Binding Zoom}" Padding="0" VerticalAlignment="Center" />
+                <Label Content="{Binding Zoom, FallbackValue=0}" Padding="0" VerticalAlignment="Center" />
                 <Label Content="%" Padding="5,0" VerticalAlignment="Center"/>
                 
                 <Label Content="padding" Padding="5,0" VerticalAlignment="Center" Foreground="{x:Null}"/>

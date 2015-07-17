@@ -3,9 +3,12 @@ using Livet.Commands;
 using Livet.Messaging.IO;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Windows;
 using System.Windows.Media.Imaging;
+using Livet.Converters;
 
 namespace ImageViewer.ViewModels
 {
@@ -251,7 +254,49 @@ namespace ImageViewer.ViewModels
                 encoder.Save(fs);
             }
         }
-
         #endregion SaveImageCommand
+
+        #region CopyToClipboardCommand
+        private ViewModelCommand _CopyToClipboardCommand;
+
+        public ViewModelCommand CopyToClipboardCommand
+        {
+            get
+            {
+                if (_CopyToClipboardCommand == null)
+                {
+                    _CopyToClipboardCommand = new ViewModelCommand(CopyToClipboard);
+                }
+                return _CopyToClipboardCommand;
+            }
+        }
+
+        public void CopyToClipboard()
+        {
+            Clipboard.SetImage(FallbackImage);
+        }
+        #endregion CopyToClipboardCommand
+
+        #region OpenInBrowserCommand
+        private ViewModelCommand _OpenInBrowserCommand;
+
+        public ViewModelCommand OpenInBrowserCommand
+        {
+            get
+            {
+                if (_OpenInBrowserCommand == null)
+                {
+                    _OpenInBrowserCommand = new ViewModelCommand(OpenInBrowser);
+                }
+                return _OpenInBrowserCommand;
+            }
+        }
+
+        public void OpenInBrowser()
+        {
+            Process.Start(ImageUri);
+        }
+        #endregion OpenInBrowserCommand
+
     }
 }
