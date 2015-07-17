@@ -160,7 +160,7 @@
                     <VisualState x:Name="MouseOver">
                         <Storyboard>
                             <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Panel.Background).(SolidColorBrush.Color)" Storyboard.TargetName="border">
-                                <EasingColorKeyFrame KeyTime="0:0:0.1" Value="#7FFFFFFF">
+                                <EasingColorKeyFrame KeyTime="0:0:0.1" Value="#7F888888">
                                     <EasingColorKeyFrame.EasingFunction>
                                         <CubicEase EasingMode="EaseInOut" />
                                     </EasingColorKeyFrame.EasingFunction>
@@ -171,7 +171,7 @@
                     <VisualState x:Name="Pressed">
                         <Storyboard>
                             <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Panel.Background).(SolidColorBrush.Color)" Storyboard.TargetName="border">
-                                <EasingColorKeyFrame KeyTime="0:0:0.1" Value="#7FAAAAAA">
+                                <EasingColorKeyFrame KeyTime="0:0:0.1" Value="#7F666666">
                                     <EasingColorKeyFrame.EasingFunction>
                                         <CubicEase EasingMode="EaseInOut" />
                                     </EasingColorKeyFrame.EasingFunction>
