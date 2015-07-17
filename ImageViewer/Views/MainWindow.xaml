@@ -6,7 +6,7 @@
         xmlns:l="http://schemas.livet-mvvm.net/2011/wpf"
         xmlns:v="clr-namespace:ImageViewer.Views"
         xmlns:vm="clr-namespace:ImageViewer.ViewModels"
-        Title="ImageViewer" Height="360" Width="525" ResizeMode="CanResizeWithGrip" Background="#FF2D2D30">
+        Title="ImageViewer" Height="360" Width="525" MinHeight="96" MinWidth="{Binding ElementName=StatusBarElements, Path=ActualWidth, UpdateSourceTrigger=PropertyChanged}" ResizeMode="CanResizeWithGrip" Background="#FF2D2D30">
 
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="32" />
@@ -84,22 +84,25 @@
             </Button>
         </Grid>
         <Grid Grid.Row="2" Background="#FF338ECC">
-            <WrapPanel>
-                <Label Content="Render:" />
-                <Label Content="{Binding ImageRenderWidth}" Padding="0,5" />
-                <Label Content="x" Padding="0,5" />
-                <Label Content="{Binding ImageRenderHeight}" Padding="0,5" />
-                <Label Content="px" />
+            <WrapPanel x:Name="StatusBarElements" HorizontalAlignment="Left">
+                <Label Content="" Padding="0,5" />
+                <Label Content="Render:" Padding="5,0" VerticalAlignment="Center" />
+                <Label Content="{Binding ImageRenderWidth}" Padding="0" VerticalAlignment="Center" />
+                <Label Content="x" Padding="2,0" VerticalAlignment="Center" />
+                <Label Content="{Binding ImageRenderHeight}" Padding="0" VerticalAlignment="Center" />
+                <Label Content="px" Padding="5,0" VerticalAlignment="Center"/>
 
-                <Label Content="Image:" />
-                <Label Content="{Binding FallbackImage.Width}" Padding="0,5" />
-                <Label Content="x" Padding="0,5" />
-                <Label Content="{Binding FallbackImage.Height}" Padding="0,5" />
-                <Label Content="px" />
+                <Label Content="Image:" Padding="5,0" VerticalAlignment="Center" />
+                <Label Content="{Binding FallbackImage.Width, FallbackValue=0}" Padding="0" VerticalAlignment="Center" />
+                <Label Content="x" Padding="2,0" VerticalAlignment="Center"/>
+                <Label Content="{Binding FallbackImage.Height, FallbackValue=0}" Padding="0" VerticalAlignment="Center"/>
+                <Label Content="px" Padding="5,0" VerticalAlignment="Center"/>
 
-                <Label Content="Zoom:" />
-                <Label Content="{Binding Zoom}" Padding="0,5" />
-                <Label Content="%" />
+                <Label Content="Zoom:" Padding="5,0" VerticalAlignment="Center"/>
+                <Label Content="{Binding Zoom}" Padding="0" VerticalAlignment="Center" />
+                <Label Content="%" Padding="5,0" VerticalAlignment="Center"/>
+                
+                <Label Content="padding" Padding="5,0" VerticalAlignment="Center" Foreground="{x:Null}"/>
             </WrapPanel>
         </Grid>
     </Grid>
