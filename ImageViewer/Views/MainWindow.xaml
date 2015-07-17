@@ -24,6 +24,12 @@
         <vm:MainWindowViewModel />
     </Window.DataContext>
 
+    <Window.InputBindings>
+        <KeyBinding Key="S" Modifiers="Control" Command="{Binding SaveImageCommand}"></KeyBinding>
+        <KeyBinding Key="C" Modifiers="Control" Command="{Binding CopyToClipboardCommand}"></KeyBinding>
+        <KeyBinding Key="O" Modifiers="Control" Command="{Binding OpenInBrowserCommand}"></KeyBinding>
+    </Window.InputBindings>
+
     <i:Interaction.Triggers>
 
         <!--Viewに特別な要件が存在しない限りは、トリガーやアクションの自作にこだわらず積極的にコードビハインドを使いましょう -->
@@ -78,15 +84,22 @@
             </StackPanel>
         </Grid>
         <Grid Grid.Row="1">
+            <Grid.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="SaveAs" InputGestureText="Ctrl+S" Command="{Binding SaveImageCommand}"/>
+                    <MenuItem Header="Copy to Clipboard" InputGestureText="Ctrl+C" Command="{Binding CopyToClipboardCommand}"/>
+                    <MenuItem Header="Open in Browser" InputGestureText="Ctrl+O" Command="{Binding OpenInBrowserCommand}"/>
+                </ContextMenu>
+            </Grid.ContextMenu>
             <Image Name="Image" Source="{Binding ImageUri, IsAsync=True, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" RenderOptions.BitmapScalingMode="Fant" />
             <WrapPanel HorizontalAlignment="Left" VerticalAlignment="Bottom">
-                <Button Command="{Binding SaveImageCommand}" VerticalAlignment="Bottom" HorizontalAlignment="Left" Template="{DynamicResource TransparentButton}">
+                <Button Command="{Binding SaveImageCommand}" ToolTip="SaveAs" VerticalAlignment="Bottom" HorizontalAlignment="Left" Template="{DynamicResource TransparentButton}">
                     <Image Source="/Resources/IcoMoon/save.png" Width="24" Height="24" />
                 </Button>
-                <Button Command="{Binding CopyToClipboardCommand}" VerticalAlignment="Bottom" HorizontalAlignment="Left" Template="{DynamicResource TransparentButton}">
+                <Button Command="{Binding CopyToClipboardCommand}" ToolTip="Copy to Clipboard" VerticalAlignment="Bottom" HorizontalAlignment="Left" Template="{DynamicResource TransparentButton}">
                     <Image Source="/ImageViewer;component/Resources/IcoMoon/copy.png" Width="24" Height="24" />
                 </Button>
-                <Button Command="{Binding OpenInBrowserCommand}" VerticalAlignment="Bottom" HorizontalAlignment="Left" Template="{DynamicResource TransparentButton}">
+                <Button Command="{Binding OpenInBrowserCommand}" ToolTip="Open in Browser" VerticalAlignment="Bottom" HorizontalAlignment="Left" Template="{DynamicResource TransparentButton}">
                     <Image Source="/ImageViewer;component/Resources/IcoMoon/open.png" Width="24" Height="24" />
                 </Button>
             </WrapPanel>
