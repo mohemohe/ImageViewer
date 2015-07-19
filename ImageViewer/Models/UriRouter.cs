@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace ImageViewer.Models
 {
@@ -33,6 +34,16 @@ namespace ImageViewer.Models
 
             if (result == false)
             {
+                string twippleResult;
+                if (IsTwipplePhoto(uri, out twippleResult))
+                {
+                    targetUri = twippleResult;
+                    result = true;
+                }
+            }
+
+            if (result == false)
+            {
                 string apiResult;
                 if (GetAzyobuziApiResult(uri, out apiResult))
                 {
@@ -42,6 +53,21 @@ namespace ImageViewer.Models
             }
 
             imageUri = targetUri;
+            return result;
+        }
+
+        private static bool IsTwipplePhoto(string uri, out string resultUri)
+        {
+            var result = false;
+            resultUri = null;
+            var regex = new Regex(@"(?<baseUri>(http://|https://)(p.twipple.jp/|p.twpl.jp/))(thumb/|large/|orig/)?(?<imageId>.*)");
+            if (regex.IsMatch(uri))
+            {
+                var match = regex.Matches(uri);
+                result = true;
+                resultUri = match[0].Groups["baseUri"] + @"show/orig/" + match[0].Groups["imageId"];
+            }
+
             return result;
         }
 

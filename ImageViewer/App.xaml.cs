@@ -48,12 +48,17 @@ namespace ImageViewer
             DispatcherHelper.UIDispatcher = Dispatcher;
             //AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
 
-            var window = new MainWindow("http://i.imgur.com/MrRafpj.jpg");
+            string testUri = "http://p.twipple.jp/wnpwe";
+            string imageUri;
+            if (UriRouter.IsImageUri(testUri, out imageUri))
+            {
+                var window = new MainWindow(imageUri);
 
-            window.WindowStartupLocation = WindowStartupLocation.Manual;
-            window.Left = 0;
-            window.Top = 0;
-            window.Show();
+                window.WindowStartupLocation = WindowStartupLocation.Manual;
+                window.Left = 0;
+                window.Top = 0;
+                window.Show();
+            }
         }
 #endif
 
