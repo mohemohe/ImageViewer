@@ -60,7 +60,7 @@ namespace ImageViewer.Models
         {
             var result = false;
             resultUri = null;
-            var regex = new Regex(@"(?<baseUri>(http://|https://)(p.twipple.jp/|p.twpl.jp/))(thumb/|large/|orig/)?(?<imageId>.*)");
+            var regex = new Regex(@"(?<baseUri>(http://|https://)(p.twipple.jp/|p.twpl.jp/))(show/)?(thumb/|large/|orig/)?(?<imageId>.*)");
             if (regex.IsMatch(uri))
             {
                 var match = regex.Matches(uri);
