@@ -19,10 +19,24 @@ namespace ImageViewer.Models
             ".gif"
         };
 
+        private static readonly List<string> BlackList = new List<string>
+        {
+            @"http(s)?://(www.)?(youtube.com|youtu.be)/.*",
+            @"http(s)?://(www.)?(nicovideo.jp|nico.ms)/.*",
+            @"http(s)?://(www.)?vine.co/.*",
+        };
+
         public static bool IsImageUri(string uri, out string imageUri)
         {
             var result = false;
             string targetUri = null;
+
+            if (IsBlackListedUri(uri))
+            {
+                imageUri = targetUri;
+                return result;
+            }
+
             IsImageList.ForEach(x =>
             {
                 if (uri.EndsWith(x))
@@ -44,6 +58,26 @@ namespace ImageViewer.Models
 
             if (result == false)
             {
+                string instagramResult;
+                if (IsInstagramPhoto(uri, out instagramResult))
+                {
+                    targetUri = instagramResult;
+                    result = true;
+                }
+            }
+
+            if (result == false)
+            {
+                string gyazoResult;
+                if (IsGyazoPhoto(uri, out gyazoResult))
+                {
+                    targetUri = gyazoResult;
+                    result = true;
+                }
+            }
+
+            if (result == false)
+            {
                 string apiResult;
                 if (GetAzyobuziApiResult(uri, out apiResult))
                 {
@@ -56,16 +90,87 @@ namespace ImageViewer.Models
             return result;
         }
 
+        private static bool IsBlackListedUri(string uri)
+        {
+            var result = false;
+            BlackList.ForEach(x =>
+            {
+                var regex = new Regex(x);
+                if (regex.IsMatch(uri))
+                {
+                    result = true;
+                }
+            });
+
+            return result;
+        }
+
         private static bool IsTwipplePhoto(string uri, out string resultUri)
         {
             var result = false;
             resultUri = null;
-            var regex = new Regex(@"(?<baseUri>(http://|https://)(p.twipple.jp/|p.twpl.jp/))(show/)?(thumb/|large/|orig/)?(?<imageId>.*)");
+            var regex = new Regex(@"(?<baseUri>http(s)?://(p.twipple.jp|p.twpl.jp)/)(show/)?(thumb/|large/|orig/)?(?<imageId>.*)");
             if (regex.IsMatch(uri))
             {
                 var match = regex.Matches(uri);
                 result = true;
                 resultUri = match[0].Groups["baseUri"] + @"show/orig/" + match[0].Groups["imageId"];
+            }
+
+            return result;
+        }
+
+        private static bool IsInstagramPhoto(string uri, out string resultUri)
+        {
+            var result = false;
+            resultUri = null;
+            var regex = new Regex(@"(?<baseUri>http(s)?://instagram.com/p/)(?<imageId>.*)/");
+            if (regex.IsMatch(uri))
+            {
+                result = true;
+                resultUri = uri + @"media/?size=l";
+            }
+
+            return result;
+        }
+
+        private static bool IsGyazoPhoto(string uri, out string resultUri)
+        {
+            const string apiBaseUri = @"https://api.gyazo.com/api/oembed/?url=";
+
+            var result = false;
+            resultUri = null;
+            var regex = new Regex(@"(?<baseUri>http(s)?://gyazo.com/)(?<imageId>.*)");
+            if (regex.IsMatch(uri))
+            {
+                result = true;
+
+                var req = WebRequest.Create(apiBaseUri + uri);
+                req.Timeout = 3000;
+
+                try
+                {
+                    var res = (HttpWebResponse)req.GetResponse();
+                    if (res.StatusCode == HttpStatusCode.OK)
+                    {
+                        using (var resStream = res.GetResponseStream())
+                        using (var sr = new StreamReader(resStream, Encoding.UTF8))
+                        {
+                            var resBody = sr.ReadToEnd();
+                            var resJson = new JsonList(resBody);
+                            resultUri =
+                                resJson.Where(x => x.Name == "url").Where(x => x.Value != null).ToList()[0]?.Value.ToString();
+                            return true;
+                        }
+                    }
+                    resultUri = null;
+                    return false;
+                }
+                catch
+                {
+                    resultUri = null;
+                    return false;
+                }
             }
 
             return result;
@@ -89,7 +194,7 @@ namespace ImageViewer.Models
                         var resBody = sr.ReadToEnd();
                         var resJson = new JsonList(resBody);
                         resultUri =
-                            resJson.Where(x => x.Name.Contains("full")).Where(x => x.Value != null).ToList().ToString();
+                            resJson.Where(x => x.Name.Contains("full")).Where(x => x.Value != null).ToList()[0]?.Value.ToString();
                         return true;
                     }
                 }
