@@ -28,6 +28,7 @@
         <KeyBinding Key="S" Modifiers="Control" Command="{Binding SaveImageCommand}"></KeyBinding>
         <KeyBinding Key="C" Modifiers="Control" Command="{Binding CopyToClipboardCommand}"></KeyBinding>
         <KeyBinding Key="O" Modifiers="Control" Command="{Binding OpenInBrowserCommand}"></KeyBinding>
+        <KeyBinding Key="F" Modifiers="Control" Command="{Binding SearchByGoogleCommand}"></KeyBinding>
     </Window.InputBindings>
 
     <i:Interaction.Triggers>
@@ -89,6 +90,7 @@
                     <MenuItem Header="SaveAs" InputGestureText="Ctrl+S" Command="{Binding SaveImageCommand}"/>
                     <MenuItem Header="Copy to Clipboard" InputGestureText="Ctrl+C" Command="{Binding CopyToClipboardCommand}"/>
                     <MenuItem Header="Open in Browser" InputGestureText="Ctrl+O" Command="{Binding OpenInBrowserCommand}"/>
+                    <MenuItem Header="Search by Google Images" InputGestureText="Ctrl+F" Command="{Binding OpenInBrowserCommand}"/>
                 </ContextMenu>
             </Grid.ContextMenu>
             <Image Name="Image" Source="{Binding ImageUri, IsAsync=True, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" RenderOptions.BitmapScalingMode="Fant" />
@@ -101,6 +103,9 @@
                 </Button>
                 <Button Command="{Binding OpenInBrowserCommand}" ToolTip="Open in Browser" VerticalAlignment="Bottom" HorizontalAlignment="Left" Template="{DynamicResource TransparentButton}">
                     <Image Source="/ImageViewer;component/Resources/IcoMoon/open.png" Width="24" Height="24" />
+                </Button>
+                <Button Command="{Binding SearchByGoogleCommand}" ToolTip="Search by Google Images" VerticalAlignment="Bottom" HorizontalAlignment="Left" Template="{DynamicResource TransparentButton}">
+                    <Image Source="/ImageViewer;component/Resources/IcoMoon/search.png" Width="24" Height="24" />
                 </Button>
             </WrapPanel>
         </Grid>

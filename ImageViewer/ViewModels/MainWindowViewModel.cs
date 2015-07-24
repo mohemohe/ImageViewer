@@ -298,5 +298,26 @@ namespace ImageViewer.ViewModels
         }
         #endregion OpenInBrowserCommand
 
+        #region SearchByGoogleCommand
+        private ViewModelCommand _SearchByGoogleCommand;
+
+        public ViewModelCommand SearchByGoogleCommand
+        {
+            get
+            {
+                if (_SearchByGoogleCommand == null)
+                {
+                    _SearchByGoogleCommand = new ViewModelCommand(SearchByGoogle);
+                }
+                return _SearchByGoogleCommand;
+            }
+        }
+
+        public void SearchByGoogle()
+        {
+            Process.Start("https://www.google.com/searchbyimage?image_url=" + FallbackImageUri);
+        }
+        #endregion
+
     }
 }
