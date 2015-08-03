@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -26,6 +27,15 @@ namespace ImageViewer.Models
             @"http(s)?://(www.)?vine.co/.*",
         };
 
+        delegate V FuncDelegate<T, U, V>(T uri, out U imageUri);
+        private static readonly List<FuncDelegate<string, string, bool>> WhiteList = new List<FuncDelegate<string, string, bool>>
+        {
+            new FuncDelegate<string, string, bool>(IsTwipplePhoto),
+            new FuncDelegate<string, string, bool>(IsInstagramPhoto),
+            new FuncDelegate<string, string, bool>(IsGyazoPhoto),
+            new FuncDelegate<string, string, bool>(IsGamenNow),
+        };
+
         public static bool IsImageUri(string uri, out string imageUri)
         {
             var result = false;
@@ -33,7 +43,7 @@ namespace ImageViewer.Models
 
             if (IsBlackListedUri(uri))
             {
-                imageUri = targetUri;
+                imageUri = null;
                 return result;
             }
 
@@ -48,32 +58,7 @@ namespace ImageViewer.Models
 
             if (result == false)
             {
-                string twippleResult;
-                if (IsTwipplePhoto(uri, out twippleResult))
-                {
-                    targetUri = twippleResult;
-                    result = true;
-                }
-            }
-
-            if (result == false)
-            {
-                string instagramResult;
-                if (IsInstagramPhoto(uri, out instagramResult))
-                {
-                    targetUri = instagramResult;
-                    result = true;
-                }
-            }
-
-            if (result == false)
-            {
-                string gyazoResult;
-                if (IsGyazoPhoto(uri, out gyazoResult))
-                {
-                    targetUri = gyazoResult;
-                    result = true;
-                }
+                WhiteList.ForEach(x => result = x(uri, out targetUri));
             }
 
             if (result == false)
@@ -105,6 +90,7 @@ namespace ImageViewer.Models
             return result;
         }
 
+        #region WhiteListMethods
         private static bool IsTwipplePhoto(string uri, out string resultUri)
         {
             var result = false;
@@ -175,6 +161,22 @@ namespace ImageViewer.Models
 
             return result;
         }
+
+        private static bool IsGamenNow(string uri, out string resultUri)
+        {
+            var result = false;
+            resultUri = null;
+            var regex = new Regex(@"(?<baseUri>http(s)?://s.kuku.lu/)(?<imageId>.*)");
+            if (regex.IsMatch(uri))
+            {
+                var match = regex.Matches(uri);
+                result = true;
+                resultUri = match[0].Groups["baseUri"] + @"image.php/" + match[0].Groups["imageId"];
+            }
+
+            return result;
+        }
+        #endregion WhiteListMethods
 
         private static bool GetAzyobuziApiResult(string uri, out string resultUri)
         {

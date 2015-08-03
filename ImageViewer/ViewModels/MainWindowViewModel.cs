@@ -9,6 +9,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Media.Imaging;
 using Livet.Converters;
+using ImageViewer.Models;
 
 namespace ImageViewer.ViewModels
 {
@@ -56,19 +57,41 @@ namespace ImageViewer.ViewModels
          * 自動的にUIDispatcher上での通知に変換されます。変更通知に際してUIDispatcherを操作する必要はありません。
          */
 
-        public void Initialize()
+        private Image image = new Image();
+        
+        public async void Initialize()
         {
+            Image = await image.DownloadDataAsync(ImageUri, ImageUri.Contains(@"s.kuku.lu") ? OriginalUri : "");
         }
 
         private void CalcZoom()
         {
-            if (FallbackImage != null)
+            if (Image != null)
             {
-                var imageSize = FallbackImage.Width*FallbackImage.Height;
+                var imageSize = Image.Width*Image.Height;
                 var renderSize = ImageRenderWidth*ImageRenderHeight;
                 Zoom = Convert.ToInt32((renderSize/imageSize)*100);
             }
         }
+
+        #region OriginalUri変更通知プロパティ
+
+        private string _OriginalUri;
+
+        public string OriginalUri
+        {
+            get
+            { return _OriginalUri; }
+            set
+            { 
+                if (_OriginalUri == value)
+                    return;
+                _OriginalUri = value;
+                RaisePropertyChanged();
+            }
+        }
+
+        #endregion
 
         #region ImageUri変更通知プロパティ
 
@@ -88,42 +111,24 @@ namespace ImageViewer.ViewModels
 
         #endregion ImageUri変更通知プロパティ
 
-        #region FallbackImage変更通知プロパティ
+        #region Image変更通知プロパティ
 
-        private BitmapSource _FallbackImage;
+        private BitmapSource _Image;
 
-        public BitmapSource FallbackImage
+        public BitmapSource Image
         {
-            get { return _FallbackImage; }
+            get { return _Image; }
             set
             {
-                if (_FallbackImage == value)
+                if (_Image == value)
                     return;
-                _FallbackImage = value;
+                _Image = value;
                 RaisePropertyChanged();
                 CalcZoom();
             }
         }
 
-        #endregion FallbackImage変更通知プロパティ
-
-        #region FallbackImageUri変更通知プロパティ
-
-        private string _FallbackImageUri;
-
-        public string FallbackImageUri
-        {
-            get { return _FallbackImageUri; }
-            set
-            {
-                if (_FallbackImageUri == value)
-                    return;
-                _FallbackImageUri = value;
-                RaisePropertyChanged();
-            }
-        }
-
-        #endregion FallbackImageUri変更通知プロパティ
+        #endregion Image変更通知プロパティ
 
         #region ImageRenderWidth変更通知プロパティ
 
@@ -198,9 +203,9 @@ namespace ImageViewer.ViewModels
 
         public void SaveImage()
         {
-            var uri = FallbackImageUri.EndsWith(":orig")
-                ? FallbackImageUri.Substring(0, FallbackImageUri.Length - ":orig".Length)
-                : FallbackImageUri;
+            var uri = ImageUri.EndsWith(":orig")
+                ? ImageUri.Substring(0, ImageUri.Length - ":orig".Length)
+                : ImageUri;
             var fileName = Path.GetFileNameWithoutExtension(uri);
             var ext = Path.GetExtension(uri);
 
@@ -247,7 +252,7 @@ namespace ImageViewer.ViewModels
                                 : ext == ".gif"
                                     ? new GifBitmapEncoder()
                                     : (BitmapEncoder) (new PngBitmapEncoder());
-            encoder.Frames.Add(BitmapFrame.Create(FallbackImage));
+            encoder.Frames.Add(BitmapFrame.Create(Image));
 
             using (var fs = new FileStream(targetFilePath, FileMode.Create))
             {
@@ -273,7 +278,7 @@ namespace ImageViewer.ViewModels
 
         public void CopyToClipboard()
         {
-            Clipboard.SetImage(FallbackImage);
+            Clipboard.SetImage(Image);
         }
         #endregion CopyToClipboardCommand
 
@@ -315,7 +320,7 @@ namespace ImageViewer.ViewModels
 
         public void SearchByGoogle()
         {
-            Process.Start("https://www.google.com/searchbyimage?image_url=" + FallbackImageUri);
+            Process.Start("https://www.google.com/searchbyimage?image_url=" + ImageUri);
         }
         #endregion
 

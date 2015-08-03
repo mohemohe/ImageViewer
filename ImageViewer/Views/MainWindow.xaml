@@ -93,8 +93,8 @@
                     <MenuItem Header="Search by Google Images" InputGestureText="Ctrl+F" Command="{Binding OpenInBrowserCommand}"/>
                 </ContextMenu>
             </Grid.ContextMenu>
-            <Image Name="Image" Source="{Binding ImageUri, IsAsync=True, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" RenderOptions.BitmapScalingMode="Fant" />
-            <WrapPanel HorizontalAlignment="Left" VerticalAlignment="Bottom">
+            <Image Name="Image" Source="{Binding Image, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" RenderOptions.BitmapScalingMode="Fant"/>
+                <WrapPanel HorizontalAlignment="Left" VerticalAlignment="Bottom">
                 <Button Command="{Binding SaveImageCommand}" ToolTip="SaveAs" VerticalAlignment="Bottom" HorizontalAlignment="Left" Template="{DynamicResource TransparentButton}">
                     <Image Source="/Resources/IcoMoon/save.png" Width="24" Height="24" />
                 </Button>
@@ -119,9 +119,9 @@
                 <Label Content="px" Padding="5,0" VerticalAlignment="Center"/>
 
                 <Label Content="Image:" Padding="5,0" VerticalAlignment="Center" />
-                <Label Content="{Binding FallbackImage.Width, FallbackValue=0}" Padding="0" VerticalAlignment="Center" />
+                <Label Content="{Binding Image.Width, FallbackValue=0}" Padding="0" VerticalAlignment="Center" />
                 <Label Content="x" Padding="2,0" VerticalAlignment="Center"/>
-                <Label Content="{Binding FallbackImage.Height, FallbackValue=0}" Padding="0" VerticalAlignment="Center"/>
+                <Label Content="{Binding Image.Height, FallbackValue=0}" Padding="0" VerticalAlignment="Center"/>
                 <Label Content="px" Padding="5,0" VerticalAlignment="Center"/>
 
                 <Label Content="Zoom:" Padding="5,0" VerticalAlignment="Center"/>

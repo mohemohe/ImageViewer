@@ -6,11 +6,13 @@ namespace ImageViewer.Models
     internal class WebClient : System.Net.WebClient
     {
         public int Timeout { get; set; } = 5000;
+        public string Referer { get; set; } = null;
 
         protected override WebRequest GetWebRequest(Uri uri)
         {
-            var req = base.GetWebRequest(uri);
+            var req = (HttpWebRequest)base.GetWebRequest(uri);
             req.Timeout = Timeout;
+            req.Referer = Referer?.ToString();
             return req;
         }
     }

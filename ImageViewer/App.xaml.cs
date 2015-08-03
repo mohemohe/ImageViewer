@@ -1,6 +1,7 @@
 ﻿using ImageViewer.Models;
 using ImageViewer.Views;
 using Livet;
+using Microsoft.VisualBasic.ApplicationServices;
 using System;
 using System.Diagnostics;
 using System.Windows;
@@ -14,7 +15,7 @@ namespace ImageViewer
     {
 #if !DEBUG
 
-        private void Application_Startup(object sender, StartupEventArgs e)
+        private void Application_Startup(object sender, System.Windows.StartupEventArgs e)
         {
             if (e.Args.Length == 0)
             {
@@ -27,7 +28,7 @@ namespace ImageViewer
             string imageUri;
             if (UriRouter.IsImageUri(e.Args[0], out imageUri))
             {
-                var window = new MainWindow(imageUri);
+                var window = new MainWindow(e.Args[0], imageUri);
 
                 window.WindowStartupLocation = WindowStartupLocation.Manual;
                 window.Left = 0;
@@ -43,16 +44,16 @@ namespace ImageViewer
 
 #endif
 #if DEBUG
-        private void Application_Startup(object sender, StartupEventArgs e)
+        private void Application_Startup(object sender, System.Windows.StartupEventArgs e)
         {
             DispatcherHelper.UIDispatcher = Dispatcher;
             //AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
 
-            string testUri = "http://p.twipple.jp/wnpwe";
+            string testUri = "http://s.kuku.lu/70i95am9k";
             string imageUri;
             if (UriRouter.IsImageUri(testUri, out imageUri))
             {
-                var window = new MainWindow(imageUri);
+                var window = new MainWindow(testUri, imageUri);
 
                 window.WindowStartupLocation = WindowStartupLocation.Manual;
                 window.Left = 0;
