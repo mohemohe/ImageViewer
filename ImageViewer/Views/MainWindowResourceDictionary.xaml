@@ -272,4 +272,58 @@
             </Setter.Value>
         </Setter>
     </Style>
+
+    <ControlTemplate x:Key="TabScrollRepeatButton" TargetType="{x:Type RepeatButton}">
+        <Border x:Name="border" Background="#7F2D2D30" Padding="5">
+            <VisualStateManager.VisualStateGroups>
+                <VisualStateGroup x:Name="CommonStates">
+                    <VisualState x:Name="Normal">
+                        <Storyboard>
+                            <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Panel.Background).(SolidColorBrush.Color)" Storyboard.TargetName="border">
+                                <EasingColorKeyFrame KeyTime="0:0:0.3" Value="#7F2D2D30">
+                                    <EasingColorKeyFrame.EasingFunction>
+                                        <CubicEase EasingMode="EaseInOut" />
+                                    </EasingColorKeyFrame.EasingFunction>
+                                </EasingColorKeyFrame>
+                            </ColorAnimationUsingKeyFrames>
+                        </Storyboard>
+                    </VisualState>
+                    <VisualState x:Name="MouseOver">
+                        <Storyboard>
+                            <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Panel.Background).(SolidColorBrush.Color)" Storyboard.TargetName="border">
+                                <EasingColorKeyFrame KeyTime="0:0:0.1" Value="#7F888888">
+                                    <EasingColorKeyFrame.EasingFunction>
+                                        <CubicEase EasingMode="EaseInOut" />
+                                    </EasingColorKeyFrame.EasingFunction>
+                                </EasingColorKeyFrame>
+                            </ColorAnimationUsingKeyFrames>
+                        </Storyboard>
+                    </VisualState>
+                    <VisualState x:Name="Pressed">
+                        <Storyboard>
+                            <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Panel.Background).(SolidColorBrush.Color)" Storyboard.TargetName="border">
+                                <EasingColorKeyFrame KeyTime="0:0:0.1" Value="#7F666666">
+                                    <EasingColorKeyFrame.EasingFunction>
+                                        <CubicEase EasingMode="EaseInOut" />
+                                    </EasingColorKeyFrame.EasingFunction>
+                                </EasingColorKeyFrame>
+                            </ColorAnimationUsingKeyFrames>
+                        </Storyboard>
+                    </VisualState>
+                    <VisualState x:Name="Disabled">
+                        <Storyboard>
+                            <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Panel.Background).(SolidColorBrush.Color)" Storyboard.TargetName="border">
+                                <EasingColorKeyFrame KeyTime="0:0:0.1" Value="#7F2D2D30">
+                                    <EasingColorKeyFrame.EasingFunction>
+                                        <CubicEase EasingMode="EaseInOut" />
+                                    </EasingColorKeyFrame.EasingFunction>
+                                </EasingColorKeyFrame>
+                            </ColorAnimationUsingKeyFrames>
+                        </Storyboard>
+                    </VisualState>
+                </VisualStateGroup>
+            </VisualStateManager.VisualStateGroups>
+            <ContentPresenter TextBlock.Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" />
+        </Border>
+    </ControlTemplate>
 </ResourceDictionary>

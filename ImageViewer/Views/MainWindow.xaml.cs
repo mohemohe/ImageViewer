@@ -34,6 +34,11 @@ namespace ImageViewer.Views
                     WindowRoot.Margin = new Thickness(0);
                 }
             };
+
+            Loaded += (sender, args) =>
+            {
+                VM.View = this;
+            };
         }
 
         //HACK: 最高にやばい
@@ -53,6 +58,20 @@ namespace ImageViewer.Views
                 VM.ImageRenderWidth = Convert.ToInt32(image.DesiredSize.Width * dpi);
                 VM.ImageRenderHeight = Convert.ToInt32(image.DesiredSize.Height * dpi);
             }
+        }
+
+        private void MoveLeft(object sender, RoutedEventArgs e)
+        {
+            var template = TabControl.Template;
+            var sv = (ScrollViewer)template.FindName("ScrollableTab", TabControl);
+            sv.LineLeft();
+        }
+
+        private void MoveRight(object sender, RoutedEventArgs e)
+        {
+            var template = TabControl.Template;
+            var sv = (ScrollViewer)template.FindName("ScrollableTab", TabControl);
+            sv.LineRight();
         }
     }
 }

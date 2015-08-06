@@ -97,7 +97,28 @@
                     <MenuItem Header="Search by Google Images" InputGestureText="Ctrl+F" Command="{Binding OpenInBrowserCommand}"/>
                 </ContextMenu>
             </Grid.ContextMenu>
-            <TabControl x:Name="TabControl" Background="{x:Null}" BorderBrush="#FF338ECC" BorderThickness="0,4,0,0" ItemsSource="{Binding DeferredImageItems}" AlternationCount="{Binding ImageItems.Count}" SelectedIndex="{Binding SelectedIndex}">
+            <TabControl x:Name="TabControl" Background="{x:Null}" ItemsSource="{Binding DeferredImageItems, UpdateSourceTrigger=PropertyChanged}" AlternationCount="{Binding DeferredImageItems.Count, UpdateSourceTrigger=PropertyChanged}" SelectedIndex="{Binding SelectedIndex, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ScrollViewer.VerticalScrollBarVisibility="Disabled">
+                <TabControl.Template>
+                    <ControlTemplate TargetType="TabControl">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition />
+                            </Grid.RowDefinitions>
+                            <Grid Grid.Row="0">
+                                <RepeatButton Delay="300" Interval="15" Template="{DynamicResource TabScrollRepeatButton}" Content="3" FontFamily="Marlett" Width="{Binding RelativeSource={RelativeSource Self}, Path=ActualHeight }" HorizontalAlignment="Left" Click="MoveLeft"/>
+                                <ScrollViewer Name="ScrollableTab" HorizontalScrollBarVisibility="Hidden"  VerticalScrollBarVisibility="Hidden" MinHeight="24" Margin="28,0" CanContentScroll="True">
+                                    <TabPanel IsItemsHost="true" HorizontalAlignment="Left" VerticalAlignment="Bottom"/>
+                                </ScrollViewer>
+                                <RepeatButton Delay="300" Interval="15" Template="{DynamicResource TabScrollRepeatButton}" Content="4" FontFamily="Marlett" Width="{Binding RelativeSource={RelativeSource Self}, Path=ActualHeight }" HorizontalAlignment="Right" Click="MoveRight"/>
+                            </Grid>
+                            <Border BorderBrush="#FF338ECC" BorderThickness="0,4,0,0" Grid.Row="1" Margin="0,-1,0,0"/>
+                            <ContentPresenter ContentSource="SelectedContent" Grid.Row="2"/>
+                        </Grid>
+                    </ControlTemplate>
+                </TabControl.Template>
+
                 <TabControl.ItemTemplate>
                     <DataTemplate>
                         <Border>

@@ -12,6 +12,8 @@ using Livet.Converters;
 using ImageViewer.Models;
 using System.Collections.ObjectModel;
 using Livet.Messaging.Windows;
+using ImageViewer.Views;
+using System.Windows.Controls;
 
 namespace ImageViewer.ViewModels
 {
@@ -71,7 +73,13 @@ namespace ImageViewer.ViewModels
             DeferredImageItems = new ObservableCollection<ImageItem>(ImageItems);
             SelectedIndex = DeferredImageItems.Count - 1;
 
-            Messenger.Raise(new WindowActionMessage(WindowAction.Active, "WindowMessage"));
+            //MEMO: ウィンドウがアクティブにならない場合がある
+            //Messenger.Raise(new WindowActionMessage(WindowAction.Active, "WindowMessage"));
+            Application.Current.MainWindow.Activate();
+
+            var template = View.TabControl.Template;
+            var sv = (ScrollViewer)template.FindName("ScrollableTab", View.TabControl);
+            sv.ScrollToRightEnd();
         }
 
         private void CalcZoom()
@@ -83,6 +91,23 @@ namespace ImageViewer.ViewModels
                 Zoom = Convert.ToInt32((renderSize/imageSize)*100);
             }
         }
+
+        #region View変更通知プロパティ
+        private MainWindow _View;
+
+        public MainWindow View
+        {
+            get
+            { return _View; }
+            set
+            { 
+                if (_View == value)
+                    return;
+                _View = value;
+                RaisePropertyChanged();
+            }
+        }
+        #endregion
 
         #region ImageRenderWidth変更通知プロパティ
 
@@ -186,8 +211,11 @@ namespace ImageViewer.ViewModels
             set
             {
                 _SelectedIndex = value;
-                SelectedImageWidth = ImageItems[value].Width;
-                SelectedImageHeight = ImageItems[value].Height;
+                if (value != -1)
+                {
+                    SelectedImageWidth = ImageItems[value].Width;
+                    SelectedImageHeight = ImageItems[value].Height;
+                }
                 RaisePropertyChanged();
             }
         }
@@ -363,15 +391,16 @@ namespace ImageViewer.ViewModels
 
         public void TabClose(int parameter)
         {
+            if (ImageItems.Count == 1)
+            {
+                Messenger.Raise(new WindowActionMessage(WindowAction.Close, "WindowMessage"));
+                return;
+            }
+
             var currentIndex = SelectedIndex;
             ImageItems.RemoveAt(parameter);
             DeferredImageItems = new ObservableCollection<ImageItem>(ImageItems);
-            SelectedIndex = currentIndex < ImageItems.Count ? currentIndex : currentIndex - 1;
-
-            if (ImageItems.Count == 0)
-            {
-                Messenger.Raise(new WindowActionMessage(WindowAction.Close, "WindowMessage"));
-            }
+            SelectedIndex = currentIndex < ImageItems.Count ? currentIndex : ImageItems.Count - 1;
         }
         #endregion
 
