@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 
 namespace ImageViewer.Views
@@ -17,12 +18,9 @@ namespace ImageViewer.Views
     /// </summary>
     public partial class MainWindow : Window
     {
-        public MainWindow(string uri, string imageUri)
+        public MainWindow()
         {
             InitializeComponent();
-
-            VM.OriginalUri = uri;
-            VM.ImageUri = imageUri;
 
             StateChanged += (sender, args) =>
             {
@@ -36,25 +34,25 @@ namespace ImageViewer.Views
                     WindowRoot.Margin = new Thickness(0);
                 }
             };
-
-            //HACK: DPIの算出
-            Image.SizeChanged += (sender, args) =>
-            {
-                if (Image.Source != null)
-                {
-                    var source = PresentationSource.FromVisual(this);
-                    var ct = source.CompositionTarget;
-                    var dpi = ct.TransformToDevice.Transform(new Point(1, 1)).X;
-                    VM.ImageRenderWidth = Convert.ToInt32(Image.DesiredSize.Width * dpi);
-                    VM.ImageRenderHeight = Convert.ToInt32(Image.DesiredSize.Height * dpi);
-                }
-            };
         }
 
-        // 最高にやばい
-        private dynamic VM
+        //HACK: 最高にやばい
+        public dynamic VM
         {
             get { return DataContext; }
+        }
+
+        private void Image_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            var image = sender as Image;
+            if (image.Source != null)
+            {
+                var source = PresentationSource.FromVisual(this);
+                var ct = source.CompositionTarget;
+                var dpi = ct.TransformToDevice.Transform(new Point(1, 1)).X;
+                VM.ImageRenderWidth = Convert.ToInt32(image.DesiredSize.Width * dpi);
+                VM.ImageRenderHeight = Convert.ToInt32(image.DesiredSize.Height * dpi);
+            }
         }
     }
 }

@@ -10,6 +10,8 @@ using System.Windows;
 using System.Windows.Media.Imaging;
 using Livet.Converters;
 using ImageViewer.Models;
+using System.Collections.ObjectModel;
+using Livet.Messaging.Windows;
 
 namespace ImageViewer.ViewModels
 {
@@ -57,78 +59,30 @@ namespace ImageViewer.ViewModels
          * 自動的にUIDispatcher上での通知に変換されます。変更通知に際してUIDispatcherを操作する必要はありません。
          */
 
-        private Image image = new Image();
-        
-        public async void Initialize()
+        public void Initialize()
         {
-            Image = await image.DownloadDataAsync(ImageUri, ImageUri.Contains(@"s.kuku.lu") ? OriginalUri : "");
+
+        }
+
+        public async void AddTab(string imageUri, string originalUri = null)
+        {
+            ImageItems.Add(new ImageItem(imageUri, originalUri));
+            await ImageItems[ImageItems.Count - 1].DownloadDataAsync();
+            DeferredImageItems = new ObservableCollection<ImageItem>(ImageItems);
+            SelectedIndex = DeferredImageItems.Count - 1;
+
+            Messenger.Raise(new WindowActionMessage(WindowAction.Active, "WindowMessage"));
         }
 
         private void CalcZoom()
         {
-            if (Image != null)
+            if (DeferredImageItems[_SelectedIndex].Bitmap != null)
             {
-                var imageSize = Image.Width*Image.Height;
+                var imageSize = DeferredImageItems[_SelectedIndex].Bitmap.Width* DeferredImageItems[_SelectedIndex].Bitmap.Height;
                 var renderSize = ImageRenderWidth*ImageRenderHeight;
                 Zoom = Convert.ToInt32((renderSize/imageSize)*100);
             }
         }
-
-        #region OriginalUri変更通知プロパティ
-
-        private string _OriginalUri;
-
-        public string OriginalUri
-        {
-            get
-            { return _OriginalUri; }
-            set
-            { 
-                if (_OriginalUri == value)
-                    return;
-                _OriginalUri = value;
-                RaisePropertyChanged();
-            }
-        }
-
-        #endregion
-
-        #region ImageUri変更通知プロパティ
-
-        private string _ImageUri;
-
-        public string ImageUri
-        {
-            get { return _ImageUri; }
-            set
-            {
-                if (_ImageUri == value)
-                    return;
-                _ImageUri = value;
-                RaisePropertyChanged();
-            }
-        }
-
-        #endregion ImageUri変更通知プロパティ
-
-        #region Image変更通知プロパティ
-
-        private BitmapSource _Image;
-
-        public BitmapSource Image
-        {
-            get { return _Image; }
-            set
-            {
-                if (_Image == value)
-                    return;
-                _Image = value;
-                RaisePropertyChanged();
-                CalcZoom();
-            }
-        }
-
-        #endregion Image変更通知プロパティ
 
         #region ImageRenderWidth変更通知プロパティ
 
@@ -167,6 +121,43 @@ namespace ImageViewer.ViewModels
 
         #endregion ImageRenderHeight変更通知プロパティ
 
+        #region SelectedImageWidth変更通知プロパティ
+
+        private int _SelectedImageWidth;
+
+        public int SelectedImageWidth
+        {
+            get { return _SelectedImageWidth; }
+            set
+            {
+                if (_SelectedImageWidth == value)
+                    return;
+                _SelectedImageWidth = value;
+                RaisePropertyChanged();
+            }
+        }
+
+        #endregion ImageRenderWidth変更通知プロパティ
+
+        #region SelectedImageHeight変更通知プロパティ
+
+        private int _SelectedImageHeight;
+
+        public int SelectedImageHeight
+        {
+            get { return _SelectedImageHeight; }
+            set
+            {
+                if (_SelectedImageHeight == value)
+                    return;
+                _SelectedImageHeight = value;
+                RaisePropertyChanged();
+                CalcZoom();
+            }
+        }
+
+        #endregion ImageRenderHeight変更通知プロパティ
+
         #region Zoom変更通知プロパティ
 
         private int _Zoom;
@@ -184,6 +175,60 @@ namespace ImageViewer.ViewModels
         }
 
         #endregion Zoom変更通知プロパティ
+
+        #region SelectedIndex変更通知プロパティ
+
+        private int _SelectedIndex;
+
+        public int SelectedIndex
+        {
+            get { return _SelectedIndex; }
+            set
+            {
+                _SelectedIndex = value;
+                SelectedImageWidth = ImageItems[value].Width;
+                SelectedImageHeight = ImageItems[value].Height;
+                RaisePropertyChanged();
+            }
+        }
+
+        #endregion SelectedIndex変更通知プロパティ
+
+        #region ImageItems変更通知プロパティ
+
+        private List<ImageItem> _ImageItems = new List<ImageItem>();
+
+        public List<ImageItem> ImageItems
+        {
+            get { return _ImageItems; }
+            set
+            {
+                if (_ImageItems == value)
+                    return;
+                _ImageItems = value;
+                RaisePropertyChanged();
+            }
+        }
+
+        #endregion ImageItems変更通知プロパティ
+
+        #region DeferredImageItems変更通知プロパティ
+
+        private ObservableCollection<ImageItem> _DeferredImageItems = new ObservableCollection<ImageItem>();
+
+        public ObservableCollection<ImageItem> DeferredImageItems
+        {
+            get { return _DeferredImageItems; }
+            set
+            {
+                if (_DeferredImageItems == value)
+                    return;
+                _DeferredImageItems = value;
+                RaisePropertyChanged();
+            }
+        }
+
+        #endregion DeferredImageItems変更通知プロパティ
 
         #region SaveImageCommand
 
@@ -203,11 +248,8 @@ namespace ImageViewer.ViewModels
 
         public void SaveImage()
         {
-            var uri = ImageUri.EndsWith(":orig")
-                ? ImageUri.Substring(0, ImageUri.Length - ":orig".Length)
-                : ImageUri;
-            var fileName = Path.GetFileNameWithoutExtension(uri);
-            var ext = Path.GetExtension(uri);
+            var fileName = Path.GetFileNameWithoutExtension(ImageItems[SelectedIndex].Name);
+            var ext = Path.GetExtension(ImageItems[SelectedIndex].Name);
 
             var tmpList = new List<string>
             {
@@ -219,7 +261,6 @@ namespace ImageViewer.ViewModels
 
             var filterList = new List<string>();
             filterList.AddRange(tmpList.Where(x => x.Contains(ext)));
-            filterList.AddRange(tmpList.Where(x => !x.Contains(ext)));
 
             var filter = "";
             filterList.ForEach(x => filter += x);
@@ -238,26 +279,7 @@ namespace ImageViewer.ViewModels
                 return;
             }
 
-            var targetFilePath = message.Response[0];
-
-            var encoder =
-                Path.GetExtension(targetFilePath) == ".jpeg"
-                    ? new JpegBitmapEncoder()
-                    : ext == ".jpg"
-                        ? new JpegBitmapEncoder()
-                        : ext == ".bmp"
-                            ? new BmpBitmapEncoder()
-                            : ext == ".png"
-                                ? new PngBitmapEncoder()
-                                : ext == ".gif"
-                                    ? new GifBitmapEncoder()
-                                    : (BitmapEncoder) (new PngBitmapEncoder());
-            encoder.Frames.Add(BitmapFrame.Create(Image));
-
-            using (var fs = new FileStream(targetFilePath, FileMode.Create))
-            {
-                encoder.Save(fs);
-            }
+            ImageItems[SelectedIndex].Save(message.Response[0]);
         }
         #endregion SaveImageCommand
 
@@ -278,7 +300,7 @@ namespace ImageViewer.ViewModels
 
         public void CopyToClipboard()
         {
-            Clipboard.SetImage(Image);
+            Clipboard.SetImage(ImageItems[SelectedIndex].Bitmap);
         }
         #endregion CopyToClipboardCommand
 
@@ -299,7 +321,7 @@ namespace ImageViewer.ViewModels
 
         public void OpenInBrowser()
         {
-            Process.Start(ImageUri);
+            Process.Start(ImageItems[SelectedIndex].ImageUri);
         }
         #endregion OpenInBrowserCommand
 
@@ -320,7 +342,36 @@ namespace ImageViewer.ViewModels
 
         public void SearchByGoogle()
         {
-            Process.Start("https://www.google.com/searchbyimage?image_url=" + ImageUri);
+            Process.Start(@"https://www.google.com/searchbyimage?image_url=" + ImageItems[SelectedIndex].ImageUri);
+        }
+        #endregion
+
+        #region TabCloseCommand
+        private ListenerCommand<int> _TabCloseCommand;
+
+        public ListenerCommand<int> TabCloseCommand
+        {
+            get
+            {
+                if (_TabCloseCommand == null)
+                {
+                    _TabCloseCommand = new ListenerCommand<int>(TabClose);
+                }
+                return _TabCloseCommand;
+            }
+        }
+
+        public void TabClose(int parameter)
+        {
+            var currentIndex = SelectedIndex;
+            ImageItems.RemoveAt(parameter);
+            DeferredImageItems = new ObservableCollection<ImageItem>(ImageItems);
+            SelectedIndex = currentIndex < ImageItems.Count ? currentIndex : currentIndex - 1;
+
+            if (ImageItems.Count == 0)
+            {
+                Messenger.Raise(new WindowActionMessage(WindowAction.Close, "WindowMessage"));
+            }
         }
         #endregion
 

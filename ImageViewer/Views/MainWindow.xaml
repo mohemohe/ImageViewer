@@ -49,6 +49,10 @@
 
         <!--WindowのCloseキャンセル処理に対応する場合は、WindowCloseCancelBehaviorの使用を検討してください-->
 
+        <l:InteractionMessageTrigger MessageKey="WindowMessage" Messenger="{Binding Messenger}" InvokeActionsOnlyWhileAttatchedObjectLoaded="True">
+            <l:WindowInteractionMessageAction />
+        </l:InteractionMessageTrigger>
+
         <l:InteractionMessageTrigger MessageKey="Save" Messenger="{Binding Messenger}">
             <l:SaveFileDialogInteractionMessageAction />
         </l:InteractionMessageTrigger>
@@ -93,8 +97,52 @@
                     <MenuItem Header="Search by Google Images" InputGestureText="Ctrl+F" Command="{Binding OpenInBrowserCommand}"/>
                 </ContextMenu>
             </Grid.ContextMenu>
-            <Image Name="Image" Source="{Binding Image, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" RenderOptions.BitmapScalingMode="Fant"/>
-                <WrapPanel HorizontalAlignment="Left" VerticalAlignment="Bottom">
+            <TabControl x:Name="TabControl" Background="{x:Null}" BorderBrush="#FF338ECC" BorderThickness="0,4,0,0" ItemsSource="{Binding DeferredImageItems}" AlternationCount="{Binding ImageItems.Count}" SelectedIndex="{Binding SelectedIndex}">
+                <TabControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border>
+                            <WrapPanel>
+                                <TextBlock Text="{Binding Name}" Margin="12,0"/>
+                                <Button 
+                                    x:Name="CloseButton" 
+                                    ToolTip="Close"
+                                    Command="{Binding Path=Content.DataContext.TabCloseCommand}"
+                                    CommandParameter="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type TabItem}}}"
+                                    Content="r"
+                                    FontFamily="Marlett"
+                                    Margin="0" 
+                                    Template="{DynamicResource TabCloseButton}"
+                                    Width="{Binding RelativeSource={RelativeSource Self}, Path=ActualHeight}">
+
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="Click">
+                                            <l:LivetCallMethodAction 
+                                                MethodTarget="{
+                                                    Binding Path=DataContext, 
+                                                    RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type TabControl}}, 
+                                                    Mode=OneWay}" 
+                                                MethodName="TabClose" 
+                                                MethodParameter="{
+                                                    Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type TabItem}}, 
+                                                    Path=(ItemsControl.AlternationIndex)}"
+                                                />
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>
+                                </Button>
+                            </WrapPanel>
+                        </Border>
+                    </DataTemplate>
+                </TabControl.ItemTemplate>
+
+                <TabControl.ContentTemplate>
+                    <DataTemplate>
+                        <Grid>
+                            <Image Name="Image" Source="{Binding Bitmap, UpdateSourceTrigger=PropertyChanged}" RenderOptions.BitmapScalingMode="Fant" SizeChanged="Image_SizeChanged"/>
+                        </Grid>
+                    </DataTemplate>
+                </TabControl.ContentTemplate>
+            </TabControl>
+            <WrapPanel HorizontalAlignment="Left" VerticalAlignment="Bottom">
                 <Button Command="{Binding SaveImageCommand}" ToolTip="SaveAs" VerticalAlignment="Bottom" HorizontalAlignment="Left" Template="{DynamicResource TransparentButton}">
                     <Image Source="/Resources/IcoMoon/save.png" Width="24" Height="24" />
                 </Button>
@@ -119,15 +167,15 @@
                 <Label Content="px" Padding="5,0" VerticalAlignment="Center"/>
 
                 <Label Content="Image:" Padding="5,0" VerticalAlignment="Center" />
-                <Label Content="{Binding Image.Width, FallbackValue=0}" Padding="0" VerticalAlignment="Center" />
+                <Label Content="{Binding SelectedImageWidth, FallbackValue=0, UpdateSourceTrigger=PropertyChanged}" Padding="0" VerticalAlignment="Center" />
                 <Label Content="x" Padding="2,0" VerticalAlignment="Center"/>
-                <Label Content="{Binding Image.Height, FallbackValue=0}" Padding="0" VerticalAlignment="Center"/>
+                <Label Content="{Binding SelectedImageHeight, FallbackValue=0, UpdateSourceTrigger=PropertyChanged}" Padding="0" VerticalAlignment="Center"/>
                 <Label Content="px" Padding="5,0" VerticalAlignment="Center"/>
 
                 <Label Content="Zoom:" Padding="5,0" VerticalAlignment="Center"/>
                 <Label Content="{Binding Zoom, FallbackValue=0}" Padding="0" VerticalAlignment="Center" />
                 <Label Content="%" Padding="5,0" VerticalAlignment="Center"/>
-                
+
                 <Label Content="padding" Padding="5,0" VerticalAlignment="Center" Foreground="{x:Null}"/>
             </WrapPanel>
         </Grid>
