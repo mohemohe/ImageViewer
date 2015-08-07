@@ -73,10 +73,18 @@ namespace ImageViewer.ViewModels
             DeferredImageItems = new ObservableCollection<ImageItem>(ImageItems);
             SelectedIndex = DeferredImageItems.Count - 1;
 
-            //MEMO: ウィンドウがアクティブにならない場合がある
-            //Messenger.Raise(new WindowActionMessage(WindowAction.Active, "WindowMessage"));
-            Application.Current.MainWindow.Activate();
-
+            if (View.WindowState == WindowState.Minimized)
+            {
+                View.WindowState = WindowState.Normal;
+            }
+            for(var i = 0; i < 50; i++)
+            {
+                if (Application.Current.MainWindow.Activate())
+                {
+                    break;
+                }
+            }
+            
             var template = View.TabControl.Template;
             var sv = (ScrollViewer)template.FindName("ScrollableTab", View.TabControl);
             sv.ScrollToRightEnd();
