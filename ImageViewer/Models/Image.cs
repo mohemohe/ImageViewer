@@ -5,10 +5,11 @@ using System.Windows.Media.Imaging;
 using System.Drawing;
 using System.Threading.Tasks;
 using System.IO;
+using Livet;
 
 namespace ImageViewer.Models
 {
-    public class Image
+    public class Image : NotificationObject
     {
         public byte[] OriginalData { get; private set; }
         public Bitmap OriginalBitmap { get; private set; }

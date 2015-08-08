@@ -82,7 +82,7 @@ namespace ImageViewer
             DispatcherHelper.UIDispatcher = Dispatcher;
             //AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
 
-            string testUri = "http://www.pixiv.net/member_illust.php?illust_id=51847799&mode=medium";
+            string testUri = "https://pbs.twimg.com/media/CDc-gf3VIAAD6q9.png:orig";
 
             if (mutex.WaitOne(0, false) == false)
             {

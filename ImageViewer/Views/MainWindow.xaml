@@ -6,7 +6,7 @@
         xmlns:l="http://schemas.livet-mvvm.net/2011/wpf"
         xmlns:v="clr-namespace:ImageViewer.Views"
         xmlns:vm="clr-namespace:ImageViewer.ViewModels"
-        Title="ImageViewer" Height="360" Width="525" MinHeight="96" MinWidth="{Binding ElementName=StatusBarElements, Path=ActualWidth, UpdateSourceTrigger=PropertyChanged}" ResizeMode="CanResizeWithGrip" Background="#FF2D2D30">
+        Title="ImageViewer" Height="480" Width="720" MinHeight="128" MinWidth="{Binding ElementName=StatusBarElements, Path=ActualWidth, UpdateSourceTrigger=PropertyChanged}" ResizeMode="CanResizeWithGrip" Background="{DynamicResource MatteBlack}">
 
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="32" />
@@ -58,14 +58,14 @@
         </l:InteractionMessageTrigger>
     </i:Interaction.Triggers>
 
-    <Grid Name="WindowRoot" Background="#FF2D2D30" Margin="0">
+    <Grid Name="WindowRoot" Margin="0">
         <Grid.RowDefinitions>
             <RowDefinition Height="32" />
             <RowDefinition Height="*" />
             <RowDefinition Height="24" />
         </Grid.RowDefinitions>
 
-        <Grid Grid.Row="0" WindowChrome.IsHitTestVisibleInChrome="True">
+        <Grid Grid.Row="0" Background="{DynamicResource MatteBlack}" WindowChrome.IsHitTestVisibleInChrome="False" Panel.ZIndex="1">
             <Grid.DataContext>
                 <vm:CaptionBarViewModel />
             </Grid.DataContext>
@@ -80,24 +80,16 @@
             </i:Interaction.Triggers>
 
             <StackPanel Orientation="Horizontal" Margin="0,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Top">
-                <Label Content="ImageViewer" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="8,0,0,0" Foreground="#FFFAFAFF" FontSize="14" />
+                <Label Content="ImageViewer" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="8,0,0,0" Foreground="{DynamicResource EvilWhite}" FontSize="14" />
             </StackPanel>
-            <StackPanel Orientation="Horizontal" Margin="0,0,5,0" HorizontalAlignment="Right" VerticalAlignment="Top">
+            <StackPanel Orientation="Horizontal" Margin="0,0,5,0" HorizontalAlignment="Right" VerticalAlignment="Top" WindowChrome.IsHitTestVisibleInChrome="True">
                 <Button Content="0" FontFamily="Marlett" Width="28" Height="20" Margin="0,0,1,0" Template="{DynamicResource CaptionButton}" Command="{Binding MinimizeCommand}" />
                 <Button Content="{Binding MaximizeButtonContent}" FontFamily="Marlett" Width="28" Height="20" Margin="0,0,1,0" Template="{DynamicResource CaptionButton}" Command="{Binding MaximizeCommand}" />
                 <Button Content="r" FontFamily="Marlett" Width="48" Height="20" Margin="0" Template="{DynamicResource CloseButton}" Command="{Binding CloseCommand}" />
             </StackPanel>
         </Grid>
         <Grid Grid.Row="1">
-            <Grid.ContextMenu>
-                <ContextMenu>
-                    <MenuItem Header="SaveAs" InputGestureText="Ctrl+S" Command="{Binding SaveImageCommand}"/>
-                    <MenuItem Header="Copy to Clipboard" InputGestureText="Ctrl+C" Command="{Binding CopyToClipboardCommand}"/>
-                    <MenuItem Header="Open in Browser" InputGestureText="Ctrl+O" Command="{Binding OpenInBrowserCommand}"/>
-                    <MenuItem Header="Search by Google Images" InputGestureText="Ctrl+F" Command="{Binding OpenInBrowserCommand}"/>
-                </ContextMenu>
-            </Grid.ContextMenu>
-            <TabControl x:Name="TabControl" Background="{x:Null}" ItemsSource="{Binding DeferredImageItems, UpdateSourceTrigger=PropertyChanged}" AlternationCount="{Binding DeferredImageItems.Count, UpdateSourceTrigger=PropertyChanged}" SelectedIndex="{Binding SelectedIndex, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ScrollViewer.VerticalScrollBarVisibility="Disabled">
+            <TabControl x:Name="TabControl" ItemsSource="{Binding DeferredImageItems, UpdateSourceTrigger=PropertyChanged}" AlternationCount="{Binding DeferredImageItems.Count, UpdateSourceTrigger=PropertyChanged}" SelectedIndex="{Binding SelectedIndex, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ScrollViewer.VerticalScrollBarVisibility="Disabled">
                 <TabControl.Template>
                     <ControlTemplate TargetType="TabControl">
                         <Grid>
@@ -106,15 +98,15 @@
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition />
                             </Grid.RowDefinitions>
-                            <Grid Grid.Row="0">
+                            <Grid Grid.Row="0" Background="{DynamicResource MatteBlack}" Panel.ZIndex="1">
                                 <RepeatButton Delay="300" Interval="15" Template="{DynamicResource TabScrollRepeatButton}" Content="3" FontFamily="Marlett" Width="{Binding RelativeSource={RelativeSource Self}, Path=ActualHeight }" HorizontalAlignment="Left" Click="MoveLeft"/>
                                 <ScrollViewer Name="ScrollableTab" HorizontalScrollBarVisibility="Hidden"  VerticalScrollBarVisibility="Hidden" MinHeight="24" Margin="28,0" CanContentScroll="True">
                                     <TabPanel IsItemsHost="true" HorizontalAlignment="Left" VerticalAlignment="Bottom"/>
                                 </ScrollViewer>
                                 <RepeatButton Delay="300" Interval="15" Template="{DynamicResource TabScrollRepeatButton}" Content="4" FontFamily="Marlett" Width="{Binding RelativeSource={RelativeSource Self}, Path=ActualHeight }" HorizontalAlignment="Right" Click="MoveRight"/>
                             </Grid>
-                            <Border BorderBrush="#FF338ECC" BorderThickness="0,4,0,0" Grid.Row="1" Margin="0,-1,0,0"/>
-                            <ContentPresenter ContentSource="SelectedContent" Grid.Row="2"/>
+                            <Border BorderBrush="{DynamicResource MetroBlue}" BorderThickness="0,4,0,0" Grid.Row="1" Panel.ZIndex="1"/>
+                            <ContentPresenter ContentSource="SelectedContent" Grid.Row="2" Panel.ZIndex="0"/>
                         </Grid>
                     </ControlTemplate>
                 </TabControl.Template>
@@ -157,8 +149,26 @@
 
                 <TabControl.ContentTemplate>
                     <DataTemplate>
-                        <Grid>
-                            <Image Name="Image" Source="{Binding Bitmap, UpdateSourceTrigger=PropertyChanged, TargetNullValue={StaticResource ErrorImage}}" RenderOptions.BitmapScalingMode="Fant" SizeChanged="Image_SizeChanged"/>
+                        <Grid Background="#00000000" MouseWheel="Zoom" MouseDown="StartTranslate" MouseUp="StopTranslate" MouseMove="Translate">
+                            <Grid.ContextMenu>
+                                <ContextMenu>
+                                    <MenuItem Header="SaveAs" InputGestureText="Ctrl+S" Command="{Binding Content.DataContext.SaveImageCommand}"/>
+                                    <MenuItem Header="Copy to Clipboard" InputGestureText="Ctrl+C" Command="{Binding Content.DataContext.CopyToClipboardCommand}"/>
+                                    <MenuItem Header="Open in Browser" InputGestureText="Ctrl+O" Command="{Binding Content.DataContext.OpenInBrowserCommand}"/>
+                                    <MenuItem Header="Search by Google Images" InputGestureText="Ctrl+F" Command="{Binding Content.DataContext.OpenInBrowserCommand}"/>
+                                </ContextMenu>
+                            </Grid.ContextMenu>
+
+                            <Image Name="Image" Source="{Binding Bitmap, UpdateSourceTrigger=PropertyChanged, TargetNullValue={StaticResource ErrorImage}}" RenderOptions.BitmapScalingMode="Fant" SizeChanged="Image_SizeChanged" RenderTransformOrigin="0.5, 0.5">
+                                <Image.RenderTransform>
+                                    <TransformGroup>
+                                        <ScaleTransform ScaleX="{Binding Zoom, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ScaleY="{Binding Zoom, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" CenterX="0.5" CenterY="0.5"/>
+                                        <SkewTransform/>
+                                        <RotateTransform/>
+                                        <TranslateTransform X="{Binding Translate.X, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Y="{Binding Translate.Y, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                    </TransformGroup>
+                                </Image.RenderTransform>
+                            </Image>
                         </Grid>
                     </DataTemplate>
                 </TabControl.ContentTemplate>
@@ -178,26 +188,26 @@
                 </Button>
             </WrapPanel>
         </Grid>
-        <Grid Grid.Row="2" Background="#FF338ECC">
+        <Grid Grid.Row="2" Background="{DynamicResource MetroBlue}" Panel.ZIndex="1">
             <WrapPanel x:Name="StatusBarElements" HorizontalAlignment="Left">
                 <Label Content="" Padding="0,5" />
-                <Label Content="Render:" Padding="5,0" VerticalAlignment="Center" />
-                <Label Content="{Binding ImageRenderWidth, FallbackValue=0}" Padding="0" VerticalAlignment="Center" />
-                <Label Content="x" Padding="2,0" VerticalAlignment="Center" />
-                <Label Content="{Binding ImageRenderHeight, FallbackValue=0}" Padding="0" VerticalAlignment="Center" />
-                <Label Content="px" Padding="5,0" VerticalAlignment="Center"/>
+                <Label Content="Render:" Padding="5,0" VerticalAlignment="Center" Foreground="{DynamicResource EvilWhite}" />
+                <Label Content="{Binding ImageRenderWidth, FallbackValue=0}" Padding="0" VerticalAlignment="Center" Foreground="{DynamicResource EvilWhite}" />
+                <Label Content="x" Padding="2,0" VerticalAlignment="Center" Foreground="{DynamicResource EvilWhite}" />
+                <Label Content="{Binding ImageRenderHeight, FallbackValue=0}" Padding="0" VerticalAlignment="Center" Foreground="{DynamicResource EvilWhite}" />
+                <Label Content="px" Padding="5,0" VerticalAlignment="Center" Foreground="{DynamicResource EvilWhite}"/>
 
-                <Label Content="Image:" Padding="5,0" VerticalAlignment="Center" />
-                <Label Content="{Binding SelectedImageWidth, FallbackValue=0, UpdateSourceTrigger=PropertyChanged}" Padding="0" VerticalAlignment="Center" />
-                <Label Content="x" Padding="2,0" VerticalAlignment="Center"/>
-                <Label Content="{Binding SelectedImageHeight, FallbackValue=0, UpdateSourceTrigger=PropertyChanged}" Padding="0" VerticalAlignment="Center"/>
-                <Label Content="px" Padding="5,0" VerticalAlignment="Center"/>
+                <Label Content="Image:" Padding="5,0" VerticalAlignment="Center" Foreground="{DynamicResource EvilWhite}" />
+                <Label Content="{Binding SelectedImageWidth, FallbackValue=0, UpdateSourceTrigger=PropertyChanged}" Padding="0" VerticalAlignment="Center" Foreground="{DynamicResource EvilWhite}" />
+                <Label Content="x" Padding="2,0" VerticalAlignment="Center" Foreground="{DynamicResource EvilWhite}" />
+                <Label Content="{Binding SelectedImageHeight, FallbackValue=0, UpdateSourceTrigger=PropertyChanged}" Padding="0" VerticalAlignment="Center" Foreground="{DynamicResource EvilWhite}" />
+                <Label Content="px" Padding="5,0" VerticalAlignment="Center" Foreground="{DynamicResource EvilWhite}"/>
 
-                <Label Content="Zoom:" Padding="5,0" VerticalAlignment="Center"/>
-                <Label Content="{Binding Zoom, FallbackValue=0}" Padding="0" VerticalAlignment="Center" />
-                <Label Content="%" Padding="5,0" VerticalAlignment="Center"/>
+                <Label Content="Zoom:" Padding="5,0" VerticalAlignment="Center" Foreground="{DynamicResource EvilWhite}" />
+                <Label Content="{Binding Zoom, FallbackValue=0}" Padding="0" VerticalAlignment="Center" Foreground="{DynamicResource EvilWhite}" />
+                <Label Content="%" Padding="5,0" VerticalAlignment="Center" Foreground="{DynamicResource EvilWhite}" />
 
-                <Label Content="padding" Padding="5,0" VerticalAlignment="Center" Foreground="{x:Null}"/>
+                <Label Content="padding" Padding="5,0" VerticalAlignment="Center" Foreground="{x:Null}" />
             </WrapPanel>
         </Grid>
     </Grid>

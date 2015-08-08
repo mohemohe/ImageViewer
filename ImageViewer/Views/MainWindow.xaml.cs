@@ -1,6 +1,9 @@
-﻿using System;
+﻿using ImageViewer.Helpers;
+using ImageViewer.ViewModels;
+using System;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media.Imaging;
 
 namespace ImageViewer.Views
@@ -18,6 +21,8 @@ namespace ImageViewer.Views
     /// </summary>
     public partial class MainWindow : Window
     {
+        private bool _isTranslate = false;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -42,9 +47,9 @@ namespace ImageViewer.Views
         }
 
         //HACK: 最高にやばい
-        public dynamic VM
+        public MainWindowViewModel VM
         {
-            get { return DataContext; }
+            get { return DataContext as MainWindowViewModel; }
         }
 
         private void Image_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -55,8 +60,9 @@ namespace ImageViewer.Views
                 var source = PresentationSource.FromVisual(this);
                 var ct = source.CompositionTarget;
                 var dpi = ct.TransformToDevice.Transform(new Point(1, 1)).X;
-                VM.ImageRenderWidth = Convert.ToInt32(image.DesiredSize.Width * dpi);
-                VM.ImageRenderHeight = Convert.ToInt32(image.DesiredSize.Height * dpi);
+                var zoom = VM.DeferredImageItems[VM.SelectedIndex].Zoom;
+                VM.ImageRenderWidth = Convert.ToInt32(image.DesiredSize.Width * dpi * zoom);
+                VM.ImageRenderHeight = Convert.ToInt32(image.DesiredSize.Height * dpi * zoom);
             }
         }
 
@@ -72,6 +78,53 @@ namespace ImageViewer.Views
             var template = TabControl.Template;
             var sv = (ScrollViewer)template.FindName("ScrollableTab", TabControl);
             sv.LineRight();
+        }
+
+        private void Zoom(object sender, System.Windows.Input.MouseWheelEventArgs e)
+        {
+            VM.DeferredImageItems[VM.SelectedIndex].Zoom += Math.Sign(e.Delta) * VM.DeferredImageItems[VM.SelectedIndex].Zoom * 0.1;
+            Image_SizeChanged(((Image)((Grid)sender).Children[0]), null);
+        }
+
+        System.Drawing.Point _mousePosition;
+
+        private void StartTranslate(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            if (e.ChangedButton == MouseButton.Left)
+            {
+                Win32Helper.GetCursorPos(out _mousePosition);
+                Win32Helper.ShowCursor(false);
+                _isTranslate = true;
+            }
+            else if(e.ChangedButton == MouseButton.Middle)
+            {
+                VM.DeferredImageItems[VM.SelectedIndex].Zoom = 1.0;
+                VM.DeferredImageItems[VM.SelectedIndex].Translate.X = 0.5;
+                VM.DeferredImageItems[VM.SelectedIndex].Translate.Y = 0.5;
+                Image_SizeChanged(((Image)((Grid)sender).Children[0]), null);
+            }
+        }
+
+        private void StopTranslate(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            if (_isTranslate)
+            {
+                _isTranslate = false;
+                Win32Helper.SetCursorPos(_mousePosition.X, _mousePosition.Y);
+                Win32Helper.ShowCursor(true);
+            }
+        }
+
+        private void Translate(object sender, System.Windows.Input.MouseEventArgs e)
+        {
+            if (_isTranslate)
+            {
+                System.Drawing.Point currentPosition;
+                Win32Helper.GetCursorPos(out currentPosition);
+                Win32Helper.SetCursorPos(_mousePosition.X, _mousePosition.Y);
+                VM.DeferredImageItems[VM.SelectedIndex].Translate.X += currentPosition.X - _mousePosition.X;
+                VM.DeferredImageItems[VM.SelectedIndex].Translate.Y += currentPosition.Y - _mousePosition.Y;
+            }
         }
     }
 }

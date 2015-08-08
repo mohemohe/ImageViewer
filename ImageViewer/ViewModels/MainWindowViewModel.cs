@@ -63,7 +63,7 @@ namespace ImageViewer.ViewModels
 
         public void Initialize()
         {
-
+            
         }
 
         public async void AddTab(string imageUri, string originalUri = null)
@@ -71,7 +71,6 @@ namespace ImageViewer.ViewModels
             ImageItems.Add(new ImageItem(imageUri, originalUri));
             await ImageItems[ImageItems.Count - 1].DownloadDataAsync();
             DeferredImageItems = new ObservableCollection<ImageItem>(ImageItems);
-
             SelectedIndex = DeferredImageItems.Count - 1;
 
             if (View.WindowState == WindowState.Minimized)

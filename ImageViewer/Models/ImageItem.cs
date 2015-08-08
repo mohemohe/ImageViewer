@@ -1,4 +1,6 @@
-﻿using System;
+﻿using ImageViewer.Helpers;
+using Livet;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -14,6 +16,40 @@ namespace ImageViewer.Models
         public string Name { get; set; }
         public string OriginalUri { get; private set; }
         public string ImageUri { get; private set; }
+
+        #region Zoom変更通知プロパティ
+        private double _Zoom = 1.0;
+
+        public double Zoom
+        {
+            get
+            { return _Zoom; }
+            set
+            { 
+                if (_Zoom == value)
+                    return;
+                _Zoom = value;
+                RaisePropertyChanged();
+            }
+        }
+        #endregion
+
+        #region Translate変更通知プロパティ
+        private DimensionHelper.TwoDimension _Translate = new DimensionHelper.TwoDimension { X = 0.5, Y = 0.5 };
+
+        public DimensionHelper.TwoDimension Translate
+        {
+            get
+            { return _Translate; }
+            set
+            { 
+                if (_Translate == value)
+                    return;
+                _Translate = value;
+                RaisePropertyChanged();
+            }
+        }
+        #endregion
 
         public int Width { get { return (base.Bitmap != null) ? (int)base.Bitmap.Width : 0 ; } }
         public int Height { get { return (base.Bitmap != null) ? (int)base.Bitmap?.Height : 0 ; } }

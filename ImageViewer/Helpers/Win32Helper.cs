@@ -1,12 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Interop;
 
 namespace ImageViewer.Helpers
 {
@@ -14,5 +7,15 @@ namespace ImageViewer.Helpers
     {
         [DllImport("user32.dll")]
         public static extern IntPtr GetForegroundWindow();
+
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool GetCursorPos(out System.Drawing.Point point);
+
+        [DllImport("USER32.dll")]
+        public static extern void SetCursorPos(int x, int y);
+
+        [DllImport("USER32.dll")]
+        public static extern void ShowCursor(bool isShow);
     }
 }

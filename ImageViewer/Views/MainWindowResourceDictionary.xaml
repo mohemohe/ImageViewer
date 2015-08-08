@@ -5,6 +5,10 @@
     xmlns:l="http://schemas.livet-mvvm.net/2011/wpf"
     xmlns:vm="clr-namespace:ImageViewer.ViewModels">
 
+    <SolidColorBrush x:Key="MetroBlue" Color="#FF338ECC" />
+    <SolidColorBrush x:Key="MatteBlack" Color="#FF2D2D30" />
+    <SolidColorBrush x:Key="EvilWhite" Color="#FFFAFAFF" />
+
     <ControlTemplate x:Key="CaptionButton" TargetType="{x:Type Button}">
         <Border x:Name="border" Background="#FF333333">
             <VisualStateManager.VisualStateGroups>
