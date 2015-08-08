@@ -71,6 +71,7 @@ namespace ImageViewer.ViewModels
             ImageItems.Add(new ImageItem(imageUri, originalUri));
             await ImageItems[ImageItems.Count - 1].DownloadDataAsync();
             DeferredImageItems = new ObservableCollection<ImageItem>(ImageItems);
+
             SelectedIndex = DeferredImageItems.Count - 1;
 
             if (View.WindowState == WindowState.Minimized)
@@ -92,10 +93,10 @@ namespace ImageViewer.ViewModels
 
         private void CalcZoom()
         {
-            if (DeferredImageItems[_SelectedIndex].Bitmap != null)
+            if (_SelectedIndex != -1 && DeferredImageItems[_SelectedIndex].Bitmap != null)
             {
-                var imageSize = DeferredImageItems[_SelectedIndex].Bitmap.Width* DeferredImageItems[_SelectedIndex].Bitmap.Height;
-                var renderSize = ImageRenderWidth*ImageRenderHeight;
+                var imageSize = DeferredImageItems[_SelectedIndex].Bitmap.Width;
+                var renderSize = ImageRenderWidth;
                 Zoom = Convert.ToInt32((renderSize/imageSize)*100);
             }
         }
@@ -117,6 +118,8 @@ namespace ImageViewer.ViewModels
         }
         #endregion
 
+        #region ステータスバーにバインディング
+
         #region ImageRenderWidth変更通知プロパティ
 
         private int _ImageRenderWidth;
@@ -130,29 +133,28 @@ namespace ImageViewer.ViewModels
                     return;
                 _ImageRenderWidth = value;
                 RaisePropertyChanged();
+                CalcZoom();
             }
         }
 
         #endregion ImageRenderWidth変更通知プロパティ
 
         #region ImageRenderHeight変更通知プロパティ
-
         private int _ImageRenderHeight;
 
         public int ImageRenderHeight
         {
-            get { return _ImageRenderHeight; }
+            get
+            { return _ImageRenderHeight; }
             set
-            {
+            { 
                 if (_ImageRenderHeight == value)
                     return;
                 _ImageRenderHeight = value;
                 RaisePropertyChanged();
-                CalcZoom();
             }
         }
-
-        #endregion ImageRenderHeight変更通知プロパティ
+        #endregion
 
         #region SelectedImageWidth変更通知プロパティ
 
@@ -209,6 +211,8 @@ namespace ImageViewer.ViewModels
 
         #endregion Zoom変更通知プロパティ
 
+        #endregion ステータスバーにバインディング
+
         #region SelectedIndex変更通知プロパティ
 
         private int _SelectedIndex;
@@ -221,8 +225,9 @@ namespace ImageViewer.ViewModels
                 _SelectedIndex = value;
                 if (value != -1)
                 {
-                    SelectedImageWidth = ImageItems[value].Width;
-                    SelectedImageHeight = ImageItems[value].Height;
+                    SelectedImageWidth = DeferredImageItems[value].Width;
+                    SelectedImageHeight = DeferredImageItems[value].Height;
+                    CalcZoom();
                 }
                 RaisePropertyChanged();
             }
@@ -284,8 +289,8 @@ namespace ImageViewer.ViewModels
 
         public void SaveImage()
         {
-            var fileName = Path.GetFileNameWithoutExtension(ImageItems[SelectedIndex].Name);
-            var ext = Path.GetExtension(ImageItems[SelectedIndex].Name);
+            var fileName = Path.GetFileNameWithoutExtension(DeferredImageItems[SelectedIndex].Name);
+            var ext = Path.GetExtension(DeferredImageItems[SelectedIndex].Name);
 
             var tmpList = new List<string>
             {
@@ -315,7 +320,7 @@ namespace ImageViewer.ViewModels
                 return;
             }
 
-            ImageItems[SelectedIndex].Save(message.Response[0]);
+            DeferredImageItems[SelectedIndex].Save(message.Response[0]);
         }
         #endregion SaveImageCommand
 
@@ -336,7 +341,7 @@ namespace ImageViewer.ViewModels
 
         public void CopyToClipboard()
         {
-            Clipboard.SetImage(ImageItems[SelectedIndex].Bitmap);
+            Clipboard.SetImage(DeferredImageItems[SelectedIndex].Bitmap);
         }
         #endregion CopyToClipboardCommand
 
@@ -357,7 +362,7 @@ namespace ImageViewer.ViewModels
 
         public void OpenInBrowser()
         {
-            Process.Start(ImageItems[SelectedIndex].ImageUri);
+            Process.Start(DeferredImageItems[SelectedIndex].ImageUri);
         }
         #endregion OpenInBrowserCommand
 
@@ -378,7 +383,7 @@ namespace ImageViewer.ViewModels
 
         public void SearchByGoogle()
         {
-            Process.Start(@"https://www.google.com/searchbyimage?image_url=" + ImageItems[SelectedIndex].ImageUri);
+            Process.Start(@"https://www.google.com/searchbyimage?image_url=" + DeferredImageItems[SelectedIndex].ImageUri);
         }
         #endregion
 
@@ -399,7 +404,7 @@ namespace ImageViewer.ViewModels
 
         public void TabClose(int parameter)
         {
-            if (ImageItems.Count == 1)
+            if (DeferredImageItems.Count == 1)
             {
                 Messenger.Raise(new WindowActionMessage(WindowAction.Close, "WindowMessage"));
                 return;
@@ -408,7 +413,7 @@ namespace ImageViewer.ViewModels
             var currentIndex = SelectedIndex;
             ImageItems.RemoveAt(parameter);
             DeferredImageItems = new ObservableCollection<ImageItem>(ImageItems);
-            SelectedIndex = currentIndex < ImageItems.Count ? currentIndex : ImageItems.Count - 1;
+            SelectedIndex = currentIndex < DeferredImageItems.Count ? currentIndex : DeferredImageItems.Count - 1;
         }
         #endregion
 
