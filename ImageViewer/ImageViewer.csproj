@@ -74,6 +74,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Helpers\Win32Helper.cs" />
     <Compile Include="Models\Image.cs" />
     <Compile Include="Models\ImageItem.cs" />
     <Compile Include="Models\Json.cs" />

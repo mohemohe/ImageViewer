@@ -1,4 +1,5 @@
-﻿using ImageViewer.Models;
+﻿using ImageViewer.Helpers;
+using ImageViewer.Models;
 using ImageViewer.Views;
 using Livet;
 using System;
@@ -8,6 +9,7 @@ using System.Runtime.Remoting.Channels;
 using System.Runtime.Remoting.Channels.Ipc;
 using System.Threading;
 using System.Windows;
+using System.Windows.Interop;
 using System.Windows.Threading;
 
 namespace ImageViewer
@@ -47,9 +49,9 @@ namespace ImageViewer
             if (UriRouter.IsImageUri(e.Args[0], out imageUri))
             {
                 var window = new MainWindow();
-                window.WindowStartupLocation = WindowStartupLocation.Manual;
-                window.Left = 0;
-                window.Top = 0;
+                var wih = new WindowInteropHelper(window);
+                wih.Owner = Win32Helper.GetForegroundWindow();
+                window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
                 window.Show();
 
                 window.VM.AddTab(imageUri, e.Args[0]);
@@ -99,10 +101,9 @@ namespace ImageViewer
             if (UriRouter.IsImageUri(testUri, out imageUri))
             {
                 var window = new MainWindow();
-
-                window.WindowStartupLocation = WindowStartupLocation.Manual;
-                window.Left = 0;
-                window.Top = 0;
+                var wih = new WindowInteropHelper(window);
+                wih.Owner = Win32Helper.GetForegroundWindow();
+                window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
                 window.Show();
 
                 window.VM.AddTab(imageUri, testUri);
