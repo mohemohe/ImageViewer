@@ -288,6 +288,11 @@ namespace ImageViewer.ViewModels
 
         public void SaveImage()
         {
+            if (DeferredImageItems[SelectedIndex].Bitmap == null)
+            {
+                return;
+            }
+
             var fileName = Path.GetFileNameWithoutExtension(DeferredImageItems[SelectedIndex].Name);
             var ext = Path.GetExtension(DeferredImageItems[SelectedIndex].Name);
 
@@ -340,7 +345,10 @@ namespace ImageViewer.ViewModels
 
         public void CopyToClipboard()
         {
-            Clipboard.SetImage(DeferredImageItems[SelectedIndex].Bitmap);
+            if (DeferredImageItems[SelectedIndex].Bitmap != null)
+            {
+                Clipboard.SetImage(DeferredImageItems[SelectedIndex].Bitmap);
+            }
         }
         #endregion CopyToClipboardCommand
 
@@ -361,7 +369,10 @@ namespace ImageViewer.ViewModels
 
         public void OpenInBrowser()
         {
-            Process.Start(DeferredImageItems[SelectedIndex].ImageUri);
+            var uri = (DeferredImageItems[SelectedIndex].Bitmap != null) ?
+                DeferredImageItems[SelectedIndex].ImageUri :
+                DeferredImageItems[SelectedIndex].OriginalUri;
+            Process.Start(uri);
         }
         #endregion OpenInBrowserCommand
 
@@ -382,7 +393,10 @@ namespace ImageViewer.ViewModels
 
         public void SearchByGoogle()
         {
-            Process.Start(@"https://www.google.com/searchbyimage?image_url=" + DeferredImageItems[SelectedIndex].ImageUri);
+            if (DeferredImageItems[SelectedIndex].Bitmap != null)
+            {
+                Process.Start(@"https://www.google.com/searchbyimage?image_url=" + DeferredImageItems[SelectedIndex].ImageUri);
+            }
         }
         #endregion
 
