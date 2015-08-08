@@ -125,6 +125,7 @@
     <Content Include="InfrastructureAssemblies\Livet.XML" />
     <Content Include="InfrastructureAssemblies\Microsoft.Expression.Interactions.dll" />
     <Content Include="InfrastructureAssemblies\System.Windows.Interactivity.dll" />
+    <Resource Include="Resources\IcoMoon\warning.png" />
     <Resource Include="Resources\IcoMoon\search.png" />
     <Resource Include="Resources\IcoMoon\open.png" />
     <Resource Include="Resources\IcoMoon\copy.png" />

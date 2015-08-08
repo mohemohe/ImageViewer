@@ -158,7 +158,7 @@
                 <TabControl.ContentTemplate>
                     <DataTemplate>
                         <Grid>
-                            <Image Name="Image" Source="{Binding Bitmap, UpdateSourceTrigger=PropertyChanged}" RenderOptions.BitmapScalingMode="Fant" SizeChanged="Image_SizeChanged"/>
+                            <Image Name="Image" Source="{Binding Bitmap, UpdateSourceTrigger=PropertyChanged, TargetNullValue={StaticResource ErrorImage}}" RenderOptions.BitmapScalingMode="Fant" SizeChanged="Image_SizeChanged"/>
                         </Grid>
                     </DataTemplate>
                 </TabControl.ContentTemplate>

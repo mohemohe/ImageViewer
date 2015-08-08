@@ -80,19 +80,21 @@ namespace ImageViewer
             DispatcherHelper.UIDispatcher = Dispatcher;
             //AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
 
-            if(mutex.WaitOne(0, false) == false)
+            string testUri = "http://www.pixiv.net/member_illust.php?illust_id=51847799&mode=medium";
+
+            if (mutex.WaitOne(0, false) == false)
             {
                 IpcClientChannel ipc = new IpcClientChannel();
                 ChannelServices.RegisterChannel(ipc, true);
                 Message message = (Message)RemotingServices.Connect(typeof(Message), @"ipc://" + Application.ResourceAssembly.GetName().Name + @"/Message");
-                message.RaiseHandler(new string[] { "http://s.kuku.lu/70i95am9k" });
+                message.RaiseHandler(new string[] { testUri });
 
                 mutex.Close();
                 mutex = null;
                 this.Shutdown();
             }
 
-            string testUri = "http://s.kuku.lu/70i95am9k";
+            
             string imageUri;
             if (UriRouter.IsImageUri(testUri, out imageUri))
             {

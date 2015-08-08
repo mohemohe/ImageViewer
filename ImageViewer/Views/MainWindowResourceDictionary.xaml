@@ -326,4 +326,6 @@
             <ContentPresenter TextBlock.Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" />
         </Border>
     </ControlTemplate>
+
+    <BitmapImage x:Key="ErrorImage" UriSource="/ImageViewer;component/Resources/IcoMoon/warning.png" />
 </ResourceDictionary>
