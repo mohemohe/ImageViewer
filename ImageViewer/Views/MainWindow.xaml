@@ -6,7 +6,7 @@
         xmlns:l="http://schemas.livet-mvvm.net/2011/wpf"
         xmlns:v="clr-namespace:ImageViewer.Views"
         xmlns:vm="clr-namespace:ImageViewer.ViewModels"
-        Title="ImageViewer" Height="480" Width="720" MinHeight="128" MinWidth="{Binding ElementName=StatusBarElements, Path=ActualWidth, UpdateSourceTrigger=PropertyChanged}" ResizeMode="CanResizeWithGrip" Background="{DynamicResource MatteBlack}">
+        Title="ImageViewer" Height="520" Width="780" MinHeight="128" MinWidth="{Binding ElementName=StatusBarElements, Path=ActualWidth, UpdateSourceTrigger=PropertyChanged}" ResizeMode="CanResizeWithGrip" Background="{DynamicResource MatteBlack}">
 
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="32" />
@@ -101,7 +101,7 @@
                             <Grid Grid.Row="0" Background="{DynamicResource MatteBlack}" Panel.ZIndex="1">
                                 <RepeatButton Delay="300" Interval="15" Template="{DynamicResource TabScrollRepeatButton}" Content="3" FontFamily="Marlett" Width="{Binding RelativeSource={RelativeSource Self}, Path=ActualHeight }" HorizontalAlignment="Left" Click="MoveLeft"/>
                                 <ScrollViewer Name="ScrollableTab" HorizontalScrollBarVisibility="Hidden"  VerticalScrollBarVisibility="Hidden" MinHeight="24" Margin="28,0" CanContentScroll="True">
-                                    <TabPanel IsItemsHost="true" HorizontalAlignment="Left" VerticalAlignment="Bottom"/>
+                                    <StackPanel IsItemsHost="true" HorizontalAlignment="Left" VerticalAlignment="Bottom" Orientation="Horizontal"/>
                                 </ScrollViewer>
                                 <RepeatButton Delay="300" Interval="15" Template="{DynamicResource TabScrollRepeatButton}" Content="4" FontFamily="Marlett" Width="{Binding RelativeSource={RelativeSource Self}, Path=ActualHeight }" HorizontalAlignment="Right" Click="MoveRight"/>
                             </Grid>
