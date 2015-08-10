@@ -82,6 +82,23 @@ namespace ImageViewer.Views
 
         private void Zoom(object sender, System.Windows.Input.MouseWheelEventArgs e)
         {
+            var maxSize = int.MaxValue / 2.0 / Math.Sqrt(2);
+            var minSize = 0.01;
+            if (Math.Sign(e.Delta) > 0)
+            {
+                if (VM.ImageRenderWidth > maxSize || VM.ImageRenderHeight > maxSize || VM.Zoom > maxSize)
+                {
+                    return;
+                }
+            }
+            else
+            {
+                if (VM.Zoom < minSize)
+                {
+                    return;
+                }
+            }
+
             VM.DeferredImageItems[VM.SelectedIndex].Zoom += Math.Sign(e.Delta) * VM.DeferredImageItems[VM.SelectedIndex].Zoom * 0.1;
             Image_SizeChanged(((Image)((Grid)sender).Children[0]), null);
         }
