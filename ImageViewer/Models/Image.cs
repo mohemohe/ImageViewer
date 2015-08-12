@@ -13,7 +13,24 @@ namespace ImageViewer.Models
     {
         public byte[] OriginalData { get; private set; }
         public Bitmap OriginalBitmap { get; private set; }
-        public BitmapSource Bitmap { get; private set; }
+
+        #region Bitmap変更通知プロパティ
+        private BitmapSource _Bitmap;
+
+        public BitmapSource Bitmap
+        {
+            get
+            { return _Bitmap; }
+            set
+            { 
+                if (_Bitmap == value)
+                    return;
+                _Bitmap = value;
+                RaisePropertyChanged();
+            }
+        }
+        #endregion
+
 
         public async Task<BitmapImage> DownloadDataAsync(string uri, string referer = null)
         {

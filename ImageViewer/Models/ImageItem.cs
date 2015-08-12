@@ -7,6 +7,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Media.Imaging;
 
 namespace ImageViewer.Models
@@ -16,6 +17,24 @@ namespace ImageViewer.Models
         public string Name { get; set; }
         public string OriginalUri { get; private set; }
         public string ImageUri { get; private set; }
+        public bool IsError { get; private set; }
+
+        #region IsLoading変更通知プロパティ
+        private Visibility _IsLoading;
+
+        public Visibility IsLoading
+        {
+            get
+            { return _IsLoading; }
+            set
+            { 
+                if (_IsLoading == value)
+                    return;
+                _IsLoading = value;
+                RaisePropertyChanged();
+            }
+        }
+        #endregion
 
         #region Zoom変更通知プロパティ
         private double _Zoom = 1.0;
@@ -51,14 +70,15 @@ namespace ImageViewer.Models
         }
         #endregion
 
-        public int Width { get { return (base.Bitmap != null) ? (int)base.Bitmap.Width : 0 ; } }
-        public int Height { get { return (base.Bitmap != null) ? (int)base.Bitmap?.Height : 0 ; } }
+        public int Width { get { return (!IsError && base.Bitmap != null) ? (int)base.Bitmap.Width : 0 ; } }
+        public int Height { get { return (!IsError && base.Bitmap != null) ? (int)base.Bitmap?.Height : 0 ; } }
 
         public ImageItem(string imageUri, string originalUri = null)
         {
             ImageUri = imageUri;
             OriginalUri = originalUri;
             Name = Path.GetFileName(ImageUri.Replace(@":orig", @""));
+            IsLoading = Visibility.Visible;
         }
 
         public async new Task<BitmapImage> DownloadDataAsync(string imageUri = null, string originalUri = null)
@@ -74,10 +94,13 @@ namespace ImageViewer.Models
                     bi = await base.DownloadDataAsync(ImageUri, OriginalUri);
                 }
             }
-            catch (WebException)
+            catch
             {
-                bi = null;
+                bi = new BitmapImage(new Uri(@"pack://application:,,,/Resources/IcoMoon/warning.png", UriKind.Absolute));
+                base.Bitmap = bi;
+                IsError = true;
             }
+            IsLoading = Visibility.Hidden;
 
             return bi;
         }

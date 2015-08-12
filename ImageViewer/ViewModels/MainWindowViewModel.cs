@@ -14,6 +14,7 @@ using System.Collections.ObjectModel;
 using Livet.Messaging.Windows;
 using ImageViewer.Views;
 using System.Windows.Controls;
+using System.Threading.Tasks;
 
 namespace ImageViewer.ViewModels
 {
@@ -68,9 +69,10 @@ namespace ImageViewer.ViewModels
 
         public async void AddTab(string imageUri, string originalUri = null)
         {
-            ImageItems.Add(new ImageItem(imageUri, originalUri));
-            await ImageItems[ImageItems.Count - 1].DownloadDataAsync();
-            DeferredImageItems = new ObservableCollection<ImageItem>(ImageItems);
+            //HACK: タブを切り替えたあとにSelectedIndexを変更してもアクティブなタブが変更されない
+            View.Focus();
+
+            DeferredImageItems.Add(new ImageItem(imageUri, originalUri));
             SelectedIndex = DeferredImageItems.Count - 1;
 
             if (View.WindowState == WindowState.Minimized)
@@ -88,14 +90,23 @@ namespace ImageViewer.ViewModels
             var template = View.TabControl.Template;
             var sv = (ScrollViewer)template.FindName("ScrollableTab", View.TabControl);
             sv.ScrollToRightEnd();
+
+            await DeferredImageItems[DeferredImageItems.Count - 1].DownloadDataAsync();
+            SelectedImageWidth = DeferredImageItems[SelectedIndex].Width;
+            SelectedImageHeight = DeferredImageItems[SelectedIndex].Height;
         }
 
         private void CalcZoom()
         {
             if (_SelectedIndex != -1 && DeferredImageItems[_SelectedIndex].Bitmap != null)
             {
-                var imageSize = DeferredImageItems[_SelectedIndex].Bitmap.Width;
+                var imageSize = DeferredImageItems[_SelectedIndex].Width;
                 var renderSize = ImageRenderWidth;
+                if(imageSize == 0)
+                {
+                    return;
+                }
+
                 Zoom = Convert.ToInt32((renderSize/imageSize)*100);
             }
         }
@@ -233,24 +244,6 @@ namespace ImageViewer.ViewModels
         }
 
         #endregion SelectedIndex変更通知プロパティ
-
-        #region ImageItems変更通知プロパティ
-
-        private List<ImageItem> _ImageItems = new List<ImageItem>();
-
-        public List<ImageItem> ImageItems
-        {
-            get { return _ImageItems; }
-            set
-            {
-                if (_ImageItems == value)
-                    return;
-                _ImageItems = value;
-                RaisePropertyChanged();
-            }
-        }
-
-        #endregion ImageItems変更通知プロパティ
 
         #region DeferredImageItems変更通知プロパティ
 
@@ -424,8 +417,7 @@ namespace ImageViewer.ViewModels
             }
 
             var currentIndex = SelectedIndex;
-            ImageItems.RemoveAt(parameter);
-            DeferredImageItems = new ObservableCollection<ImageItem>(ImageItems);
+            DeferredImageItems.RemoveAt(parameter);
             SelectedIndex = currentIndex < DeferredImageItems.Count ? currentIndex : DeferredImageItems.Count - 1;
         }
         #endregion
