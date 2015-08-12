@@ -107,7 +107,7 @@ namespace ImageViewer.ViewModels
                     return;
                 }
 
-                Zoom = Convert.ToInt32((renderSize/imageSize)*100);
+                Zoom = Convert.ToInt32((renderSize/(double)imageSize)*100);
             }
         }
 
