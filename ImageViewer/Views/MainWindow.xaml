@@ -147,8 +147,8 @@
 
                 <TabControl.ContentTemplate>
                     <DataTemplate>
-                        <Grid x:Name="ImageWrapper" Background="#00000000" MouseWheel="Zoom" MouseDown="StartTranslate" MouseUp="StopTranslate" MouseMove="Translate">
-                            <Grid DataContext="{Binding DataContext, ElementName=WindowRoot}">
+                        <Grid x:Name="ImageWrapper" Background="#00000000">
+                            <Grid DataContext="{Binding DataContext, ElementName=WindowRoot}" Background="#00000000"  MouseWheel="Zoom" MouseDown="StartTranslate" MouseUp="StopTranslate" MouseMove="Translate">
                                 <Grid.ContextMenu>
                                     <ContextMenu>
                                         <MenuItem Header="SaveAs" InputGestureText="Ctrl+S" Command="{Binding SaveImageCommand}"/>
