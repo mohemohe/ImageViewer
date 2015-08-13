@@ -1,4 +1,4 @@
-﻿<Window x:Class="ImageViewer.Views.MainWindow"
+﻿<Window x:Name="window" x:Class="ImageViewer.Views.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
@@ -119,8 +119,6 @@
                                 <Button 
                                     x:Name="CloseButton" 
                                     ToolTip="Close"
-                                    Command="{Binding Path=Content.DataContext.TabCloseCommand}"
-                                    CommandParameter="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type TabItem}}}"
                                     Content="r"
                                     FontFamily="Marlett"
                                     Margin="0" 
@@ -149,67 +147,71 @@
 
                 <TabControl.ContentTemplate>
                     <DataTemplate>
-                        <Grid Background="#00000000" MouseWheel="Zoom" MouseDown="StartTranslate" MouseUp="StopTranslate" MouseMove="Translate">
-                            <Grid.ContextMenu>
-                                <ContextMenu>
-                                    <MenuItem Header="SaveAs" InputGestureText="Ctrl+S" Command="{Binding Content.DataContext.SaveImageCommand}"/>
-                                    <MenuItem Header="Copy to Clipboard" InputGestureText="Ctrl+C" Command="{Binding Content.DataContext.CopyToClipboardCommand}"/>
-                                    <MenuItem Header="Open in Browser" InputGestureText="Ctrl+O" Command="{Binding Content.DataContext.OpenInBrowserCommand}"/>
-                                    <MenuItem Header="Search by Google Images" InputGestureText="Ctrl+F" Command="{Binding Content.DataContext.OpenInBrowserCommand}"/>
-                                </ContextMenu>
-                            </Grid.ContextMenu>
+                        <Grid x:Name="ImageWrapper" Background="#00000000" MouseWheel="Zoom" MouseDown="StartTranslate" MouseUp="StopTranslate" MouseMove="Translate">
+                            <Grid DataContext="{Binding DataContext, ElementName=WindowRoot}">
+                                <Grid.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Header="SaveAs" InputGestureText="Ctrl+S" Command="{Binding SaveImageCommand}"/>
+                                        <MenuItem Header="Copy to Clipboard" InputGestureText="Ctrl+C" Command="{Binding CopyToClipboardCommand}"/>
+                                        <MenuItem Header="Open in Browser" InputGestureText="Ctrl+O" Command="{Binding OpenInBrowserCommand}"/>
+                                        <MenuItem Header="Search by Google Images" InputGestureText="Ctrl+F" Command="{Binding SearchByGoogleCommand}"/>
+                                    </ContextMenu>
+                                </Grid.ContextMenu>
 
-                            <Grid.Triggers>
-                                <EventTrigger RoutedEvent="Window.Loaded">
-                                    <BeginStoryboard>
-                                        <Storyboard>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="Loading"
-                                                                           Storyboard.TargetProperty="(Image.Source)"
-                                                                           Duration="0:0:0.4"
-                                                                           RepeatBehavior="Forever">
-                                                <DiscreteObjectKeyFrame KeyTime="0:0:0">
-                                                    <DiscreteObjectKeyFrame.Value>
-                                                        <BitmapImage UriSource="/ImageViewer;component/Resources/loading0.png"  />
-                                                    </DiscreteObjectKeyFrame.Value>
-                                                </DiscreteObjectKeyFrame>
-                                                <DiscreteObjectKeyFrame KeyTime="0:0:0.1">
-                                                    <DiscreteObjectKeyFrame.Value>
-                                                        <BitmapImage UriSource="/ImageViewer;component/Resources/loading1.png" />
-                                                    </DiscreteObjectKeyFrame.Value>
-                                                </DiscreteObjectKeyFrame>
-                                                <DiscreteObjectKeyFrame KeyTime="0:0:0.2">
-                                                    <DiscreteObjectKeyFrame.Value>
-                                                        <BitmapImage UriSource="/ImageViewer;component/Resources/loading2.png" />
-                                                    </DiscreteObjectKeyFrame.Value>
-                                                </DiscreteObjectKeyFrame>
-                                                <DiscreteObjectKeyFrame KeyTime="0:0:0.3">
-                                                    <DiscreteObjectKeyFrame.Value>
-                                                        <BitmapImage UriSource="/ImageViewer;component/Resources/loading3.png" />
-                                                    </DiscreteObjectKeyFrame.Value>
-                                                </DiscreteObjectKeyFrame>
-                                            </ObjectAnimationUsingKeyFrames>
-                                        </Storyboard>
-                                    </BeginStoryboard>
-                                </EventTrigger>
-                            </Grid.Triggers>
-                            
-                            <Image Name="Image" 
-                                   Source="{Binding Bitmap, UpdateSourceTrigger=PropertyChanged}" 
-                                   RenderOptions.BitmapScalingMode="Fant" 
-                                   SizeChanged="Image_SizeChanged" 
-                                   RenderTransformOrigin="0.5, 0.5">
-                                <Image.RenderTransform>
-                                    <TransformGroup>
-                                        <ScaleTransform ScaleX="{Binding Zoom, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ScaleY="{Binding Zoom, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" CenterX="0.5" CenterY="0.5"/>
-                                        <SkewTransform/>
-                                        <RotateTransform/>
-                                        <TranslateTransform X="{Binding Translate.X, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Y="{Binding Translate.Y, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                                    </TransformGroup>
-                                </Image.RenderTransform>
-                            </Image>
-                            <Image Name="Loading" 
-                                   RenderOptions.BitmapScalingMode="NearestNeighbor" 
-                                   Stretch="None" Visibility="{Binding IsLoading}"/>
+                                <Grid.Triggers>
+                                    <EventTrigger RoutedEvent="Window.Loaded">
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetName="Loading"
+                                                                               Storyboard.TargetProperty="(Image.Source)"
+                                                                               Duration="0:0:0.4"
+                                                                               RepeatBehavior="Forever">
+                                                    <DiscreteObjectKeyFrame KeyTime="0:0:0">
+                                                        <DiscreteObjectKeyFrame.Value>
+                                                            <BitmapImage UriSource="/ImageViewer;component/Resources/loading0.png"  />
+                                                        </DiscreteObjectKeyFrame.Value>
+                                                    </DiscreteObjectKeyFrame>
+                                                    <DiscreteObjectKeyFrame KeyTime="0:0:0.1">
+                                                        <DiscreteObjectKeyFrame.Value>
+                                                            <BitmapImage UriSource="/ImageViewer;component/Resources/loading1.png" />
+                                                        </DiscreteObjectKeyFrame.Value>
+                                                    </DiscreteObjectKeyFrame>
+                                                    <DiscreteObjectKeyFrame KeyTime="0:0:0.2">
+                                                        <DiscreteObjectKeyFrame.Value>
+                                                            <BitmapImage UriSource="/ImageViewer;component/Resources/loading2.png" />
+                                                        </DiscreteObjectKeyFrame.Value>
+                                                    </DiscreteObjectKeyFrame>
+                                                    <DiscreteObjectKeyFrame KeyTime="0:0:0.3">
+                                                        <DiscreteObjectKeyFrame.Value>
+                                                            <BitmapImage UriSource="/ImageViewer;component/Resources/loading3.png" />
+                                                        </DiscreteObjectKeyFrame.Value>
+                                                    </DiscreteObjectKeyFrame>
+                                                </ObjectAnimationUsingKeyFrames>
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </EventTrigger>
+                                </Grid.Triggers>
+
+                                <Image Name="Image" 
+                                       Source="{Binding Bitmap, UpdateSourceTrigger=PropertyChanged}" 
+                                       DataContext="{Binding DataContext, ElementName=ImageWrapper}"
+                                       RenderOptions.BitmapScalingMode="Fant" 
+                                       SizeChanged="Image_SizeChanged" 
+                                       RenderTransformOrigin="0.5, 0.5">
+                                    <Image.RenderTransform>
+                                        <TransformGroup>
+                                            <ScaleTransform ScaleX="{Binding Zoom, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ScaleY="{Binding Zoom, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" CenterX="0.5" CenterY="0.5"/>
+                                            <SkewTransform/>
+                                            <RotateTransform/>
+                                            <TranslateTransform X="{Binding Translate.X, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Y="{Binding Translate.Y, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                        </TransformGroup>
+                                    </Image.RenderTransform>
+                                </Image>
+                                <Image Name="Loading" 
+                                       RenderOptions.BitmapScalingMode="NearestNeighbor" 
+                                       Stretch="None" Visibility="{Binding IsLoading}"
+                                       DataContext="{Binding DataContext, ElementName=ImageWrapper}"/>
+                            </Grid>
                         </Grid>
                     </DataTemplate>
                 </TabControl.ContentTemplate>
