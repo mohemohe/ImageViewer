@@ -74,33 +74,39 @@
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition />
                             </Grid.RowDefinitions>
-                            
-                            <Grid Grid.Row="0" Panel.ZIndex="2" Margin="0,0,130,0" Background="{DynamicResource MatteBlack}">
-                                <RepeatButton Delay="300" Interval="15" Template="{DynamicResource TabScrollRepeatButton}" Content="3" FontFamily="Marlett" Width="{Binding RelativeSource={RelativeSource Self}, Path=ActualHeight }" HorizontalAlignment="Left" Click="MoveLeft" WindowChrome.IsHitTestVisibleInChrome="True"/>
-                                <ScrollViewer Name="ScrollableTab" HorizontalScrollBarVisibility="Hidden"  VerticalScrollBarVisibility="Hidden" MinHeight="24" Margin="32,0" CanContentScroll="True">
-                                    <StackPanel IsItemsHost="true" HorizontalAlignment="Left" VerticalAlignment="Bottom" Orientation="Horizontal"/>
-                                </ScrollViewer>
-                                <RepeatButton Delay="300" Interval="15" Template="{DynamicResource TabScrollRepeatButton}" Content="4" FontFamily="Marlett" Width="{Binding RelativeSource={RelativeSource Self}, Path=ActualHeight }" HorizontalAlignment="Right" Click="MoveRight" WindowChrome.IsHitTestVisibleInChrome="True"/>
-                            </Grid>
-                            <Grid Grid.Row="0" Panel.ZIndex="1" Background="{DynamicResource MatteBlack}" WindowChrome.IsHitTestVisibleInChrome="False">
-                                <Grid.DataContext>
-                                    <vm:CaptionBarViewModel />
-                                </Grid.DataContext>
+                            <Grid Grid.Row="0" Panel.ZIndex="1">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="{Binding ElementName=CaptionButtons, Path=ActualWidth, UpdateSourceTrigger=PropertyChanged}"/>
+                                </Grid.ColumnDefinitions>
+                                
+                                <Grid Grid.Column="0" Panel.ZIndex="2" Margin="0" Background="{DynamicResource MatteBlack}">
+                                    <RepeatButton Delay="300" Interval="15" Template="{DynamicResource TabScrollRepeatButton}" Content="3" FontFamily="Marlett" Width="{Binding RelativeSource={RelativeSource Self}, Path=ActualHeight }" HorizontalAlignment="Left" Click="MoveLeft" WindowChrome.IsHitTestVisibleInChrome="True"/>
+                                    <ScrollViewer Name="ScrollableTab" HorizontalScrollBarVisibility="Hidden"  VerticalScrollBarVisibility="Hidden" MinHeight="24" Margin="32,0" CanContentScroll="True">
+                                        <StackPanel IsItemsHost="true" HorizontalAlignment="Left" VerticalAlignment="Bottom" Orientation="Horizontal"/>
+                                    </ScrollViewer>
+                                    <RepeatButton Delay="300" Interval="15" Template="{DynamicResource TabScrollRepeatButton}" Content="4" FontFamily="Marlett" Width="{Binding RelativeSource={RelativeSource Self}, Path=ActualHeight }" HorizontalAlignment="Right" Click="MoveRight" WindowChrome.IsHitTestVisibleInChrome="True"/>
+                                </Grid>
+                                <Grid Grid.Column="1" x:Name="CaptionButtons" Panel.ZIndex="1" Background="{DynamicResource MatteBlack}" WindowChrome.IsHitTestVisibleInChrome="True" MouseDown="CaptionBar_MouseDown" HorizontalAlignment="Right">
+                                    <Grid.DataContext>
+                                        <vm:CaptionBarViewModel />
+                                    </Grid.DataContext>
 
-                                <i:Interaction.Triggers>
-                                    <i:EventTrigger EventName="Loaded">
-                                        <l:LivetCallMethodAction MethodTarget="{Binding}" MethodName="Initialize" />
-                                    </i:EventTrigger>
-                                    <l:InteractionMessageTrigger MessageKey="WindowMessage" Messenger="{Binding Messenger}" InvokeActionsOnlyWhileAttatchedObjectLoaded="True">
-                                        <l:WindowInteractionMessageAction />
-                                    </l:InteractionMessageTrigger>
-                                </i:Interaction.Triggers>
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="Loaded">
+                                            <l:LivetCallMethodAction MethodTarget="{Binding}" MethodName="Initialize" />
+                                        </i:EventTrigger>
+                                        <l:InteractionMessageTrigger MessageKey="WindowMessage" Messenger="{Binding Messenger}" InvokeActionsOnlyWhileAttatchedObjectLoaded="True">
+                                            <l:WindowInteractionMessageAction />
+                                        </l:InteractionMessageTrigger>
+                                    </i:Interaction.Triggers>
 
-                                <StackPanel Orientation="Horizontal" Margin="0,0,5,0" HorizontalAlignment="Right" VerticalAlignment="Top" WindowChrome.IsHitTestVisibleInChrome="True" Panel.ZIndex="1" Background="{DynamicResource MatteBlack}">
-                                    <Button Content="0" FontFamily="Marlett" Width="28" Height="20" Margin="0,0,1,0" Template="{DynamicResource CaptionButton}" Command="{Binding MinimizeCommand}" />
-                                    <Button Content="{Binding MaximizeButtonContent}" FontFamily="Marlett" Width="28" Height="20" Margin="0,0,1,0" Template="{DynamicResource CaptionButton}" Command="{Binding MaximizeCommand}" />
-                                    <Button Content="r" FontFamily="Marlett" Width="48" Height="20" Margin="0" Template="{DynamicResource CloseButton}" Command="{Binding CloseCommand}" />
-                                </StackPanel>
+                                    <StackPanel Orientation="Horizontal" Margin="0,0,5,0" HorizontalAlignment="Right" VerticalAlignment="Top" WindowChrome.IsHitTestVisibleInChrome="True" Panel.ZIndex="1" Background="{DynamicResource MatteBlack}">
+                                        <Button Content="0" FontFamily="Marlett" Width="28" Height="20" Margin="0,0,1,0" Template="{DynamicResource CaptionButton}" Command="{Binding MinimizeCommand}" />
+                                        <Button Content="{Binding MaximizeButtonContent}" FontFamily="Marlett" Width="28" Height="20" Margin="0,0,1,0" Template="{DynamicResource CaptionButton}" Command="{Binding MaximizeCommand}" />
+                                        <Button Content="r" FontFamily="Marlett" Width="48" Height="20" Margin="0" Template="{DynamicResource CloseButton}" Command="{Binding CloseCommand}" />
+                                    </StackPanel>
+                                </Grid>
                             </Grid>
                             <Border BorderBrush="{DynamicResource MetroBlue}" BorderThickness="0,4,0,0" Grid.Row="1" Panel.ZIndex="1"/>
                             <ContentPresenter ContentSource="SelectedContent" Grid.Row="2" Panel.ZIndex="0"/>
@@ -144,7 +150,7 @@
 
                 <TabControl.ContentTemplate>
                     <DataTemplate>
-                        <Grid x:Name="ImageWrapper" Background="#00000000">
+                        <Grid x:Name="ImageWrapper" Background="{x:Null}">
                             <Grid DataContext="{Binding DataContext, ElementName=WindowRoot}" Background="#00000000"  MouseWheel="Zoom" MouseDown="StartTranslate" MouseUp="StopTranslate" MouseMove="Translate">
                                 <Grid.ContextMenu>
                                     <ContextMenu>
