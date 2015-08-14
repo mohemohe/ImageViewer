@@ -287,11 +287,11 @@ namespace ImageViewer.ViewModels
             }
 
             var fileName = Path.GetFileNameWithoutExtension(DeferredImageItems[SelectedIndex].Name);
-            var ext = Path.GetExtension(DeferredImageItems[SelectedIndex].Name);
+            var ext = Path.GetExtension(DeferredImageItems[SelectedIndex].FileExtension);
 
             var tmpList = new List<string>
             {
-                "JPEG(*.jpg;*.jpeg)|*.jpg;*.jpeg|",
+                "JPEG(*.jpg;*.jpeg;*.jfif)|*.jpg;*.jpeg;*.jfif|",
                 "Bitmap(*.bmp)|*.bmp|",
                 "PNG(*.png)|*.png|",
                 "GIF(*.gif)|*.gif|"
@@ -302,8 +302,7 @@ namespace ImageViewer.ViewModels
 
             var filter = "";
             filterList.ForEach(x => filter += x);
-            filter = filter.Remove(filter.Length - 1, 1);
-            filter += "|All Files(*.*)|*.*";
+            filter += "All Files(*.*)|*.*";
 
             var message = new SavingFileSelectionMessage("Save")
             {

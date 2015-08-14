@@ -83,7 +83,7 @@
                                 <Grid Grid.Column="0" Panel.ZIndex="2" Margin="0" Background="{DynamicResource MatteBlack}">
                                     <RepeatButton Delay="300" Interval="15" Template="{DynamicResource TabScrollRepeatButton}" Content="3" FontFamily="Marlett" Height="{Binding ElementName=Tabs, Path=ActualHeight, UpdateSourceTrigger=PropertyChanged}" Width="{Binding RelativeSource={RelativeSource Self}, Path=ActualHeight }" HorizontalAlignment="Left" Click="MoveLeft" WindowChrome.IsHitTestVisibleInChrome="True" VerticalAlignment="Bottom"/>
                                     <ScrollViewer Name="ScrollableTab" HorizontalScrollBarVisibility="Hidden"  VerticalScrollBarVisibility="Hidden" MinHeight="24" Margin="25,0" CanContentScroll="True">
-                                        <StackPanel x:Name="Tabs" IsItemsHost="true" HorizontalAlignment="Left" VerticalAlignment="Bottom" Orientation="Horizontal"/>
+                                        <StackPanel x:Name="Tabs" IsItemsHost="true" HorizontalAlignment="Left" VerticalAlignment="Bottom" Orientation="Horizontal" WindowChrome.IsHitTestVisibleInChrome="True"/>
                                     </ScrollViewer>
                                     <RepeatButton Delay="300" Interval="15" Template="{DynamicResource TabScrollRepeatButton}" Content="4" FontFamily="Marlett" Height="{Binding ElementName=Tabs, Path=ActualHeight, UpdateSourceTrigger=PropertyChanged}" Width="{Binding RelativeSource={RelativeSource Self}, Path=ActualHeight }" HorizontalAlignment="Right" Click="MoveRight" WindowChrome.IsHitTestVisibleInChrome="True" VerticalAlignment="Bottom"/>
                                 </Grid>
