@@ -4,7 +4,7 @@ using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Media.Imaging;
+using POINT = System.Drawing.Point;
 
 namespace ImageViewer.Views
 {
@@ -103,7 +103,7 @@ namespace ImageViewer.Views
             Image_SizeChanged(((Image)((Grid)sender).Children[0]), null);
         }
 
-        System.Drawing.Point _mousePosition;
+        POINT _mousePosition;
 
         private void StartTranslate(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
@@ -136,11 +136,43 @@ namespace ImageViewer.Views
         {
             if (_isTranslate)
             {
-                System.Drawing.Point currentPosition;
+                POINT currentPosition;
                 Win32Helper.GetCursorPos(out currentPosition);
                 Win32Helper.SetCursorPos(_mousePosition.X, _mousePosition.Y);
                 VM.DeferredImageItems[VM.SelectedIndex].Translate.X += currentPosition.X - _mousePosition.X;
                 VM.DeferredImageItems[VM.SelectedIndex].Translate.Y += currentPosition.Y - _mousePosition.Y;
+            }
+        }
+
+        private void CaptionBar_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if(e.ChangedButton == MouseButton.Left)
+            {
+                if (e.ClickCount == 1)
+                {
+                    try
+                    {
+                        this.DragMove();
+                    }
+                    catch { }
+                }
+                else
+                {
+                    if(this.WindowState == WindowState.Maximized)
+                    {
+                        this.WindowState = WindowState.Normal;
+                    }
+                    else
+                    {
+                        this.WindowState = WindowState.Maximized;
+                    }
+                }
+            }
+            else if(e.ChangedButton == MouseButton.Right)
+            {
+                POINT currentPosition;
+                Win32Helper.GetCursorPos(out currentPosition);
+                Win32Helper.ShowContextMenu(currentPosition);
             }
         }
     }
