@@ -148,11 +148,25 @@ namespace ImageViewer.Views
         {
             if(e.ChangedButton == MouseButton.Left)
             {
-                try
+                if (e.ClickCount == 1)
                 {
-                    this.DragMove();
+                    try
+                    {
+                        this.DragMove();
+                    }
+                    catch { }
                 }
-                catch { }
+                else
+                {
+                    if(this.WindowState == WindowState.Maximized)
+                    {
+                        this.WindowState = WindowState.Normal;
+                    }
+                    else
+                    {
+                        this.WindowState = WindowState.Maximized;
+                    }
+                }
             }
             else if(e.ChangedButton == MouseButton.Right)
             {

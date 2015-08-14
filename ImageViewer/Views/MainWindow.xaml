@@ -101,7 +101,7 @@
                                         </l:InteractionMessageTrigger>
                                     </i:Interaction.Triggers>
 
-                                    <StackPanel Orientation="Horizontal" Margin="0,0,5,0" HorizontalAlignment="Right" VerticalAlignment="Top" WindowChrome.IsHitTestVisibleInChrome="True" Panel.ZIndex="1" Background="{DynamicResource MatteBlack}">
+                                    <StackPanel Orientation="Horizontal" Margin="5,0" HorizontalAlignment="Right" VerticalAlignment="Top" WindowChrome.IsHitTestVisibleInChrome="True" Panel.ZIndex="1" Background="{DynamicResource MatteBlack}">
                                         <Button Content="0" FontFamily="Marlett" Width="28" Height="20" Margin="0,0,1,0" Template="{DynamicResource CaptionButton}" Command="{Binding MinimizeCommand}" />
                                         <Button Content="{Binding MaximizeButtonContent}" FontFamily="Marlett" Width="28" Height="20" Margin="0,0,1,0" Template="{DynamicResource CaptionButton}" Command="{Binding MaximizeCommand}" />
                                         <Button Content="r" FontFamily="Marlett" Width="48" Height="20" Margin="0" Template="{DynamicResource CloseButton}" Command="{Binding CloseCommand}" />
