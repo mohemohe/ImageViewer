@@ -54,6 +54,9 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>Resources\ImageViewer.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Livet, Version=1.1.0.0, Culture=neutral, PublicKeyToken=b0b1d3f711ef38cb, processorArchitecture=MSIL">
       <HintPath>..\packages\LivetCask.1.1.0.0\lib\net45\Livet.dll</HintPath>
@@ -140,6 +143,7 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <AppDesigner Include="Properties\" />
+    <None Include="Resources\ImageViewer.ai" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="InfrastructureAssemblies\Design\Livet.Design.dll" />
@@ -147,6 +151,8 @@
     <Content Include="InfrastructureAssemblies\Livet.XML" />
     <Content Include="InfrastructureAssemblies\Microsoft.Expression.Interactions.dll" />
     <Content Include="InfrastructureAssemblies\System.Windows.Interactivity.dll" />
+    <Resource Include="Resources\ImageViewer.ico" />
+    <Resource Include="Resources\ImageViewer.png" />
     <Resource Include="Resources\loading0.png" />
     <Resource Include="Resources\loading1.png" />
     <Resource Include="Resources\loading2.png" />
