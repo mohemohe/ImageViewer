@@ -15,6 +15,12 @@ namespace ImageViewer.Models
         public byte[] OriginalData { get; private set; }
         public string FileExtension { get; private set; }
 
+        ~Image()
+        {
+            OriginalData = null;
+            Bitmap = null;
+        }
+
         #region Bitmap変更通知プロパティ
         private BitmapSource _Bitmap;
 

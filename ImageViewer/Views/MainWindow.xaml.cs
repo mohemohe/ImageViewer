@@ -104,6 +104,7 @@ namespace ImageViewer.Views
         }
 
         POINT _mousePosition;
+        bool _isMove;
 
         private void StartTranslate(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
@@ -134,13 +135,18 @@ namespace ImageViewer.Views
 
         private void Translate(object sender, System.Windows.Input.MouseEventArgs e)
         {
-            if (_isTranslate)
+            if (!_isMove)
             {
-                POINT currentPosition;
-                Win32Helper.GetCursorPos(out currentPosition);
-                Win32Helper.SetCursorPos(_mousePosition.X, _mousePosition.Y);
-                VM.DeferredImageItems[VM.SelectedIndex].Translate.X += currentPosition.X - _mousePosition.X;
-                VM.DeferredImageItems[VM.SelectedIndex].Translate.Y += currentPosition.Y - _mousePosition.Y;
+                _isMove = true;
+                if (_isTranslate)
+                {
+                    POINT currentPosition;
+                    Win32Helper.GetCursorPos(out currentPosition);
+                    Win32Helper.SetCursorPos(_mousePosition.X, _mousePosition.Y);
+                    VM.DeferredImageItems[VM.SelectedIndex].Translate.X += currentPosition.X - _mousePosition.X;
+                    VM.DeferredImageItems[VM.SelectedIndex].Translate.Y += currentPosition.Y - _mousePosition.Y;
+                }
+                _isMove = false;
             }
         }
 

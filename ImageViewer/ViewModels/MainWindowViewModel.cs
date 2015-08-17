@@ -15,6 +15,7 @@ using Livet.Messaging.Windows;
 using ImageViewer.Views;
 using System.Windows.Controls;
 using System.Threading.Tasks;
+using System.Runtime;
 
 namespace ImageViewer.ViewModels
 {
