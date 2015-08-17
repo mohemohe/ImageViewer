@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows;
@@ -10,6 +11,13 @@ namespace ImageViewer.Helpers
     static class Win32Helper
     {
         #region Win32API
+
+        [Flags]
+        public enum MenuFlags : uint
+        {
+            STRING = 0,
+            SEPARATOR = 0x800,
+        }
 
         const uint TPM_LEFTBUTTON = 0x0000;
         const uint TPM_RETURNCMD = 0x0100;
@@ -31,6 +39,9 @@ namespace ImageViewer.Helpers
         [DllImport("user32.dll")]
         public static extern IntPtr GetSystemMenu(IntPtr hWnd, bool bRevert);
 
+        [DllImport("user32.dll", CharSet = CharSet.Auto)]
+        public static extern bool AppendMenu(IntPtr hMenu, MenuFlags uFlags, uint uIDNewItem, string lpNewItem);
+
         [DllImport("user32.dll")]
         public static extern uint TrackPopupMenuEx(IntPtr hMenu, uint fuFlags, int x, int y, IntPtr hWnd, IntPtr lptpm);
 
@@ -51,6 +62,40 @@ namespace ImageViewer.Helpers
             {
                 PostMessage(myHWnd, WM_SYSCOMMAND, new IntPtr(cmd), IntPtr.Zero);
             }
+        }
+
+        private static Dictionary<uint, Action> _menuActionDictionary = new Dictionary<uint, Action>();
+        private static HwndSourceHook _hook;
+        
+        public static void MainWindowAppendMenu(MenuFlags menuFlag, string menuTitle, Action action)
+        {
+            var wih = new WindowInteropHelper(Application.Current.MainWindow);
+            var myHWnd = wih.Handle;
+            
+            var hMenu = GetSystemMenu(myHWnd, false);
+
+            uint uIDNewItem = (uint)_menuActionDictionary.Count + 1001;
+            _menuActionDictionary.Add(uIDNewItem, action);
+
+            AppendMenu(hMenu, menuFlag, uIDNewItem, menuTitle);
+
+            var source = HwndSource.FromHwnd(myHWnd);
+            //NOTE: hookしなおす必要があるのか分からん
+            if (_hook != null)
+            {
+                source.RemoveHook(_hook);
+            }
+
+            _hook = new HwndSourceHook((IntPtr hWnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled) =>
+            {
+                if (msg == WM_SYSCOMMAND && _menuActionDictionary.ContainsKey((uint)wParam))
+                {
+                    _menuActionDictionary[(uint)wParam]();
+                    handled = true;
+                }
+                return IntPtr.Zero;
+            });
+            source.AddHook(_hook);
         }
     }
 }

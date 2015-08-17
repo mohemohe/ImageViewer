@@ -1,10 +1,14 @@
 ﻿using ImageViewer.Helpers;
+using ImageViewer.Models;
 using ImageViewer.ViewModels;
 using System;
+using System.Collections.ObjectModel;
+using System.Runtime;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using POINT = System.Drawing.Point;
+using Image = System.Windows.Controls.Image;
 
 namespace ImageViewer.Views
 {
@@ -43,6 +47,24 @@ namespace ImageViewer.Views
             Loaded += (sender, args) =>
             {
                 VM.View = this;
+                Win32Helper.MainWindowAppendMenu(Win32Helper.MenuFlags.SEPARATOR, @"", null);
+                Win32Helper.MainWindowAppendMenu(Win32Helper.MenuFlags.STRING, @"Force Full GC", new Action(() =>
+                {
+                    var selectedIndex = VM.SelectedIndex;
+                    //HACK: 2ループ（4回）GCを呼び出すと回収された　何故？
+                    //NOTE: GCLargeObjectHeapCompactionMode.CompactOnce か GC.WaitForPendingFinalizers() が2回必要？
+                    for (var i = 0; i < 2; i++)
+                    {
+                        var tmpImageItems = new ObservableCollection<ImageItem>(VM.DeferredImageItems);
+                        VM.DeferredImageItems = null;
+                        GCSettings.LargeObjectHeapCompactionMode = GCLargeObjectHeapCompactionMode.CompactOnce;
+                        GC.Collect();
+                        GC.WaitForPendingFinalizers();
+                        GC.Collect();
+                        VM.DeferredImageItems = tmpImageItems;
+                    }
+                    VM.SelectedIndex = selectedIndex;
+                }));
             };
         }
 
