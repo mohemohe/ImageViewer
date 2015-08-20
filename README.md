@@ -3,10 +3,11 @@
 
 ----
 
-## もくじ
+- master [![Build status](https://ci.appveyor.com/api/projects/status/2nugne62ubbuknux/branch/master?svg=true)](https://ci.appveyor.com/project/mohemohe/imageviewer/branch/master)
 
-- つかいかた
-- そうさほうほう
+- develop [![Build status](https://ci.appveyor.com/api/projects/status/2nugne62ubbuknux/branch/develop?svg=true)](https://ci.appveyor.com/project/mohemohe/imageviewer/branch/develop)
+
+----
 
 ## つかいかた
 
@@ -16,6 +17,7 @@
 `\path\to\ImageVIewer.exe %1`
 
 ![](http://i.imgur.com/YG5QAn5.png)
+
 
 ## そうさほうほう
 
