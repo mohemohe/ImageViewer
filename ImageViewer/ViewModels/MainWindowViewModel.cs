@@ -234,7 +234,7 @@ namespace ImageViewer.ViewModels
             set
             {
                 _SelectedIndex = value;
-                if (value != -1)
+                if (DeferredImageItems != null && value < DeferredImageItems.Count && value != -1)
                 {
                     SelectedImageWidth = DeferredImageItems[value].Width;
                     SelectedImageHeight = DeferredImageItems[value].Height;
