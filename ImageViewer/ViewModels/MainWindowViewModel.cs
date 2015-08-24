@@ -362,7 +362,7 @@ namespace ImageViewer.ViewModels
 
         public void OpenInBrowser()
         {
-            var uri = (DeferredImageItems[SelectedIndex].Bitmap != null) ?
+            var uri = (!DeferredImageItems[SelectedIndex].IsError) ?
                 DeferredImageItems[SelectedIndex].ImageUri :
                 DeferredImageItems[SelectedIndex].OriginalUri;
             Process.Start(uri);
