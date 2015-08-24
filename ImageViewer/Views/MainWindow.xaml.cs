@@ -74,17 +74,19 @@ namespace ImageViewer.Views
             get { return DataContext as MainWindowViewModel; }
         }
 
+        private double DPI
+        {
+            get { return PresentationSource.FromVisual(this).CompositionTarget.TransformToDevice.Transform(new Point(1, 1)).X; }
+        }
+
         private void Image_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             var image = sender as Image;
             if (image.Source != null)
             {
-                var source = PresentationSource.FromVisual(this);
-                var ct = source.CompositionTarget;
-                var dpi = ct.TransformToDevice.Transform(new Point(1, 1)).X;
                 var zoom = VM.DeferredImageItems[VM.SelectedIndex].Zoom;
-                VM.ImageRenderWidth = Convert.ToInt32(image.DesiredSize.Width * dpi * zoom);
-                VM.ImageRenderHeight = Convert.ToInt32(image.DesiredSize.Height * dpi * zoom);
+                VM.ImageRenderWidth = Convert.ToInt32(image.DesiredSize.Width * DPI * zoom);
+                VM.ImageRenderHeight = Convert.ToInt32(image.DesiredSize.Height * DPI * zoom);
             }
         }
 
@@ -155,21 +157,29 @@ namespace ImageViewer.Views
             }
         }
 
+        //MEMO: 足したのはいいけどなんか効いてない気がする
+        private void PreviewTranslate(object sender, MouseEventArgs e)
+        {
+            if (_isTranslate)
+            {
+                e.Handled = _isMove;
+            }
+            else 
+            {
+                e.Handled = true;
+            }
+        }
+
         private void Translate(object sender, System.Windows.Input.MouseEventArgs e)
         {
-            if (!_isMove)
-            {
-                _isMove = true;
-                if (_isTranslate)
-                {
-                    POINT currentPosition;
-                    Win32Helper.GetCursorPos(out currentPosition);
-                    Win32Helper.SetCursorPos(_mousePosition.X, _mousePosition.Y);
-                    VM.DeferredImageItems[VM.SelectedIndex].Translate.X += currentPosition.X - _mousePosition.X;
-                    VM.DeferredImageItems[VM.SelectedIndex].Translate.Y += currentPosition.Y - _mousePosition.Y;
-                }
-                _isMove = false;
-            }
+            POINT currentPosition;
+            Win32Helper.GetCursorPos(out currentPosition);
+            Win32Helper.SetCursorPos(_mousePosition.X, _mousePosition.Y);
+
+            VM.DeferredImageItems[VM.SelectedIndex].Translate.X += currentPosition.X - _mousePosition.X;
+            VM.DeferredImageItems[VM.SelectedIndex].Translate.Y += currentPosition.Y - _mousePosition.Y;
+
+            _isMove = false;
         }
 
         private void CaptionBar_MouseDown(object sender, MouseButtonEventArgs e)
