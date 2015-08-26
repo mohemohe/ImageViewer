@@ -26,6 +26,7 @@ namespace ImageViewer.Models
             @"http(s)?://(www.)?(nicovideo.jp|nico.ms)/.*",
             @"http(s)?://(www.)?vine.co/.*",
             @"http(s)?://(www.)?vimeo.com/.*",
+            @"http(s)?://(www.)?(ustre.am|ustream.tv)/.*",
         };
 
         delegate V FuncDelegate<T, U, V>(T uri, out U imageUri);
