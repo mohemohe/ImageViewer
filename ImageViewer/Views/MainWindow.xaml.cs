@@ -26,7 +26,7 @@ namespace ImageViewer.Views
     public partial class MainWindow : Window
     {
         private bool _isTranslate = false;
-
+        private double _dpi;
         public MainWindow()
         {
             InitializeComponent();
@@ -46,6 +46,8 @@ namespace ImageViewer.Views
 
             Loaded += (sender, args) =>
             {
+                _dpi = PresentationSource.FromVisual(this).CompositionTarget.TransformToDevice.Transform(new Point(1, 1)).X;
+
                 VM.View = this;
                 Win32Helper.MainWindowAppendMenu(Win32Helper.MenuFlags.SEPARATOR, @"", null);
                 Win32Helper.MainWindowAppendMenu(Win32Helper.MenuFlags.STRING, @"Force Full GC", new Action(() =>
@@ -79,12 +81,9 @@ namespace ImageViewer.Views
             var image = sender as Image;
             if (image.Source != null)
             {
-                var source = PresentationSource.FromVisual(this);
-                var ct = source.CompositionTarget;
-                var dpi = ct.TransformToDevice.Transform(new Point(1, 1)).X;
                 var zoom = VM.DeferredImageItems[VM.SelectedIndex].Zoom;
-                VM.ImageRenderWidth = Convert.ToInt32(image.DesiredSize.Width * dpi * zoom);
-                VM.ImageRenderHeight = Convert.ToInt32(image.DesiredSize.Height * dpi * zoom);
+                VM.ImageRenderWidth = Convert.ToInt32(image.DesiredSize.Width * _dpi * zoom);
+                VM.ImageRenderHeight = Convert.ToInt32(image.DesiredSize.Height * _dpi * zoom);
             }
         }
 
@@ -165,8 +164,8 @@ namespace ImageViewer.Views
                     POINT currentPosition;
                     Win32Helper.GetCursorPos(out currentPosition);
                     Win32Helper.SetCursorPos(_mousePosition.X, _mousePosition.Y);
-                    VM.DeferredImageItems[VM.SelectedIndex].Translate.X += currentPosition.X - _mousePosition.X;
-                    VM.DeferredImageItems[VM.SelectedIndex].Translate.Y += currentPosition.Y - _mousePosition.Y;
+                    VM.DeferredImageItems[VM.SelectedIndex].Translate.X += (currentPosition.X - _mousePosition.X) / (VM.Zoom / (100.0 * _dpi));
+                    VM.DeferredImageItems[VM.SelectedIndex].Translate.Y += (currentPosition.Y - _mousePosition.Y) / (VM.Zoom / (100.0 * _dpi));
                 }
                 _isMove = false;
             }
