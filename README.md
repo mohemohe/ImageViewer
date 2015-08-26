@@ -7,6 +7,7 @@
 
 - つかいかた
 - そうさほうほう
+- らいぶらり
 
 ## つかいかた
 
@@ -39,3 +40,9 @@
 | ドラッグ         | 画像の移動                       |
 | ホイール回転     | 画像のズーム                     |
 | ホイールクリック | 移動・ズームを元に戻す           |
+
+
+#### らいぶらり
+
+- [Livet](https://github.com/ugaya40/Livet)
+- [QuickConverter](https://quickconverter.codeplex.com/)
