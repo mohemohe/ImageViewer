@@ -55,7 +55,7 @@ namespace ImageViewer.Models
                     {
                         if (ici.FormatID == b.RawFormat.Guid)
                         {
-                            FileExtension = ici.FilenameExtension.ToLower();
+                            FileExtension = ici.FilenameExtension.Split(';')[0].ToLower();
                         }
                     }
                 }
