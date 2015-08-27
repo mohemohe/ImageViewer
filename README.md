@@ -3,11 +3,11 @@
 
 ----
 
-- master [![Build status](https://ci.appveyor.com/api/projects/status/2nugne62ubbuknux/branch/master?svg=true)](https://ci.appveyor.com/project/mohemohe/imageviewer/branch/master)
+## もくじ
 
-- develop [![Build status](https://ci.appveyor.com/api/projects/status/2nugne62ubbuknux/branch/develop?svg=true)](https://ci.appveyor.com/project/mohemohe/imageviewer/branch/develop)
-
-----
+- つかいかた
+- そうさほうほう
+- らいぶらり
 
 ## つかいかた
 
@@ -17,7 +17,6 @@
 `\path\to\ImageVIewer.exe %1`
 
 ![](http://i.imgur.com/YG5QAn5.png)
-
 
 ## そうさほうほう
 
@@ -41,3 +40,9 @@
 | ドラッグ         | 画像の移動                       |
 | ホイール回転     | 画像のズーム                     |
 | ホイールクリック | 移動・ズームを元に戻す           |
+
+
+#### らいぶらり
+
+- [Livet](https://github.com/ugaya40/Livet)
+- [QuickConverter](https://quickconverter.codeplex.com/)

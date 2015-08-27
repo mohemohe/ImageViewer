@@ -6,6 +6,7 @@
         xmlns:l="http://schemas.livet-mvvm.net/2011/wpf"
         xmlns:v="clr-namespace:ImageViewer.Views"
         xmlns:vm="clr-namespace:ImageViewer.ViewModels"
+        xmlns:qc="http://QuickConverter.CodePlex.com/"
         Title="ImageViewer" Height="520" Width="780" MinHeight="128" MinWidth="{Binding ElementName=StatusBarElements, Path=ActualWidth, UpdateSourceTrigger=PropertyChanged}" ResizeMode="CanResizeWithGrip" Background="{DynamicResource MatteBlack}">
 
     <WindowChrome.WindowChrome>
@@ -203,7 +204,7 @@
                                        RenderTransformOrigin="0.5, 0.5">
                                     <Image.RenderTransform>
                                         <TransformGroup>
-                                            <ScaleTransform ScaleX="{Binding Zoom, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ScaleY="{Binding Zoom, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" CenterX="0.5" CenterY="0.5"/>
+                                            <ScaleTransform ScaleX="{Binding Zoom, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ScaleY="{Binding Zoom, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" CenterX="{qc:Binding '$P * -1', P={Binding Translate.X, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}}" CenterY="{qc:Binding '$P * -1', P={Binding Translate.Y, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}}"/>
                                             <SkewTransform/>
                                             <RotateTransform/>
                                             <TranslateTransform X="{Binding Translate.X, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Y="{Binding Translate.Y, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>

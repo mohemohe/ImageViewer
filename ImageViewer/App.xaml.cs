@@ -21,6 +21,11 @@ namespace ImageViewer
     {
         private static Mutex mutex = new Mutex(false, Application.ResourceAssembly.GetName().Name);
 
+        public App() : base()
+        {
+            QuickConverter.EquationTokenizer.AddNamespace(typeof(object));
+        }
+
 #if !DEBUG
 
         private void Application_Startup(object sender, System.Windows.StartupEventArgs e)
