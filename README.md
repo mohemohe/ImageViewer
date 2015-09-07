@@ -1,7 +1,15 @@
 # ImageViewer
 くるるとかそのへん用
 
-----
+## ダウンロード
+
+- 常用版（≠安定版）  
+[![Build status](https://ci.appveyor.com/api/projects/status/2nugne62ubbuknux/branch/master?svg=true)](https://ci.appveyor.com/project/mohemohe/imageviewer/branch/master/artifacts)  
+
+- 開発版  
+[![Build status](https://ci.appveyor.com/api/projects/status/2nugne62ubbuknux/branch/develop?svg=true)](https://ci.appveyor.com/project/mohemohe/imageviewer/branch/develop/artifacts)
+
+---
 
 ## もくじ
 
