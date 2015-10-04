@@ -233,9 +233,14 @@ namespace ImageViewer.ViewModels
             get { return _SelectedIndex; }
             set
             {
-                _SelectedIndex = value;
                 if (DeferredImageItems != null && value < DeferredImageItems.Count && value != -1)
                 {
+                    if(value == -1 || DeferredImageItems.Count == value)
+                    {
+                        return;
+                    }
+                    _SelectedIndex = value;
+
                     SelectedImageWidth = DeferredImageItems[value].Width;
                     SelectedImageHeight = DeferredImageItems[value].Height;
                     CalcZoom();
@@ -418,7 +423,11 @@ namespace ImageViewer.ViewModels
 
             var currentIndex = SelectedIndex;
             DeferredImageItems.RemoveAt(parameter);
-            SelectedIndex = currentIndex < DeferredImageItems.Count ? currentIndex : DeferredImageItems.Count - 1;
+            SelectedIndex = currentIndex < DeferredImageItems.Count ? 
+                parameter == 0 ? 
+                    parameter :
+                    currentIndex : 
+                DeferredImageItems.Count - 1;
         }
         #endregion
 

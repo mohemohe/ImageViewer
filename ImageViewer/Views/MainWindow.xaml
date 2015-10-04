@@ -117,7 +117,7 @@
 
                 <TabControl.ItemTemplate>
                     <DataTemplate>
-                        <Border WindowChrome.IsHitTestVisibleInChrome="True">
+                        <Border Name="Tab" WindowChrome.IsHitTestVisibleInChrome="True" MouseWheel="Tab_MouseWheel" PreviewMouseDown="Tab_PreviewMouseDown">
                             <WrapPanel>
                                 <TextBlock Text="{Binding Name}" Padding="12,0"/>
                                 <Button 

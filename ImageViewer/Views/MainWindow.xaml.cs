@@ -202,5 +202,33 @@ namespace ImageViewer.Views
                 Win32Helper.ShowContextMenu(currentPosition);
             }
         }
+
+        private void Tab_MouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            this.Focus();
+
+            if(e.Delta > 0)
+            {
+                VM.SelectedIndex--;
+                MoveLeft(null, null);
+            }
+            else
+            {
+                VM.SelectedIndex++;
+                MoveRight(null, null);
+            }
+        }
+
+        private void Tab_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if(e.MiddleButton == MouseButtonState.Pressed)
+            {
+                var tab = sender as Border;
+                var item = tab.DataContext as ImageItem;
+                var index = TabControl.Items.IndexOf(item);
+                VM.TabClose(index);
+                e.Handled = true;
+            }
+        }
     }
 }
