@@ -423,7 +423,11 @@ namespace ImageViewer.ViewModels
 
             var currentIndex = SelectedIndex;
             DeferredImageItems.RemoveAt(parameter);
-            SelectedIndex = currentIndex < DeferredImageItems.Count ? currentIndex : DeferredImageItems.Count - 1;
+            SelectedIndex = currentIndex < DeferredImageItems.Count ? 
+                parameter == 0 ? 
+                    parameter :
+                    currentIndex : 
+                DeferredImageItems.Count - 1;
         }
         #endregion
 
