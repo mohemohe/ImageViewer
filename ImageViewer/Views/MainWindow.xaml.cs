@@ -202,5 +202,21 @@ namespace ImageViewer.Views
                 Win32Helper.ShowContextMenu(currentPosition);
             }
         }
+
+        private void Tab_MouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            this.Focus();
+
+            if(e.Delta > 0)
+            {
+                VM.SelectedIndex--;
+                MoveLeft(null, null);
+            }
+            else
+            {
+                VM.SelectedIndex++;
+                MoveRight(null, null);
+            }
+        }
     }
 }

@@ -233,9 +233,14 @@ namespace ImageViewer.ViewModels
             get { return _SelectedIndex; }
             set
             {
-                _SelectedIndex = value;
                 if (DeferredImageItems != null && value < DeferredImageItems.Count && value != -1)
                 {
+                    if(value == -1 || DeferredImageItems.Count == value)
+                    {
+                        return;
+                    }
+                    _SelectedIndex = value;
+
                     SelectedImageWidth = DeferredImageItems[value].Width;
                     SelectedImageHeight = DeferredImageItems[value].Height;
                     CalcZoom();
