@@ -233,17 +233,16 @@ namespace ImageViewer.ViewModels
             get { return _SelectedIndex; }
             set
             {
-                if (DeferredImageItems != null && value < DeferredImageItems.Count && value != -1)
+                if (DeferredImageItems != null && value < DeferredImageItems.Count)
                 {
-                    if(value == -1 || DeferredImageItems.Count == value)
-                    {
-                        return;
-                    }
                     _SelectedIndex = value;
 
-                    SelectedImageWidth = DeferredImageItems[value].Width;
-                    SelectedImageHeight = DeferredImageItems[value].Height;
-                    CalcZoom();
+                    if (value != -1)
+                    {
+                        SelectedImageWidth = DeferredImageItems[value].Width;
+                        SelectedImageHeight = DeferredImageItems[value].Height;
+                        CalcZoom();
+                    }
                 }
                 RaisePropertyChanged();
             }
@@ -422,12 +421,13 @@ namespace ImageViewer.ViewModels
             }
 
             var currentIndex = SelectedIndex;
+            SelectedIndex = -1;
+
             DeferredImageItems.RemoveAt(parameter);
-            SelectedIndex = currentIndex < DeferredImageItems.Count ? 
-                parameter == 0 ? 
-                    parameter :
-                    currentIndex : 
-                DeferredImageItems.Count - 1;
+
+            SelectedIndex = currentIndex < DeferredImageItems.Count ?
+                    currentIndex :
+                    DeferredImageItems.Count - 1;
         }
         #endregion
 
