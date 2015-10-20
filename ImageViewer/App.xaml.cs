@@ -36,13 +36,6 @@ namespace ImageViewer
             }
 
             DispatcherHelper.UIDispatcher = Dispatcher;
-            
-            Config.ReadConfig();
-            this.Exit += (s, a) =>
-            {
-                Config.WriteConfig();
-            };
-
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
 
             if (mutex.WaitOne(0, false) == false)
@@ -56,6 +49,12 @@ namespace ImageViewer
                 mutex = null;
                 this.Shutdown();
             }
+
+            Config.ReadConfig();
+            this.Exit += (s, a) =>
+            {
+                Config.WriteConfig();
+            };
 
             string imageUri;
             if (UriRouter.IsImageUri(e.Args[0], out imageUri))
@@ -92,13 +91,6 @@ namespace ImageViewer
         private void Application_Startup(object sender, System.Windows.StartupEventArgs e)
         {
             DispatcherHelper.UIDispatcher = Dispatcher;
-
-            Config.ReadConfig();
-            this.Exit += (s, a) =>
-            {
-                Config.WriteConfig();
-            };
-
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
 
             string testUri = "https://pbs.twimg.com/media/CDc-gf3VIAAD6q9.png:orig";
@@ -115,7 +107,12 @@ namespace ImageViewer
                 this.Shutdown();
             }
 
-            
+            Config.ReadConfig();
+            this.Exit += (s, a) =>
+            {
+                Config.WriteConfig();
+            };
+
             string imageUri;
             if (UriRouter.IsImageUri(testUri, out imageUri))
             {
