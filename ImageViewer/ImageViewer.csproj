@@ -108,6 +108,7 @@
     <Compile Include="Models\Json.cs" />
     <Compile Include="Models\JsonList.cs" />
     <Compile Include="Models\Model.cs" />
+    <Compile Include="Models\Config.cs" />
     <Compile Include="Models\UriRouter.cs" />
     <Compile Include="Models\WebClient.cs">
       <SubType>Component</SubType>

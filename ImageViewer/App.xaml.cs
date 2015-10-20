@@ -36,6 +36,13 @@ namespace ImageViewer
             }
 
             DispatcherHelper.UIDispatcher = Dispatcher;
+            
+            Config.ReadConfig();
+            this.Exit += (s, a) =>
+            {
+                Config.WriteConfig();
+            };
+
             //AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
 
             if (mutex.WaitOne(0, false) == false)
@@ -85,15 +92,22 @@ namespace ImageViewer
         private void Application_Startup(object sender, System.Windows.StartupEventArgs e)
         {
             DispatcherHelper.UIDispatcher = Dispatcher;
+
+            Config.ReadConfig();
+            this.Exit += (s, a) =>
+            {
+                Config.WriteConfig();
+            };
+
             //AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
 
             string testUri = "https://pbs.twimg.com/media/CDc-gf3VIAAD6q9.png:orig";
 
             if (mutex.WaitOne(0, false) == false)
             {
-                IpcClientChannel ipc = new IpcClientChannel();
+                var ipc = new IpcClientChannel();
                 ChannelServices.RegisterChannel(ipc, true);
-                Message message = (Message)RemotingServices.Connect(typeof(Message), @"ipc://" + Application.ResourceAssembly.GetName().Name + @"/Message");
+                var message = (Message)RemotingServices.Connect(typeof(Message), @"ipc://" + Application.ResourceAssembly.GetName().Name + @"/Message");
                 message.RaiseHandler(new string[] { testUri });
 
                 mutex.Close();
@@ -113,9 +127,9 @@ namespace ImageViewer
 
                 window.VM.AddTab(imageUri, testUri);
 
-                IpcServerChannel ipc = new IpcServerChannel(Application.ResourceAssembly.GetName().Name);
+                var ipc = new IpcServerChannel(Application.ResourceAssembly.GetName().Name);
                 ChannelServices.RegisterChannel(ipc, true);
-                Message message = new Message();
+                var message = new Message();
                 message.MessageHandler += ((string[] args) =>
                 {
                     if (UriRouter.IsImageUri(args[0], out imageUri))

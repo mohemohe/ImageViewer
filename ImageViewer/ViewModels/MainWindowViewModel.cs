@@ -369,7 +369,16 @@ namespace ImageViewer.ViewModels
             var uri = (DeferredImageItems[SelectedIndex].IsError) ?
                 DeferredImageItems[SelectedIndex].OriginalUri :
                 DeferredImageItems[SelectedIndex].ImageUri;
-            Process.Start(uri);
+
+            if (Config.DefaultBrowserPath == null)
+            {
+                Process.Start(uri);
+            }
+            else
+            {
+                var psi = new ProcessStartInfo { Arguments = uri, FileName = Config.DefaultBrowserPath };
+                Process.Start(psi);
+            }
         }
         #endregion OpenInBrowserCommand
 

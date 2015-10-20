@@ -23,8 +23,8 @@ namespace ImageViewer.Models
                         @":orig",
                         @":large",
                     };
-                    var decoders = ImageCodecInfo.GetImageDecoders();
 
+                    var decoders = ImageCodecInfo.GetImageDecoders();
                     foreach (var ici in decoders)
                     {
                         _IsImageList.AddRange(ici.FilenameExtension.Replace(@"*", @"").ToLower().Split(';'));
