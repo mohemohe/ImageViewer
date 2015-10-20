@@ -1,0 +1,147 @@
+﻿<Window x:Class="ImageViewer.Views.SettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+        xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions"
+        xmlns:l="http://schemas.livet-mvvm.net/2011/wpf"
+        xmlns:v="clr-namespace:ImageViewer.Views"
+        xmlns:vm="clr-namespace:ImageViewer.ViewModels"
+        Title="設定" Height="480" Width="800" ResizeMode="NoResize">
+
+    <Window.DataContext>
+        <vm:SettingsWindowViewModel/>
+    </Window.DataContext>
+
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="MainWindowResourceDictionary.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+
+    <i:Interaction.Triggers>
+
+        <!--Viewに特別な要件が存在しない限りは、トリガーやアクションの自作にこだわらず積極的にコードビハインドを使いましょう -->
+        <!--Viewのコードビハインドは、基本的にView内で完結するロジックとViewModelからのイベントの受信(専用リスナを使用する)に限るとトラブルが少なくなります -->
+        <!--Livet1.1からはコードビハインドでViewModelのイベントを受信するためのWeakEventLisnterサポートが追加されています -->
+
+        <!--WindowのContentRenderedイベントのタイミングでViewModelのInitializeメソッドが呼ばれます-->
+        <i:EventTrigger EventName="ContentRendered">
+            <l:LivetCallMethodAction MethodTarget="{Binding}" MethodName="Initialize"/>
+        </i:EventTrigger>
+
+        <!--Windowが閉じたタイミングでViewModelのDisposeメソッドが呼ばれます-->
+        <i:EventTrigger EventName="Closed">
+            <l:DataContextDisposeAction/>
+        </i:EventTrigger>
+
+        <!--WindowのCloseキャンセル処理に対応する場合は、WindowCloseCancelBehaviorの使用を検討してください-->
+        <l:InteractionMessageTrigger MessageKey="WindowMessage" Messenger="{Binding Messenger}" InvokeActionsOnlyWhileAttatchedObjectLoaded="True">
+            <l:WindowInteractionMessageAction />
+        </l:InteractionMessageTrigger>
+
+        <l:InteractionMessageTrigger MessageKey="Open" Messenger="{Binding Messenger}">
+            <l:OpenFileDialogInteractionMessageAction />
+        </l:InteractionMessageTrigger>
+    </i:Interaction.Triggers>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="32"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="240"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <ListView Name="Menu" Grid.Column="0" Grid.RowSpan="1" BorderThickness="0,0,1,0" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}">
+            <ListView.Resources>
+                <Style TargetType="ListViewItem">
+                    <Style.Setters>
+                        <Setter Property="Padding">
+                            <Setter.Value>
+                                <Thickness>2,4</Thickness>
+                            </Setter.Value>
+                        </Setter>
+                    </Style.Setters>
+                </Style>
+            </ListView.Resources>
+            <ListViewItem Content="全般"/>
+            <ListViewItem Content="バージョン情報"/>
+        </ListView>
+        <TabControl Grid.Column="1" Grid.Row="0" Grid.RowSpan="1" SelectedIndex="{Binding SelectedIndex, ElementName=Menu}" BorderBrush="{x:Null}">
+            <TabControl.Resources>
+                <Style TargetType="TabItem">
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="TabItem"/>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </TabControl.Resources>
+
+            <!--全般-->
+            <TabItem>
+                <Grid>
+                    <Grid VerticalAlignment="Top" Margin="0,10,10,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="32"/>
+                        </Grid.ColumnDefinitions>
+                        <Label Grid.Column="0" Content="既定のブラウザ" Foreground="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" VerticalAlignment="Center"/>
+                        <TextBox Grid.Column="1" Text="{Binding DefaultBrowserPath}" VerticalContentAlignment="Center" />
+                        <Button Grid.Column="2" Content="..." Command="{Binding SetDefaultBrowserPathCommand}" />
+                    </Grid>
+                </Grid>
+            </TabItem>
+
+            <!--バージョン情報-->
+            <TabItem>
+                <StackPanel>
+                    <Grid>
+                        <Image Source="/ImageViewer;component/Resources/ImageViewer.png" Height="128" VerticalAlignment="Top" HorizontalAlignment="Left" RenderOptions.BitmapScalingMode="Fant"/>
+                        <TextBlock Text="ImageViewer" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="160,0,0,0" FontSize="64" Foreground="{DynamicResource MatteBlack}" />
+                        <TextBlock Text="{Binding Version, TargetNullValue=NaN}" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,85,22,0" FontSize="12" Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" />
+                    </Grid>
+                    <WrapPanel Margin="0,24,0,0">
+                        <TextBlock Text="Built with: " HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="12" />
+                        <TextBlock HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="12">
+                            <Hyperlink NavigateUri="https://github.com/ugaya40/Livet" RequestNavigate="Hyperlink_RequestNavigate">
+                                Livet
+                            </Hyperlink>
+                        </TextBlock>
+                        <TextBlock Text=", " HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="12" />
+                        <TextBlock HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="12">
+                            <Hyperlink NavigateUri="https://quickconverter.codeplex.com/" RequestNavigate="Hyperlink_RequestNavigate">
+                                QuickConverter
+                            </Hyperlink>
+                        </TextBlock>
+                        <TextBlock Text="." HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="12" />
+                    </WrapPanel>
+                    <WrapPanel Margin="0,24,0,0">
+                        <TextBlock Text="© 2015 mohemohe. " HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="12" />
+                        <TextBlock Text="Licensed under " HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="12" />
+                        <TextBlock HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="12">
+                                <Hyperlink NavigateUri="https://raw.githubusercontent.com/mohemohe/ImageViewer/master/LICENSE" RequestNavigate="Hyperlink_RequestNavigate">
+                                    The MIT License
+                                </Hyperlink>
+                        </TextBlock>
+                        <TextBlock Text="." HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="12" />
+                    </WrapPanel>
+                    <WrapPanel>
+                        <TextBlock Text="I would like to express my the biggest gratitude to @karno / Krile STARRYEYES ." HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="12" />
+                    </WrapPanel>
+                </StackPanel>
+            </TabItem>
+        </TabControl>
+        <Border Grid.Row="1" Grid.ColumnSpan="2" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" BorderThickness="0,1,0,0">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Content="OK" Command="{Binding OKCommand}" Width="80" Height="24" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                <Button Content="キャンセル" Command="{Binding CancelCommand}" Width="80" Height="24" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                <Button Content="適用" Command="{Binding ApplyCommand}" Width="80" Height="24" VerticalAlignment="Center" Margin="0,0,8,0"/>
+            </StackPanel>
+        </Border>
+    </Grid>
+</Window>

@@ -16,6 +16,7 @@ using ImageViewer.Views;
 using System.Windows.Controls;
 using System.Threading.Tasks;
 using System.Runtime;
+using Livet.Messaging;
 
 namespace ImageViewer.ViewModels
 {
@@ -369,7 +370,16 @@ namespace ImageViewer.ViewModels
             var uri = (DeferredImageItems[SelectedIndex].IsError) ?
                 DeferredImageItems[SelectedIndex].OriginalUri :
                 DeferredImageItems[SelectedIndex].ImageUri;
-            Process.Start(uri);
+
+            if (Config.DefaultBrowserPath == null)
+            {
+                Process.Start(uri);
+            }
+            else
+            {
+                var psi = new ProcessStartInfo { Arguments = uri, FileName = Config.DefaultBrowserPath };
+                Process.Start(psi);
+            }
         }
         #endregion OpenInBrowserCommand
 
@@ -428,6 +438,27 @@ namespace ImageViewer.ViewModels
             SelectedIndex = currentIndex < DeferredImageItems.Count ?
                     currentIndex :
                     DeferredImageItems.Count - 1;
+        }
+        #endregion
+
+        #region OpenSettingsWindowCommand
+        private ViewModelCommand _OpenSettingsWindowCommand;
+
+        public ViewModelCommand OpenSettingsWindowCommand
+        {
+            get
+            {
+                if (_OpenSettingsWindowCommand == null)
+                {
+                    _OpenSettingsWindowCommand = new ViewModelCommand(OpenSettingsWindow);
+                }
+                return _OpenSettingsWindowCommand;
+            }
+        }
+
+        public void OpenSettingsWindow()
+        {
+            Messenger.Raise(new TransitionMessage(new SettingsWindowViewModel(), "OpenMessage"));
         }
         #endregion
 

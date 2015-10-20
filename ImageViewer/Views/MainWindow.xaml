@@ -54,6 +54,10 @@
             <l:WindowInteractionMessageAction />
         </l:InteractionMessageTrigger>
 
+        <l:InteractionMessageTrigger MessageKey="OpenMessage" Messenger="{Binding Messenger}">
+            <l:TransitionInteractionMessageAction WindowType="{x:Type v:SettingsWindow}" Mode="Modal" InvokeActionOnlyWhenWindowIsActive="False"/>
+        </l:InteractionMessageTrigger>
+
         <l:InteractionMessageTrigger MessageKey="Save" Messenger="{Binding Messenger}">
             <l:SaveFileDialogInteractionMessageAction />
         </l:InteractionMessageTrigger>
@@ -103,6 +107,14 @@
                                     </i:Interaction.Triggers>
 
                                     <StackPanel Orientation="Horizontal" Margin="5,0" HorizontalAlignment="Right" VerticalAlignment="Top" WindowChrome.IsHitTestVisibleInChrome="True" Panel.ZIndex="1" Background="{DynamicResource MatteBlack}">
+                                        <Grid DataContext="{Binding DataContext, ElementName=WindowRoot}">
+                                            <Button Command="{Binding OpenSettingsWindowCommand}" MinWidth="28" Height="20" Margin="0,0,1,0" Template="{DynamicResource CaptionButton}">
+                                                <StackPanel Orientation="Horizontal" Margin="8,0">
+                                                    <TextBlock Text="&#xE2F9;" FontFamily="Segoe UI Symbol" FontSize="18" Foreground="{DynamicResource EvilWhite}" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                                    <TextBlock Text="Settings" FontFamily="Meiryo UI" FontSize="10" Foreground="{DynamicResource EvilWhite}" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="4,0,0,0" />
+                                                </StackPanel>
+                                            </Button>
+                                        </Grid>
                                         <Button Content="0" FontFamily="Marlett" Width="28" Height="20" Margin="0,0,1,0" Template="{DynamicResource CaptionButton}" Command="{Binding MinimizeCommand}" />
                                         <Button Content="{Binding MaximizeButtonContent}" FontFamily="Marlett" Width="28" Height="20" Margin="0,0,1,0" Template="{DynamicResource CaptionButton}" Command="{Binding MaximizeCommand}" />
                                         <Button Content="r" FontFamily="Marlett" Width="48" Height="20" Margin="0" Template="{DynamicResource CloseButton}" Command="{Binding CloseCommand}" />
