@@ -209,13 +209,20 @@ namespace ImageViewer.Views
 
             if(e.Delta > 0)
             {
-                VM.SelectedIndex--;
-                MoveLeft(null, null);
+                if (VM.SelectedIndex != 0)
+                {
+                    VM.SelectedIndex--;
+                    MoveLeft(null, null);
+                }
             }
             else
             {
-                VM.SelectedIndex++;
-                MoveRight(null, null);
+                if (VM.SelectedIndex < VM.DeferredImageItems.Count)
+                {
+                    VM.SelectedIndex++;
+                    MoveRight(null, null);
+                }
+                
             }
         }
 
