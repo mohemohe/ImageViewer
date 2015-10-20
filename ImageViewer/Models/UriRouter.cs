@@ -22,6 +22,7 @@ namespace ImageViewer.Models
 
         private static readonly List<string> BlackList = new List<string>
         {
+            @"http(s)?://(www.)?1drv.ms/.*",
             @"http(s)?://(www.)?(youtube.com|youtu.be)/.*",
             @"http(s)?://(www.)?(nicovideo.jp|nico.ms)/.*",
             @"http(s)?://(www.)?vine.co/.*",
