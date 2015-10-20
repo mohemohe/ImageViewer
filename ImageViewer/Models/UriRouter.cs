@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -10,15 +11,29 @@ namespace ImageViewer.Models
 {
     internal static class UriRouter
     {
-        private static readonly List<string> IsImageList = new List<string>
+        private static List<string> _IsImageList;
+        private static List<string> IsImageList
         {
-            ":orig",
-            ".jpeg",
-            ".jpg",
-            ".bmp",
-            ".png",
-            ".gif"
-        };
+            get
+            {
+                if(_IsImageList == null)
+                {
+                    _IsImageList = new List<string>
+                    {
+                        @":orig",
+                        @":large",
+                    };
+                    var decoders = ImageCodecInfo.GetImageDecoders();
+
+                    foreach (var ici in decoders)
+                    {
+                        _IsImageList.AddRange(ici.FilenameExtension.Replace(@"*", @"").ToLower().Split(';'));
+                    }
+                }
+
+                return _IsImageList;
+            }
+        }
 
         private static readonly List<string> BlackList = new List<string>
         {
@@ -52,7 +67,7 @@ namespace ImageViewer.Models
 
             IsImageList.ForEach(x =>
             {
-                if (uri.EndsWith(x))
+                if (uri.ToLower().EndsWith(x))
                 {
                     targetUri = uri;
                     result = true;
