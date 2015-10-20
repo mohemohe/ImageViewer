@@ -43,7 +43,7 @@ namespace ImageViewer
                 Config.WriteConfig();
             };
 
-            //AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
+            AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
 
             if (mutex.WaitOne(0, false) == false)
             {
@@ -99,7 +99,7 @@ namespace ImageViewer
                 Config.WriteConfig();
             };
 
-            //AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
+            AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
 
             string testUri = "https://pbs.twimg.com/media/CDc-gf3VIAAD6q9.png:orig";
 
@@ -143,17 +143,28 @@ namespace ImageViewer
 #endif
 
         //集約エラーハンドラ
-        //private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
-        //{
-        //    //TODO:ロギング処理など
-        //    MessageBox.Show(
-        //        "不明なエラーが発生しました。アプリケーションを終了します。",
-        //        "エラー",
-        //        MessageBoxButton.OK,
-        //        MessageBoxImage.Error);
-        //
-        //    Environment.Exit(1);
-        //}
+        private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            var window = new ExceptionWindow(e);
+            window.Owner = Application.Current.MainWindow;
+            window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+
+            // true: 続行, false: 終了
+            var result = window.ShowDialog();
+            if (result != null)
+            {
+                if ((bool)result)
+                {
+                    Process.Start(Application.ResourceAssembly.Location);
+                }
+
+                // 遅い
+                //Environment.Exit(1);
+
+                // 終了コード-1を返したい
+                Process.GetCurrentProcess().Kill();
+            }
+        }
     }
 
     delegate void MessageHandler(string[] args);

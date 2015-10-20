@@ -30,11 +30,14 @@ namespace ImageViewer.Helpers
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool GetCursorPos(out POINT point);
 
-        [DllImport("USER32.dll")]
+        [DllImport("user32.dll")]
         public static extern void SetCursorPos(int x, int y);
 
-        [DllImport("USER32.dll")]
+        [DllImport("user32.dll")]
         public static extern void ShowCursor(bool isShow);
+
+        [DllImport("user32.dll", CharSet = CharSet.Auto)]
+        public static extern uint PrivateExtractIcons(string lpszFile, int nIconIndex, int cxIcon, int cyIcon, IntPtr[] phicon, IntPtr[] piconid, uint nIcons, uint flags);
 
         [DllImport("user32.dll")]
         public static extern IntPtr GetSystemMenu(IntPtr hWnd, bool bRevert);
@@ -48,6 +51,9 @@ namespace ImageViewer.Helpers
         [DllImport("user32.dll", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool PostMessage(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam);
+
+        [DllImport("gdi32.dll", ExactSpelling = true, SetLastError = true)]
+        public static extern bool DeleteObject(IntPtr hObject);
 
         #endregion Win32API
 
@@ -66,12 +72,12 @@ namespace ImageViewer.Helpers
 
         private static Dictionary<uint, Action> _menuActionDictionary = new Dictionary<uint, Action>();
         private static HwndSourceHook _hook;
-        
+
         public static void MainWindowAppendMenu(MenuFlags menuFlag, string menuTitle, Action action)
         {
             var wih = new WindowInteropHelper(Application.Current.MainWindow);
             var myHWnd = wih.Handle;
-            
+
             var hMenu = GetSystemMenu(myHWnd, false);
 
             uint uIDNewItem = (uint)_menuActionDictionary.Count + 1001;
@@ -80,7 +86,7 @@ namespace ImageViewer.Helpers
             AppendMenu(hMenu, menuFlag, uIDNewItem, menuTitle);
 
             var source = HwndSource.FromHwnd(myHWnd);
-            //NOTE: hookしなおす必要があるのか分からん
+            // NOTE: hookしなおす必要があるのか分からん
             if (_hook != null)
             {
                 source.RemoveHook(_hook);
@@ -96,6 +102,16 @@ namespace ImageViewer.Helpers
                 return IntPtr.Zero;
             });
             source.AddHook(_hook);
+        }
+
+        public static Icon GetIcon(string path, int index = 0, int size = 128)
+        {
+            var phIcon = new IntPtr[] { IntPtr.Zero };
+            var pIconId = new IntPtr[] { IntPtr.Zero };
+
+            PrivateExtractIcons(path, index, size, size, phIcon, pIconId, 1, 0);
+
+            return phIcon[0] != IntPtr.Zero ? Icon.FromHandle(phIcon[0]) : null;
         }
     }
 }
