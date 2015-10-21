@@ -83,6 +83,23 @@ namespace ImageViewer.ViewModels
         }
         #endregion
 
+        #region IsChildWindow変更通知プロパティ
+        private bool _IsChildWindow;
+
+        public bool IsChildWindow
+        {
+            get
+            { return _IsChildWindow; }
+            set
+            { 
+                if (_IsChildWindow == value)
+                    return;
+                _IsChildWindow = value;
+                RaisePropertyChanged();
+            }
+        }
+        #endregion
+
         #endregion 全般
 
         #endregion 保持
@@ -101,6 +118,7 @@ namespace ImageViewer.ViewModels
         private void LoadConfig()
         {
             DefaultBrowserPath = Config.DefaultBrowserPath;
+            IsChildWindow = Config.IsChildWindow;
         }
 
         #region Version変更通知プロパティ
@@ -181,6 +199,7 @@ namespace ImageViewer.ViewModels
         public void Apply()
         {
             Config.DefaultBrowserPath = File.Exists(DefaultBrowserPath) ? DefaultBrowserPath : null;
+            Config.IsChildWindow = IsChildWindow;
         }
         #endregion
 

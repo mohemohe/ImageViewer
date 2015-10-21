@@ -83,7 +83,7 @@
 
             <!--全般-->
             <TabItem>
-                <Grid>
+                <StackPanel>
                     <Grid VerticalAlignment="Top" Margin="0,10,10,0">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="auto"/>
@@ -91,10 +91,12 @@
                             <ColumnDefinition Width="32"/>
                         </Grid.ColumnDefinitions>
                         <Label Grid.Column="0" Content="既定のブラウザ" Foreground="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" VerticalAlignment="Center"/>
-                        <TextBox Grid.Column="1" Text="{Binding DefaultBrowserPath}" VerticalContentAlignment="Center" />
+                        <TextBox Grid.Column="1" Text="{Binding DefaultBrowserPath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Center" />
                         <Button Grid.Column="2" Content="..." Command="{Binding SetDefaultBrowserPathCommand}" />
                     </Grid>
-                </Grid>
+
+                    <CheckBox Content="起動時に呼び出し元ウィンドウの中央に表示する（前面表示になります）" IsChecked="{Binding IsChildWindow, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="0,10,0,0"/>
+                </StackPanel>
             </TabItem>
 
             <!--バージョン情報-->

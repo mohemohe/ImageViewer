@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Xml.Serialization;
 
 namespace ImageViewer.Models
@@ -16,6 +17,10 @@ namespace ImageViewer.Models
     {
         [XmlElement(IsNullable = true)]
         public string DefaultBrowserPath;
+
+        public Rect WindowPosition;
+
+        public bool? IsChildWindow;
     }
 
     /// <summary>
@@ -31,6 +36,8 @@ namespace ImageViewer.Models
         protected class _Config
         {
             public static string _DefaultBrowserPath { get; set; }
+            public static Rect _WindowPosition { get; set; }
+            public static bool _IsChildWindow { get; set; }
         }
 
         #endregion
@@ -39,8 +46,20 @@ namespace ImageViewer.Models
 
         public static string DefaultBrowserPath
         {
-            get { return _Config._DefaultBrowserPath == @"null" ? null : _Config._DefaultBrowserPath; }
+            get { return  _Config._DefaultBrowserPath; }
             set { _Config._DefaultBrowserPath = value; }
+        }
+
+        public static Rect WindowPosition
+        {
+            get { return _Config._WindowPosition; }
+            set { _Config._WindowPosition = value; }
+        }
+
+        public static bool IsChildWindow
+        {
+            get { return _Config._IsChildWindow; }
+            set { _Config._IsChildWindow = value; }
         }
 
         #endregion Accessor
@@ -66,6 +85,8 @@ namespace ImageViewer.Models
             }
 
             _Config._DefaultBrowserPath = TryReadValue(xmlSettings.DefaultBrowserPath, null, null);
+            _Config._WindowPosition = TryReadValue(xmlSettings.WindowPosition, null, null);
+            _Config._IsChildWindow = TryReadValue(xmlSettings.IsChildWindow, null, true);
         }
 
         private static dynamic TryReadValue(dynamic source, dynamic check, dynamic defaultValue)
@@ -85,6 +106,8 @@ namespace ImageViewer.Models
             var xmls = new Settings
             {
                 DefaultBrowserPath = _Config._DefaultBrowserPath,
+                WindowPosition = _Config._WindowPosition,
+                IsChildWindow = _Config._IsChildWindow,
             };
 
             var xs = new XmlSerializer(typeof(Settings));

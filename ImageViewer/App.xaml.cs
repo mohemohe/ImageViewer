@@ -60,9 +60,25 @@ namespace ImageViewer
             if (UriRouter.IsImageUri(e.Args[0], out imageUri))
             {
                 var window = new MainWindow();
-                var wih = new WindowInteropHelper(window);
-                wih.Owner = Win32Helper.GetForegroundWindow();
-                window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+
+                if (Config.IsChildWindow)
+                {
+                    var wih = new WindowInteropHelper(window);
+                    wih.Owner = Win32Helper.GetForegroundWindow();
+                    window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                }
+                else
+                {
+                    window.WindowStartupLocation = WindowStartupLocation.Manual;
+                    window.Top = Config.WindowPosition.Top;
+                    window.Left = Config.WindowPosition.Left;
+                }
+
+                if (Config.WindowPosition.Width != 0)
+                {
+                    window.Width = Config.WindowPosition.Width;
+                    window.Height = Config.WindowPosition.Height;
+                }
                 window.Show();
 
                 window.VM.AddTab(imageUri, e.Args[0]);
@@ -117,9 +133,25 @@ namespace ImageViewer
             if (UriRouter.IsImageUri(testUri, out imageUri))
             {
                 var window = new MainWindow();
-                var wih = new WindowInteropHelper(window);
-                wih.Owner = Win32Helper.GetForegroundWindow();
-                window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+
+                if (Config.IsChildWindow)
+                {
+                    var wih = new WindowInteropHelper(window);
+                    wih.Owner = Win32Helper.GetForegroundWindow();
+                    window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                }
+                else
+                {
+                    window.WindowStartupLocation = WindowStartupLocation.Manual;
+                    window.Top = Config.WindowPosition.Top;
+                    window.Left = Config.WindowPosition.Left;
+                }
+
+                if (Config.WindowPosition.Width != 0)
+                {
+                    window.Width = Config.WindowPosition.Width;
+                    window.Height = Config.WindowPosition.Height;
+                }
                 window.Show();
 
                 window.VM.AddTab(imageUri, testUri);

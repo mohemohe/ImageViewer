@@ -68,6 +68,11 @@ namespace ImageViewer.Views
                     VM.SelectedIndex = selectedIndex;
                 }));
             };
+
+            Closing += (sender, args) =>
+            {
+                Config.WindowPosition = this.RestoreBounds;
+            };
         }
 
         //HACK: 最高にやばい
