@@ -220,7 +220,7 @@ namespace ImageViewer.ViewModels
 
         public void SetDefaultBrowserPath()
         {
-            var message = new OpeningFileSelectionMessage("Open");
+            var message = new OpeningFileSelectionMessage("Open") { Filter = "実行可能ファイル(*.exe)|*.exe" };
             Messenger.Raise(message);
             if (message.Response == null)
             {
