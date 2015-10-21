@@ -110,6 +110,12 @@
                     <WrapPanel Margin="0,24,0,0">
                         <TextBlock Text="Built with: " HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="12" />
                         <TextBlock HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="12">
+                            <Hyperlink NavigateUri="https://icomoon.io/" RequestNavigate="Hyperlink_RequestNavigate">
+                                IcoMoon
+                            </Hyperlink>
+                        </TextBlock>
+                        <TextBlock Text=", " HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="12" />
+                        <TextBlock HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="12">
                             <Hyperlink NavigateUri="https://github.com/ugaya40/Livet" RequestNavigate="Hyperlink_RequestNavigate">
                                 Livet
                             </Hyperlink>
