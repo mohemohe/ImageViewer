@@ -38,11 +38,11 @@ namespace ImageViewer.Models
         private static readonly List<string> BlackList = new List<string>
         {
             @"http(s)?://(www.)?1drv.ms/.*",
-            @"http(s)?://(www.)?(youtube.com|youtu.be)/.*",
             @"http(s)?://(www.)?(nicovideo.jp|nico.ms)/.*",
+            @"http(s)?://(www.)?(ustre.am|ustream.tv)/.*",
             @"http(s)?://(www.)?vine.co/.*",
             @"http(s)?://(www.)?vimeo.com/.*",
-            @"http(s)?://(www.)?(ustre.am|ustream.tv)/.*",
+            @"http(s)?://(www.)?(youtube.com|youtu.be)/.*",
         };
 
         delegate V FuncDelegate<T, U, V>(T uri, out U imageUri);
@@ -54,9 +54,10 @@ namespace ImageViewer.Models
             new FuncDelegate<string, string, bool>(IsGamenNow),
         };
 
-        public static bool IsImageUri(string uri, out string imageUri)
+        public static bool IsImageUri(ref string uri, out string imageUri)
         {
             var result = false;
+            string queryUri = uri;
             string targetUri = null;
 
             if (IsBlackListedUri(uri))
@@ -65,18 +66,35 @@ namespace ImageViewer.Models
                 return result;
             }
 
+            if (IsVideoThumbUri(queryUri))
+            {
+                var regex = new Regex(@"(?<baseUri>http(s)?://pbs.twimg.com/)(?<thumb>tweet_video_thumb)(?<mediaId>.*)(?<ext>\..*)(?<size>:(orig|large))?");
+                if (regex.IsMatch(uri))
+                {
+                    var match = regex.Matches(uri);
+                    // 画像ではなく動画なので false
+                    result = false;
+                    
+                    // .mp4 決め打ちでいいんだろうか
+                    // GIFはmp4に変換してるからいいとは思うんだけど
+                    uri = match[0].Groups["baseUri"] + @"tweet_video" + match[0].Groups["mediaId"] + @".mp4";
+                }
+                imageUri = null;
+                return result;
+            }
+
             IsImageList.ForEach(x =>
             {
-                if (uri.ToLower().EndsWith(x))
+                if (queryUri.ToLower().EndsWith(x))
                 {
-                    targetUri = uri;
+                    targetUri = queryUri;
                     result = true;
                 }
             });
 
             if (result == false)
             {
-                WhiteList.ForEach(x => result = x(uri, out targetUri));
+                WhiteList.ForEach(x => result = x(queryUri, out targetUri));
             }
 
             if (result == false)
@@ -106,6 +124,12 @@ namespace ImageViewer.Models
             });
 
             return result;
+        }
+
+        private static bool IsVideoThumbUri(string uri)
+        {
+            var regex = new Regex(@"http(s)?://pbs.twimg.com/tweet_video_thumb/.*");
+            return regex.IsMatch(uri);
         }
 
         #region WhiteListMethods

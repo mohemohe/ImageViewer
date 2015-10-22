@@ -56,8 +56,9 @@ namespace ImageViewer
                 Config.WriteConfig();
             };
 
+            string uri = e.Args[0];
             string imageUri;
-            if (UriRouter.IsImageUri(e.Args[0], out imageUri))
+            if (UriRouter.IsImageUri(ref uri, out imageUri))
             {
                 var window = new MainWindow();
 
@@ -81,14 +82,14 @@ namespace ImageViewer
                 }
                 window.Show();
 
-                window.VM.AddTab(imageUri, e.Args[0]);
+                window.VM.AddTab(imageUri, uri);
 
                 IpcServerChannel ipc = new IpcServerChannel(Application.ResourceAssembly.GetName().Name);
                 ChannelServices.RegisterChannel(ipc, true);
                 Message message = new Message();
                 message.MessageHandler += ((string[] args) =>
                 {
-                    if (UriRouter.IsImageUri(args[0], out imageUri))
+                    if (UriRouter.IsImageUri(ref args[0], out imageUri))
                     {
                         window.VM.AddTab(imageUri, args[0]);
                     }
@@ -97,7 +98,16 @@ namespace ImageViewer
             }
             else
             {
-                Process.Start(e.Args[0]);
+                if (Config.DefaultBrowserPath == null)
+                {
+                    Process.Start(uri);
+                }
+                else
+                {
+                    var psi = new ProcessStartInfo { Arguments = uri, FileName = Config.DefaultBrowserPath };
+                    Process.Start(psi);
+                }
+
                 Environment.Exit(0);
             }
         }
