@@ -6,7 +6,7 @@
         xmlns:l="http://schemas.livet-mvvm.net/2011/wpf"
         xmlns:v="clr-namespace:ImageViewer.Views"
         xmlns:vm="clr-namespace:ImageViewer.ViewModels"
-        Title="設定" Height="480" Width="800" ResizeMode="NoResize">
+        Title="設定" Height="480" Width="800" ResizeMode="NoResize" WindowStartupLocation="CenterOwner">
 
     <Window.DataContext>
         <vm:SettingsWindowViewModel/>

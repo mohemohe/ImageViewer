@@ -140,7 +140,7 @@ namespace ImageViewer
             };
 
             string imageUri;
-            if (UriRouter.IsImageUri(testUri, out imageUri))
+            if (UriRouter.IsImageUri(ref testUri, out imageUri))
             {
                 var window = new MainWindow();
 
@@ -171,7 +171,7 @@ namespace ImageViewer
                 var message = new Message();
                 message.MessageHandler += ((string[] args) =>
                 {
-                    if (UriRouter.IsImageUri(args[0], out imageUri))
+                    if (UriRouter.IsImageUri(ref args[0], out imageUri))
                     {
                         window.VM.AddTab(imageUri, args[0]);
                     }
