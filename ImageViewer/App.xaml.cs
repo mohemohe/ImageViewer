@@ -41,27 +41,30 @@ namespace ImageViewer
 
             DispatcherHelper.UIDispatcher = Dispatcher;
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
-
-            if (mutex.WaitOne(0, false) == false)
-            {
-                IpcClientChannel ipc = new IpcClientChannel();
-                ChannelServices.RegisterChannel(ipc, true);
-                Message message = (Message)RemotingServices.Connect(typeof(Message), @"ipc://" + Application.ResourceAssembly.GetName().Name + @"/Message");
-                message.RaiseHandler(e.Args);
-
-                mutex.Close();
-                mutex = null;
-                
-                // Note: うまく終了しないことがある
-                //this.Shutdown();
-                Environment.Exit(0);
-            }
-
+            
             Config.ReadConfig();
             this.Exit += (s, a) =>
             {
                 Config.WriteConfig();
             };
+
+            if (Config.IsEnablePseudoSingleInstance)
+            {
+                if (mutex.WaitOne(0, false) == false)
+                {
+                    IpcClientChannel ipc = new IpcClientChannel();
+                    ChannelServices.RegisterChannel(ipc, true);
+                    Message message = (Message)RemotingServices.Connect(typeof(Message), @"ipc://" + Application.ResourceAssembly.GetName().Name + @"/Message");
+                    message.RaiseHandler(e.Args);
+
+                    mutex.Close();
+                    mutex = null;
+
+                    // Note: うまく終了しないことがある
+                    //this.Shutdown();
+                    Environment.Exit(0);
+                }
+            }
 
             string uri = e.Args[0];
             string imageUri;
@@ -91,17 +94,20 @@ namespace ImageViewer
 
                 window.VM.AddTab(imageUri, uri);
 
-                IpcServerChannel ipc = new IpcServerChannel(Application.ResourceAssembly.GetName().Name);
-                ChannelServices.RegisterChannel(ipc, true);
-                Message message = new Message();
-                message.MessageHandler += ((string[] args) =>
+                if (Config.IsEnablePseudoSingleInstance)
                 {
-                    if (UriRouter.IsImageUri(ref args[0], out imageUri))
+                    IpcServerChannel ipc = new IpcServerChannel(Application.ResourceAssembly.GetName().Name);
+                    ChannelServices.RegisterChannel(ipc, true);
+                    Message message = new Message();
+                    message.MessageHandler += ((string[] args) =>
                     {
-                        window.VM.AddTab(imageUri, args[0]);
-                    }
-                });
-                RemotingServices.Marshal(message, "Message");
+                        if (UriRouter.IsImageUri(ref args[0], out imageUri))
+                        {
+                            window.VM.AddTab(imageUri, args[0]);
+                        }
+                    });
+                    RemotingServices.Marshal(message, "Message");
+                }
             }
             else
             {
@@ -126,25 +132,28 @@ namespace ImageViewer
             DispatcherHelper.UIDispatcher = Dispatcher;
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
 
-            string testUri = "https://pbs.twimg.com/media/CDc-gf3VIAAD6q9.png:orig";
-
-            if (mutex.WaitOne(0, false) == false)
-            {
-                var ipc = new IpcClientChannel();
-                ChannelServices.RegisterChannel(ipc, true);
-                var message = (Message)RemotingServices.Connect(typeof(Message), @"ipc://" + Application.ResourceAssembly.GetName().Name + @"/Message");
-                message.RaiseHandler(new string[] { testUri });
-
-                mutex.Close();
-                mutex = null;
-                this.Shutdown();
-            }
-
             Config.ReadConfig();
             this.Exit += (s, a) =>
             {
                 Config.WriteConfig();
             };
+
+            string testUri = "https://pbs.twimg.com/media/CDc-gf3VIAAD6q9.png:orig";
+
+            if (Config.IsEnablePseudoSingleInstance)
+            {
+                if (mutex.WaitOne(0, false) == false)
+                {
+                    var ipc = new IpcClientChannel();
+                    ChannelServices.RegisterChannel(ipc, true);
+                    var message = (Message)RemotingServices.Connect(typeof(Message), @"ipc://" + Application.ResourceAssembly.GetName().Name + @"/Message");
+                    message.RaiseHandler(new string[] { testUri });
+
+                    mutex.Close();
+                    mutex = null;
+                    this.Shutdown();
+                }
+            }
 
             string imageUri;
             if (UriRouter.IsImageUri(ref testUri, out imageUri))
@@ -173,17 +182,20 @@ namespace ImageViewer
 
                 window.VM.AddTab(imageUri, testUri);
 
-                var ipc = new IpcServerChannel(Application.ResourceAssembly.GetName().Name);
-                ChannelServices.RegisterChannel(ipc, true);
-                var message = new Message();
-                message.MessageHandler += ((string[] args) =>
+                if (Config.IsEnablePseudoSingleInstance)
                 {
-                    if (UriRouter.IsImageUri(ref args[0], out imageUri))
+                    var ipc = new IpcServerChannel(Application.ResourceAssembly.GetName().Name);
+                    ChannelServices.RegisterChannel(ipc, true);
+                    var message = new Message();
+                    message.MessageHandler += ((string[] args) =>
                     {
-                        window.VM.AddTab(imageUri, args[0]);
-                    }
-                });
-                RemotingServices.Marshal(message, "Message");
+                        if (UriRouter.IsImageUri(ref args[0], out imageUri))
+                        {
+                            window.VM.AddTab(imageUri, args[0]);
+                        }
+                    });
+                    RemotingServices.Marshal(message, "Message");
+                }
             }
         }
 #endif

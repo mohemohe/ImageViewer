@@ -87,8 +87,15 @@
             <!--全般-->
             <TabItem>
                 <StackPanel>
-                    <CheckBox Content="タブブラウズを有効にする" IsChecked="True" IsEnabled="False" Margin="0,10,0,0"/>
-                    <CheckBox Content="起動時に呼び出し元ウィンドウの中央に表示する（前面表示になります）" IsChecked="{Binding IsChildWindow, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="0,10,0,0"/>
+                    <StackPanel>
+                        <CheckBox Content="擬似シングルインスタンスを有効にする" IsChecked="{Binding IsEnablePseudoSingleInstance, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="0,10,0,0"/>
+                        <TextBlock Text="プロセス間通信（IPC）関連のエラーが発生する場合は無効にしてください" Margin="32,0,0,0" />
+                        <TextBlock Text="設定の反映にはImageViewerの再起動が必要です" Margin="32,0,0,0" />
+                    </StackPanel>
+                    <StackPanel>
+                        <CheckBox Content="起動時に呼び出し元ウィンドウの中央に表示する" IsChecked="{Binding IsChildWindow, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="0,10,0,0"/>
+                        <TextBlock Text="副作用として呼び出し元ウィンドウよりも手前に表示されます" Margin="32,0,0,0" />
+                    </StackPanel>
                 </StackPanel>
             </TabItem>
 
@@ -119,7 +126,7 @@
                         <Button Grid.Column="2" Content="..." Command="{Binding SetDefaultBrowserPathCommand}" />
                     </Grid>
 
-                    <StackPanel VerticalAlignment="Top" Margin="18,10,10,0">
+                    <StackPanel VerticalAlignment="Top" Margin="32,10,10,0">
                         <TextBlock Text="指定したアプリケーションの引数にURLを渡します" Foreground="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
                         <TextBlock Text="例: iexplore.exe https://pbs.twimg.com/media/CDc-gf3VIAAD6q9.png:orig"  Foreground="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
                     </StackPanel>

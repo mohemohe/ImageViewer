@@ -83,6 +83,23 @@ namespace ImageViewer.ViewModels
         }
         #endregion
 
+        #region IsEnablePseudoSingleInstance変更通知プロパティ
+        private bool _IsEnablePseudoSingleInstance;
+
+        public bool IsEnablePseudoSingleInstance
+        {
+            get
+            { return _IsEnablePseudoSingleInstance; }
+            set
+            { 
+                if (_IsEnablePseudoSingleInstance == value)
+                    return;
+                _IsEnablePseudoSingleInstance = value;
+                RaisePropertyChanged();
+            }
+        }
+        #endregion
+
         #region IsChildWindow変更通知プロパティ
         private bool _IsChildWindow;
 
@@ -152,6 +169,7 @@ namespace ImageViewer.ViewModels
         private void LoadConfig()
         {
             DefaultBrowserPath = Config.DefaultBrowserPath ?? string.Empty;
+            IsEnablePseudoSingleInstance = Config.IsEnablePseudoSingleInstance;
             IsChildWindow = Config.IsChildWindow;
             IsFallbackTwitterGifMovie = Config.IsFallbackTwitterGifMovie;
             IsWarningTwitter30secMovie = Config.IsWarningTwitter30secMovie;
@@ -235,6 +253,7 @@ namespace ImageViewer.ViewModels
         public void Apply()
         {
             Config.DefaultBrowserPath = File.Exists(DefaultBrowserPath) ? DefaultBrowserPath : null;
+            Config.IsEnablePseudoSingleInstance = IsEnablePseudoSingleInstance;
             Config.IsChildWindow = IsChildWindow;
             Config.IsFallbackTwitterGifMovie = IsFallbackTwitterGifMovie;
             Config.IsWarningTwitter30secMovie = IsWarningTwitter30secMovie;
