@@ -51,7 +51,10 @@ namespace ImageViewer
 
                 mutex.Close();
                 mutex = null;
-                this.Shutdown();
+                
+                // Note: うまく終了しないことがある
+                //this.Shutdown();
+                Environment.Exit(0);
             }
 
             Config.ReadConfig();
