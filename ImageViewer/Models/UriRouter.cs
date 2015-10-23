@@ -66,7 +66,7 @@ namespace ImageViewer.Models
                 return result;
             }
 
-            if (IsVideoThumbUri(queryUri))
+            if (Config.IsFallbackTwitterGifMovie && IsVideoThumbUri(queryUri))
             {
                 var regex = new Regex(@"(?<baseUri>http(s)?://pbs.twimg.com/)(?<thumb>tweet_video_thumb)(?<mediaId>.*)(?<ext>\..*)(?<size>:(orig|large))?");
                 if (regex.IsMatch(uri))

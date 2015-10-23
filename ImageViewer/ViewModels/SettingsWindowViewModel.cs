@@ -100,6 +100,40 @@ namespace ImageViewer.ViewModels
         }
         #endregion
 
+        #region IsFallbackTwitterGifMovie変更通知プロパティ
+        private bool _IsFallbackTwitterGifMovie;
+
+        public bool IsFallbackTwitterGifMovie
+        {
+            get
+            { return _IsFallbackTwitterGifMovie; }
+            set
+            { 
+                if (_IsFallbackTwitterGifMovie == value)
+                    return;
+                _IsFallbackTwitterGifMovie = value;
+                RaisePropertyChanged();
+            }
+        }
+        #endregion
+
+        #region IsWarningTwitter30secMovie変更通知プロパティ
+        private bool _IsWarningTwitter30secMovie;
+
+        public bool IsWarningTwitter30secMovie
+        {
+            get
+            { return _IsWarningTwitter30secMovie; }
+            set
+            { 
+                if (_IsWarningTwitter30secMovie == value)
+                    return;
+                _IsWarningTwitter30secMovie = value;
+                RaisePropertyChanged();
+            }
+        }
+        #endregion
+
         #endregion 全般
 
         #endregion 保持
@@ -117,8 +151,10 @@ namespace ImageViewer.ViewModels
 
         private void LoadConfig()
         {
-            DefaultBrowserPath = Config.DefaultBrowserPath;
+            DefaultBrowserPath = Config.DefaultBrowserPath ?? string.Empty;
             IsChildWindow = Config.IsChildWindow;
+            IsFallbackTwitterGifMovie = Config.IsFallbackTwitterGifMovie;
+            IsWarningTwitter30secMovie = Config.IsWarningTwitter30secMovie;
         }
 
         #region Version変更通知プロパティ
@@ -200,6 +236,8 @@ namespace ImageViewer.ViewModels
         {
             Config.DefaultBrowserPath = File.Exists(DefaultBrowserPath) ? DefaultBrowserPath : null;
             Config.IsChildWindow = IsChildWindow;
+            Config.IsFallbackTwitterGifMovie = IsFallbackTwitterGifMovie;
+            Config.IsWarningTwitter30secMovie = IsWarningTwitter30secMovie;
         }
         #endregion
 

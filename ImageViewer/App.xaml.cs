@@ -23,7 +23,11 @@ namespace ImageViewer
 
         public App() : base()
         {
+            QuickConverter.EquationTokenizer.AddAssembly(typeof(object).Assembly);
             QuickConverter.EquationTokenizer.AddNamespace(typeof(object));
+            QuickConverter.EquationTokenizer.AddNamespace(typeof(string));
+            QuickConverter.EquationTokenizer.AddNamespace(typeof(System.Windows.Media.SolidColorBrush));
+            QuickConverter.EquationTokenizer.AddNamespace(typeof(System.Windows.Media.Colors));
         }
 
 #if !DEBUG

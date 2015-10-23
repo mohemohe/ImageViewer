@@ -21,6 +21,10 @@ namespace ImageViewer.Models
         public Rect WindowPosition;
 
         public bool? IsChildWindow;
+
+        public bool? IsFallbackTwitterGifMovie;
+
+        public bool? IsWarningTwitter30secMovie;
     }
 
     /// <summary>
@@ -38,6 +42,8 @@ namespace ImageViewer.Models
             public static string _DefaultBrowserPath { get; set; }
             public static Rect _WindowPosition { get; set; }
             public static bool _IsChildWindow { get; set; }
+            public static bool _IsFallbackTwitterGifMovie { get; set; }
+            public static bool _IsWarningTwitter30secMovie { get; set; }
         }
 
         #endregion
@@ -62,10 +68,21 @@ namespace ImageViewer.Models
             set { _Config._IsChildWindow = value; }
         }
 
+        public static bool IsFallbackTwitterGifMovie
+        {
+            get { return _Config._IsFallbackTwitterGifMovie; }
+            set { _Config._IsFallbackTwitterGifMovie = value; }
+        }
+        public static bool IsWarningTwitter30secMovie
+        {
+            get { return _Config._IsWarningTwitter30secMovie; }
+            set { _Config._IsWarningTwitter30secMovie = value; }
+        }
+
         #endregion Accessor
 
         private static readonly string appPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-        private static string fileName = "Settings.xml";
+        private static readonly string fileName = @"Settings.xml";
         private static readonly string filePath = Path.Combine(appPath, fileName);
 
         /// <summary>
@@ -87,6 +104,8 @@ namespace ImageViewer.Models
             _Config._DefaultBrowserPath = TryReadValue(xmlSettings.DefaultBrowserPath, null, null);
             _Config._WindowPosition = TryReadValue(xmlSettings.WindowPosition, null, null);
             _Config._IsChildWindow = TryReadValue(xmlSettings.IsChildWindow, null, true);
+            _Config._IsFallbackTwitterGifMovie = TryReadValue(xmlSettings.IsFallbackTwitterGifMovie, null, true);
+            _Config._IsWarningTwitter30secMovie = TryReadValue(xmlSettings.IsWarningTwitter30secMovie, null, false);
         }
 
         private static dynamic TryReadValue(dynamic source, dynamic check, dynamic defaultValue)
@@ -108,6 +127,8 @@ namespace ImageViewer.Models
                 DefaultBrowserPath = _Config._DefaultBrowserPath,
                 WindowPosition = _Config._WindowPosition,
                 IsChildWindow = _Config._IsChildWindow,
+                IsFallbackTwitterGifMovie = _Config._IsFallbackTwitterGifMovie,
+                IsWarningTwitter30secMovie = _Config._IsWarningTwitter30secMovie,
             };
 
             var xs = new XmlSerializer(typeof(Settings));

@@ -83,26 +83,37 @@ namespace ImageViewer.Models
 
         public async new Task<BitmapImage> DownloadDataAsync(string imageUri = null, string originalUri = null)
         {
-            BitmapImage bi;
-            try {
-                if (imageUri != null)
+            var uri = imageUri ?? ImageUri;
+            BitmapImage bi = new BitmapImage();
+
+            // TODO: いくらなんでもここに書くのは汚いので後で移す
+            if(Config.IsWarningTwitter30secMovie && (uri.StartsWith(@"https://pbs.twimg.com/ext_tw_video_thumb/") || uri.StartsWith(@"http://pbs.twimg.com/ext_tw_video_thumb/")))
+            {
+                IsError = true;
+            }
+
+            try
+            {
+                if (!IsError)
                 {
-                    bi = await base.DownloadDataAsync(imageUri, originalUri);
-                }
-                else
-                {
-                    bi = await base.DownloadDataAsync(ImageUri, OriginalUri);
+                    bi = await base.DownloadDataAsync(uri, originalUri);
                 }
             }
             catch
             {
+                IsError = true;
+            }
+
+            if (IsError)
+            {
                 bi = new BitmapImage(new Uri(@"pack://application:,,,/Resources/IcoMoon/warning.png", UriKind.Absolute));
                 base.Bitmap = bi;
-                IsError = true;
             }
             IsLoading = Visibility.Hidden;
 
             return bi;
         }
+
+
     }
 }
