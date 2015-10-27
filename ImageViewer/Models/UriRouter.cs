@@ -51,7 +51,7 @@ namespace ImageViewer.Models
             new FuncDelegate<string, string, bool>(IsTwipplePhoto),
             new FuncDelegate<string, string, bool>(IsInstagramPhoto),
             new FuncDelegate<string, string, bool>(IsGyazoPhoto),
-            new FuncDelegate<string, string, bool>(IsGamenNow),
+            new FuncDelegate<string, string, bool>(IsGamenNowPhoto),
         };
 
         public static bool IsImageUri(ref string uri, out string imageUri)
@@ -204,7 +204,7 @@ namespace ImageViewer.Models
             return result;
         }
 
-        private static bool IsGamenNow(string uri, out string resultUri)
+        private static bool IsGamenNowPhoto(string uri, out string resultUri)
         {
             var result = false;
             resultUri = null;

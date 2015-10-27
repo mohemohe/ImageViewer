@@ -138,7 +138,7 @@ namespace ImageViewer
                 Config.WriteConfig();
             };
 
-            string testUri = "https://pbs.twimg.com/media/CDc-gf3VIAAD6q9.png:orig";
+            string testUri = "http://s.kuku.lu/23l3e6768";
 
             if (Config.IsEnablePseudoSingleInstance)
             {
