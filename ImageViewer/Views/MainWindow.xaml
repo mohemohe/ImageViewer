@@ -55,7 +55,7 @@
         </l:InteractionMessageTrigger>
 
         <l:InteractionMessageTrigger MessageKey="OpenMessage" Messenger="{Binding Messenger}">
-            <l:TransitionInteractionMessageAction WindowType="{x:Type v:SettingsWindow}" Mode="Modal" InvokeActionOnlyWhenWindowIsActive="False"/>
+            <l:TransitionInteractionMessageAction WindowType="{x:Type v:SettingsWindow}" Mode="Modal" IsOwned="True" InvokeActionOnlyWhenWindowIsActive="False"/>
         </l:InteractionMessageTrigger>
 
         <l:InteractionMessageTrigger MessageKey="Save" Messenger="{Binding Messenger}">

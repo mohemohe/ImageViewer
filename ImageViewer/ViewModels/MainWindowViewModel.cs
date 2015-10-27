@@ -93,7 +93,9 @@ namespace ImageViewer.ViewModels
             var sv = (ScrollViewer)template.FindName("ScrollableTab", View.TabControl);
             sv.ScrollToRightEnd();
 
-            await DeferredImageItems[DeferredImageItems.Count - 1].DownloadDataAsync();
+            await DeferredImageItems[DeferredImageItems.Count - 1].DownloadDataAsync(
+                DeferredImageItems[DeferredImageItems.Count - 1].ImageUri,
+                DeferredImageItems[DeferredImageItems.Count - 1].OriginalUri);
             SelectedImageWidth = DeferredImageItems[SelectedIndex].Width;
             SelectedImageHeight = DeferredImageItems[SelectedIndex].Height;
         }

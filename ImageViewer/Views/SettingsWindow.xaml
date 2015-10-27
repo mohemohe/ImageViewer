@@ -6,7 +6,8 @@
         xmlns:l="http://schemas.livet-mvvm.net/2011/wpf"
         xmlns:v="clr-namespace:ImageViewer.Views"
         xmlns:vm="clr-namespace:ImageViewer.ViewModels"
-        Title="設定" Height="480" Width="800" ResizeMode="NoResize">
+        xmlns:qc="http://QuickConverter.CodePlex.com/"
+        Title="設定" Height="480" Width="800" ResizeMode="NoResize" WindowStartupLocation="CenterOwner">
 
     <Window.DataContext>
         <vm:SettingsWindowViewModel/>
@@ -68,9 +69,11 @@
                 </Style>
             </ListView.Resources>
             <ListViewItem Content="全般"/>
+            <ListViewItem Content="サイト別設定"/>
+            <ListViewItem Content="外部アプリケーション"/>
             <ListViewItem Content="バージョン情報"/>
         </ListView>
-        <TabControl Grid.Column="1" Grid.Row="0" Grid.RowSpan="1" SelectedIndex="{Binding SelectedIndex, ElementName=Menu}" BorderBrush="{x:Null}">
+        <TabControl x:Name="TabControl"  Grid.Column="1" Grid.Row="0" Grid.RowSpan="1" SelectedIndex="{Binding SelectedIndex, ElementName=Menu}" BorderBrush="{x:Null}">
             <TabControl.Resources>
                 <Style TargetType="TabItem">
                     <Setter Property="Template">
@@ -83,20 +86,53 @@
 
             <!--全般-->
             <TabItem>
-                <Grid>
+                <StackPanel>
+                    <StackPanel>
+                        <CheckBox Content="擬似シングルインスタンスを有効にする" IsChecked="{Binding IsEnablePseudoSingleInstance, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="0,10,0,0"/>
+                        <TextBlock Text="プロセス間通信（IPC）関連のエラーが発生する場合は無効にしてください" Margin="32,0,0,0" />
+                        <TextBlock Text="設定の反映にはImageViewerの再起動が必要です" Margin="32,0,0,0" />
+                    </StackPanel>
+                    <StackPanel>
+                        <CheckBox Content="起動時に呼び出し元ウィンドウの中央に表示する" IsChecked="{Binding IsChildWindow, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="0,10,0,0"/>
+                        <TextBlock Text="副作用として呼び出し元ウィンドウよりも手前に表示されます" Margin="32,0,0,0" />
+                    </StackPanel>
+                </StackPanel>
+            </TabItem>
+
+            <!--サイト別設定-->
+            <TabItem>
+                <StackPanel>
+                    <StackPanel>
+                        <TextBlock Text="Twitter" FontSize="14.667" FontWeight="Bold" Margin="8,0,0,0" />
+                        <Border BorderBrush="{DynamicResource MetroBlue}" BorderThickness="0,1,0,0"/>
+                    </StackPanel>
+                    <CheckBox Content="GIF動画を外部アプリケーションにフォールバックする" IsChecked="{Binding IsFallbackTwitterGifMovie, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="0,10,0,0"/>
+                    <CheckBox Content="30秒動画にはサムネイルではなく警告を表示する" IsChecked="{Binding IsWarningTwitter30secMovie, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="0,10,0,0"/>
+                </StackPanel>
+            </TabItem>
+
+            <!--外部アプリケーション-->
+            <TabItem>
+                <StackPanel>
                     <Grid VerticalAlignment="Top" Margin="0,10,10,0">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="auto"/>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="32"/>
                         </Grid.ColumnDefinitions>
-                        <Label Grid.Column="0" Content="既定のブラウザ" Foreground="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" VerticalAlignment="Center"/>
-                        <TextBox Grid.Column="1" Text="{Binding DefaultBrowserPath}" VerticalContentAlignment="Center" />
+                        <Label Grid.Column="0" Content="使用するブラウザなど" Foreground="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" VerticalAlignment="Center"/>
+                        <TextBlock Grid.Column="1" Text="空白で既定のブラウザを使用します" Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" VerticalAlignment="Center" Margin="3,0,0,0"/>
+                        <TextBox Grid.Column="1" Text="{Binding DefaultBrowserPath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Center" Background="{qc:Binding '$P != string.Empty ? new SolidColorBrush(Colors.White) : new SolidColorBrush(Colors.Transparent)', P={Binding DefaultBrowserPath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}}" />
                         <Button Grid.Column="2" Content="..." Command="{Binding SetDefaultBrowserPathCommand}" />
                     </Grid>
-                </Grid>
-            </TabItem>
 
+                    <StackPanel VerticalAlignment="Top" Margin="32,10,10,0">
+                        <TextBlock Text="指定したアプリケーションの引数にURLを渡します" Foreground="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
+                        <TextBlock Text="例: iexplore.exe https://pbs.twimg.com/media/CDc-gf3VIAAD6q9.png:orig"  Foreground="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
+                    </StackPanel>
+                </StackPanel>
+            </TabItem>
+            
             <!--バージョン情報-->
             <TabItem>
                 <StackPanel>
@@ -107,6 +143,12 @@
                     </Grid>
                     <WrapPanel Margin="0,24,0,0">
                         <TextBlock Text="Built with: " HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="12" />
+                        <TextBlock HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="12">
+                            <Hyperlink NavigateUri="https://icomoon.io/" RequestNavigate="Hyperlink_RequestNavigate">
+                                IcoMoon
+                            </Hyperlink>
+                        </TextBlock>
+                        <TextBlock Text=", " HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="12" />
                         <TextBlock HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="12">
                             <Hyperlink NavigateUri="https://github.com/ugaya40/Livet" RequestNavigate="Hyperlink_RequestNavigate">
                                 Livet

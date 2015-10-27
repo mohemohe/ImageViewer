@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Xml.Serialization;
 
 namespace ImageViewer.Models
@@ -16,6 +17,16 @@ namespace ImageViewer.Models
     {
         [XmlElement(IsNullable = true)]
         public string DefaultBrowserPath;
+
+        public Rect WindowPosition;
+
+        public bool? IsEnablePseudoSingleInstance;
+
+        public bool? IsChildWindow;
+
+        public bool? IsFallbackTwitterGifMovie;
+
+        public bool? IsWarningTwitter30secMovie;
     }
 
     /// <summary>
@@ -31,6 +42,11 @@ namespace ImageViewer.Models
         protected class _Config
         {
             public static string _DefaultBrowserPath { get; set; }
+            public static Rect _WindowPosition { get; set; }
+            public static bool _IsEnablePseudoSingleInstance { get; set; }
+            public static bool _IsChildWindow { get; set; }
+            public static bool _IsFallbackTwitterGifMovie { get; set; }
+            public static bool _IsWarningTwitter30secMovie { get; set; }
         }
 
         #endregion
@@ -39,14 +55,42 @@ namespace ImageViewer.Models
 
         public static string DefaultBrowserPath
         {
-            get { return _Config._DefaultBrowserPath == @"null" ? null : _Config._DefaultBrowserPath; }
+            get { return  _Config._DefaultBrowserPath; }
             set { _Config._DefaultBrowserPath = value; }
+        }
+
+        public static Rect WindowPosition
+        {
+            get { return _Config._WindowPosition; }
+            set { _Config._WindowPosition = value; }
+        }
+
+        public static bool IsEnablePseudoSingleInstance
+        {
+            get { return _Config._IsEnablePseudoSingleInstance; }
+            set { _Config._IsEnablePseudoSingleInstance = value; }
+        }
+        public static bool IsChildWindow
+        {
+            get { return _Config._IsChildWindow; }
+            set { _Config._IsChildWindow = value; }
+        }
+
+        public static bool IsFallbackTwitterGifMovie
+        {
+            get { return _Config._IsFallbackTwitterGifMovie; }
+            set { _Config._IsFallbackTwitterGifMovie = value; }
+        }
+        public static bool IsWarningTwitter30secMovie
+        {
+            get { return _Config._IsWarningTwitter30secMovie; }
+            set { _Config._IsWarningTwitter30secMovie = value; }
         }
 
         #endregion Accessor
 
         private static readonly string appPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-        private static string fileName = "Settings.xml";
+        private static readonly string fileName = @"Settings.xml";
         private static readonly string filePath = Path.Combine(appPath, fileName);
 
         /// <summary>
@@ -66,6 +110,11 @@ namespace ImageViewer.Models
             }
 
             _Config._DefaultBrowserPath = TryReadValue(xmlSettings.DefaultBrowserPath, null, null);
+            _Config._WindowPosition = TryReadValue(xmlSettings.WindowPosition, null, null);
+            _Config._IsEnablePseudoSingleInstance = TryReadValue(xmlSettings.IsEnablePseudoSingleInstance, null, true);
+            _Config._IsChildWindow = TryReadValue(xmlSettings.IsChildWindow, null, true);
+            _Config._IsFallbackTwitterGifMovie = TryReadValue(xmlSettings.IsFallbackTwitterGifMovie, null, true);
+            _Config._IsWarningTwitter30secMovie = TryReadValue(xmlSettings.IsWarningTwitter30secMovie, null, false);
         }
 
         private static dynamic TryReadValue(dynamic source, dynamic check, dynamic defaultValue)
@@ -85,6 +134,11 @@ namespace ImageViewer.Models
             var xmls = new Settings
             {
                 DefaultBrowserPath = _Config._DefaultBrowserPath,
+                WindowPosition = _Config._WindowPosition,
+                IsEnablePseudoSingleInstance = _Config._IsEnablePseudoSingleInstance,
+                IsChildWindow = _Config._IsChildWindow,
+                IsFallbackTwitterGifMovie = _Config._IsFallbackTwitterGifMovie,
+                IsWarningTwitter30secMovie = _Config._IsWarningTwitter30secMovie,
             };
 
             var xs = new XmlSerializer(typeof(Settings));

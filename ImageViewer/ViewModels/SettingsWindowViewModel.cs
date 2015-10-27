@@ -83,6 +83,74 @@ namespace ImageViewer.ViewModels
         }
         #endregion
 
+        #region IsEnablePseudoSingleInstance変更通知プロパティ
+        private bool _IsEnablePseudoSingleInstance;
+
+        public bool IsEnablePseudoSingleInstance
+        {
+            get
+            { return _IsEnablePseudoSingleInstance; }
+            set
+            { 
+                if (_IsEnablePseudoSingleInstance == value)
+                    return;
+                _IsEnablePseudoSingleInstance = value;
+                RaisePropertyChanged();
+            }
+        }
+        #endregion
+
+        #region IsChildWindow変更通知プロパティ
+        private bool _IsChildWindow;
+
+        public bool IsChildWindow
+        {
+            get
+            { return _IsChildWindow; }
+            set
+            { 
+                if (_IsChildWindow == value)
+                    return;
+                _IsChildWindow = value;
+                RaisePropertyChanged();
+            }
+        }
+        #endregion
+
+        #region IsFallbackTwitterGifMovie変更通知プロパティ
+        private bool _IsFallbackTwitterGifMovie;
+
+        public bool IsFallbackTwitterGifMovie
+        {
+            get
+            { return _IsFallbackTwitterGifMovie; }
+            set
+            { 
+                if (_IsFallbackTwitterGifMovie == value)
+                    return;
+                _IsFallbackTwitterGifMovie = value;
+                RaisePropertyChanged();
+            }
+        }
+        #endregion
+
+        #region IsWarningTwitter30secMovie変更通知プロパティ
+        private bool _IsWarningTwitter30secMovie;
+
+        public bool IsWarningTwitter30secMovie
+        {
+            get
+            { return _IsWarningTwitter30secMovie; }
+            set
+            { 
+                if (_IsWarningTwitter30secMovie == value)
+                    return;
+                _IsWarningTwitter30secMovie = value;
+                RaisePropertyChanged();
+            }
+        }
+        #endregion
+
         #endregion 全般
 
         #endregion 保持
@@ -100,7 +168,11 @@ namespace ImageViewer.ViewModels
 
         private void LoadConfig()
         {
-            DefaultBrowserPath = Config.DefaultBrowserPath;
+            DefaultBrowserPath = Config.DefaultBrowserPath ?? string.Empty;
+            IsEnablePseudoSingleInstance = Config.IsEnablePseudoSingleInstance;
+            IsChildWindow = Config.IsChildWindow;
+            IsFallbackTwitterGifMovie = Config.IsFallbackTwitterGifMovie;
+            IsWarningTwitter30secMovie = Config.IsWarningTwitter30secMovie;
         }
 
         #region Version変更通知プロパティ
@@ -181,6 +253,10 @@ namespace ImageViewer.ViewModels
         public void Apply()
         {
             Config.DefaultBrowserPath = File.Exists(DefaultBrowserPath) ? DefaultBrowserPath : null;
+            Config.IsEnablePseudoSingleInstance = IsEnablePseudoSingleInstance;
+            Config.IsChildWindow = IsChildWindow;
+            Config.IsFallbackTwitterGifMovie = IsFallbackTwitterGifMovie;
+            Config.IsWarningTwitter30secMovie = IsWarningTwitter30secMovie;
         }
         #endregion
 
@@ -201,7 +277,7 @@ namespace ImageViewer.ViewModels
 
         public void SetDefaultBrowserPath()
         {
-            var message = new OpeningFileSelectionMessage("Open");
+            var message = new OpeningFileSelectionMessage("Open") { Filter = "実行可能ファイル(*.exe)|*.exe" };
             Messenger.Raise(message);
             if (message.Response == null)
             {
