@@ -27,6 +27,11 @@ namespace ImageViewer.Models
         public bool? IsFallbackTwitterGifMovie;
 
         public bool? IsWarningTwitter30secMovie;
+
+        public bool? IsUsePixivWebScraping;
+
+        [XmlElement(IsNullable = true)]
+        public PixivAccount PixivAccount;
     }
 
     /// <summary>
@@ -47,6 +52,9 @@ namespace ImageViewer.Models
             public static bool _IsChildWindow { get; set; }
             public static bool _IsFallbackTwitterGifMovie { get; set; }
             public static bool _IsWarningTwitter30secMovie { get; set; }
+            public static bool _IsUsePixivWebScraping { get; set; }
+            public static bool _IsGetPixivR18Images { get; set; }
+            public static PixivAccount _PixivAccount { get; set; }
         }
 
         #endregion
@@ -87,6 +95,18 @@ namespace ImageViewer.Models
             set { _Config._IsWarningTwitter30secMovie = value; }
         }
 
+        public static bool IsUsePixivWebScraping
+        {
+            get { return _Config._IsUsePixivWebScraping; }
+            set { _Config._IsUsePixivWebScraping = value; }
+        }
+
+        public static PixivAccount PixivAccount
+        {
+            get { return _Config._PixivAccount; }
+            set { _Config._PixivAccount = value; }
+        }
+
         #endregion Accessor
 
         private static readonly string appPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
@@ -115,6 +135,8 @@ namespace ImageViewer.Models
             _Config._IsChildWindow = TryReadValue(xmlSettings.IsChildWindow, null, true);
             _Config._IsFallbackTwitterGifMovie = TryReadValue(xmlSettings.IsFallbackTwitterGifMovie, null, true);
             _Config._IsWarningTwitter30secMovie = TryReadValue(xmlSettings.IsWarningTwitter30secMovie, null, false);
+            _Config._IsUsePixivWebScraping = TryReadValue(xmlSettings.IsUsePixivWebScraping, null, false);
+            _Config._PixivAccount = TryReadValue(xmlSettings.PixivAccount, null, new PixivAccount());
         }
 
         private static dynamic TryReadValue(dynamic source, dynamic check, dynamic defaultValue)
@@ -139,6 +161,8 @@ namespace ImageViewer.Models
                 IsChildWindow = _Config._IsChildWindow,
                 IsFallbackTwitterGifMovie = _Config._IsFallbackTwitterGifMovie,
                 IsWarningTwitter30secMovie = _Config._IsWarningTwitter30secMovie,
+                IsUsePixivWebScraping = _Config._IsUsePixivWebScraping,
+                PixivAccount = _Config._PixivAccount,
             };
 
             var xs = new XmlSerializer(typeof(Settings));

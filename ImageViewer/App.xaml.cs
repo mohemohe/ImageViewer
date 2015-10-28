@@ -11,6 +11,7 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Threading;
+using ImageViewer.Infrastructures;
 
 namespace ImageViewer
 {
@@ -130,7 +131,7 @@ namespace ImageViewer
         private void Application_Startup(object sender, System.Windows.StartupEventArgs e)
         {
             DispatcherHelper.UIDispatcher = Dispatcher;
-            AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
+            //AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
 
             Config.ReadConfig();
             this.Exit += (s, a) =>

@@ -6,8 +6,9 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
+using ImageViewer.Models;
 
-namespace ImageViewer.Models
+namespace ImageViewer.Infrastructures
 {
     internal static class UriRouter
     {
@@ -52,6 +53,7 @@ namespace ImageViewer.Models
             new FuncDelegate<string, string, bool>(IsInstagramPhoto),
             new FuncDelegate<string, string, bool>(IsGyazoPhoto),
             new FuncDelegate<string, string, bool>(IsGamenNowPhoto),
+            new FuncDelegate<string, string, bool>(IsPixivPhoto)
         };
 
         public static bool IsImageUri(ref string uri, out string imageUri)
@@ -94,7 +96,14 @@ namespace ImageViewer.Models
 
             if (result == false)
             {
-                WhiteList.ForEach(x => result = x(queryUri, out targetUri));
+                foreach (var func in WhiteList)
+                {
+                    if (func(queryUri, out targetUri))
+                    {
+                        result = true;
+                        break;
+                    }
+                }
             }
 
             if (result == false)
@@ -216,6 +225,23 @@ namespace ImageViewer.Models
                 resultUri = match[0].Groups["baseUri"] + @"image.php/" + match[0].Groups["imageId"];
             }
 
+            return result;
+        }
+
+        private static bool IsPixivPhoto(string uri, out string resultUri)
+        {
+            var result = false;
+            resultUri = null;
+
+            if (Config.IsUsePixivWebScraping)
+            {
+                var regex = new Regex(@"(?<baseUri>http(s)?://(www.)?pixiv.net/member_illust.php)(?<args>.*)");
+                if (regex.IsMatch(uri))
+                {
+                    result = true;
+                    resultUri = @"{Pixiv}";
+                }
+            }
             return result;
         }
         #endregion WhiteListMethods

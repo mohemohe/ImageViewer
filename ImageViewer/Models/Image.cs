@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.IO;
 using Livet;
 using System.Drawing.Imaging;
+using ImageViewer.Infrastructures;
 
 namespace ImageViewer.Models
 {
@@ -47,6 +48,35 @@ namespace ImageViewer.Models
 
             var bi = new BitmapImage();
             using (var ms = new MemoryStream(OriginalData))
+            {
+                using (var b = new Bitmap(ms))
+                {
+                    var decoders = ImageCodecInfo.GetImageDecoders();
+                    foreach (var ici in decoders)
+                    {
+                        if (ici.FormatID == b.RawFormat.Guid)
+                        {
+                            FileExtension = ici.FilenameExtension.Split(';')[0].ToLower();
+                        }
+                    }
+                }
+                ms.Seek(0, SeekOrigin.Begin);
+
+                bi.BeginInit();
+                bi.CacheOption = BitmapCacheOption.OnLoad;
+                bi.StreamSource = ms;
+                bi.EndInit();
+                bi.Freeze();
+            }
+            Bitmap = bi;
+
+            return bi;
+        }
+
+        public BitmapImage SetData(byte[] data)
+        {
+            var bi = new BitmapImage();
+            using (var ms = new MemoryStream(data))
             {
                 using (var b = new Bitmap(ms))
                 {

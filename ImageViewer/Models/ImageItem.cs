@@ -1,4 +1,5 @@
 ﻿using ImageViewer.Helpers;
+using ImageViewer.Infrastructures;
 using Livet;
 using System;
 using System.Collections.Generic;
@@ -14,10 +15,26 @@ namespace ImageViewer.Models
 {
     public class ImageItem : Image
     {
-        public string Name { get; set; }
         public string OriginalUri { get; private set; }
         public string ImageUri { get; private set; }
         public bool IsError { get; private set; }
+
+        #region Name変更通知プロパティ
+        private string _Name;
+
+        public string Name
+        {
+            get
+            { return _Name; }
+            set
+            {
+                if (_Name == value)
+                    return;
+                _Name = value;
+                RaisePropertyChanged();
+            }
+        }
+        #endregion
 
         #region IsLoading変更通知プロパティ
         private Visibility _IsLoading;
@@ -81,10 +98,29 @@ namespace ImageViewer.Models
             IsLoading = Visibility.Visible;
         }
 
-        public async new Task<BitmapImage> DownloadDataAsync(string imageUri = null, string originalUri = null)
+        public async new Task<BitmapImage> DownloadDataAsync(string imageUri, string originalUri)
         {
-            var uri = imageUri ?? ImageUri;
+            var uri = imageUri;
             BitmapImage bi = new BitmapImage();
+
+            if (uri == @"{Pixiv}")
+            {
+                ImageUri = originalUri;
+                OriginalUri = originalUri;
+
+                var imageInfo = await PixivCrawler.GetImage(originalUri);
+                if (imageInfo.ImageData != null)
+                {
+                    base.SetData(imageInfo.ImageData);
+                    Name = Path.GetFileName(imageInfo.ImageUri);
+                    IsLoading = Visibility.Hidden;
+                    return (BitmapImage)base.Bitmap;
+                }
+                else
+                {
+                    IsError = true;
+                }
+            }
 
             // TODO: いくらなんでもここに書くのは汚いので後で移す
             if(Config.IsWarningTwitter30secMovie && (uri.StartsWith(@"https://pbs.twimg.com/ext_tw_video_thumb/") || uri.StartsWith(@"http://pbs.twimg.com/ext_tw_video_thumb/")))

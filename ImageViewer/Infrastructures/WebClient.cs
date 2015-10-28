@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Net;
 
-namespace ImageViewer.Models
+namespace ImageViewer.Infrastructures
 {
     internal class WebClient : System.Net.WebClient
     {

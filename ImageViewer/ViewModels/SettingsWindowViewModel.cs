@@ -66,6 +66,116 @@ namespace ImageViewer.ViewModels
 
         #region 全般
 
+        #region IsEnablePseudoSingleInstance変更通知プロパティ
+        private bool _IsEnablePseudoSingleInstance;
+
+        public bool IsEnablePseudoSingleInstance
+        {
+            get
+            { return _IsEnablePseudoSingleInstance; }
+            set
+            {
+                if (_IsEnablePseudoSingleInstance == value)
+                    return;
+                _IsEnablePseudoSingleInstance = value;
+                RaisePropertyChanged();
+            }
+        }
+        #endregion
+
+        #region IsChildWindow変更通知プロパティ
+        private bool _IsChildWindow;
+
+        public bool IsChildWindow
+        {
+            get
+            { return _IsChildWindow; }
+            set
+            {
+                if (_IsChildWindow == value)
+                    return;
+                _IsChildWindow = value;
+                RaisePropertyChanged();
+            }
+        }
+        #endregion
+
+        #endregion 全般
+
+        #region サイト別設定
+
+        #region IsFallbackTwitterGifMovie変更通知プロパティ
+        private bool _IsFallbackTwitterGifMovie;
+
+        public bool IsFallbackTwitterGifMovie
+        {
+            get
+            { return _IsFallbackTwitterGifMovie; }
+            set
+            {
+                if (_IsFallbackTwitterGifMovie == value)
+                    return;
+                _IsFallbackTwitterGifMovie = value;
+                RaisePropertyChanged();
+            }
+        }
+        #endregion
+
+        #region IsWarningTwitter30secMovie変更通知プロパティ
+        private bool _IsWarningTwitter30secMovie;
+
+        public bool IsWarningTwitter30secMovie
+        {
+            get
+            { return _IsWarningTwitter30secMovie; }
+            set
+            {
+                if (_IsWarningTwitter30secMovie == value)
+                    return;
+                _IsWarningTwitter30secMovie = value;
+                RaisePropertyChanged();
+            }
+        }
+        #endregion
+
+        #region IsUsePixivWebScraping変更通知プロパティ
+        private bool _IsUsePixivWebScraping;
+
+        public bool IsUsePixivWebScraping
+        {
+            get
+            { return _IsUsePixivWebScraping; }
+            set
+            {
+                if (_IsUsePixivWebScraping == value)
+                    return;
+                _IsUsePixivWebScraping = value;
+                RaisePropertyChanged();
+            }
+        }
+        #endregion
+
+        #region PixivAccount変更通知プロパティ
+        private PixivAccount _PixivAccount;
+
+        public PixivAccount PixivAccount
+        {
+            get
+            { return _PixivAccount; }
+            set
+            {
+                if (_PixivAccount == value)
+                    return;
+                _PixivAccount = value;
+                RaisePropertyChanged();
+            }
+        }
+        #endregion
+
+        #endregion サイト別設定
+
+        #region 外部アプリケーション
+
         #region DefaultBrowserPath変更通知プロパティ
         private string _DefaultBrowserPath;
 
@@ -83,75 +193,7 @@ namespace ImageViewer.ViewModels
         }
         #endregion
 
-        #region IsEnablePseudoSingleInstance変更通知プロパティ
-        private bool _IsEnablePseudoSingleInstance;
-
-        public bool IsEnablePseudoSingleInstance
-        {
-            get
-            { return _IsEnablePseudoSingleInstance; }
-            set
-            { 
-                if (_IsEnablePseudoSingleInstance == value)
-                    return;
-                _IsEnablePseudoSingleInstance = value;
-                RaisePropertyChanged();
-            }
-        }
-        #endregion
-
-        #region IsChildWindow変更通知プロパティ
-        private bool _IsChildWindow;
-
-        public bool IsChildWindow
-        {
-            get
-            { return _IsChildWindow; }
-            set
-            { 
-                if (_IsChildWindow == value)
-                    return;
-                _IsChildWindow = value;
-                RaisePropertyChanged();
-            }
-        }
-        #endregion
-
-        #region IsFallbackTwitterGifMovie変更通知プロパティ
-        private bool _IsFallbackTwitterGifMovie;
-
-        public bool IsFallbackTwitterGifMovie
-        {
-            get
-            { return _IsFallbackTwitterGifMovie; }
-            set
-            { 
-                if (_IsFallbackTwitterGifMovie == value)
-                    return;
-                _IsFallbackTwitterGifMovie = value;
-                RaisePropertyChanged();
-            }
-        }
-        #endregion
-
-        #region IsWarningTwitter30secMovie変更通知プロパティ
-        private bool _IsWarningTwitter30secMovie;
-
-        public bool IsWarningTwitter30secMovie
-        {
-            get
-            { return _IsWarningTwitter30secMovie; }
-            set
-            { 
-                if (_IsWarningTwitter30secMovie == value)
-                    return;
-                _IsWarningTwitter30secMovie = value;
-                RaisePropertyChanged();
-            }
-        }
-        #endregion
-
-        #endregion 全般
+        #endregion 外部アプリケーション
 
         #endregion 保持
 
@@ -173,6 +215,8 @@ namespace ImageViewer.ViewModels
             IsChildWindow = Config.IsChildWindow;
             IsFallbackTwitterGifMovie = Config.IsFallbackTwitterGifMovie;
             IsWarningTwitter30secMovie = Config.IsWarningTwitter30secMovie;
+            IsUsePixivWebScraping = Config.IsUsePixivWebScraping;
+            PixivAccount = Config.PixivAccount;
         }
 
         #region Version変更通知プロパティ
@@ -257,6 +301,8 @@ namespace ImageViewer.ViewModels
             Config.IsChildWindow = IsChildWindow;
             Config.IsFallbackTwitterGifMovie = IsFallbackTwitterGifMovie;
             Config.IsWarningTwitter30secMovie = IsWarningTwitter30secMovie;
+            Config.IsUsePixivWebScraping = IsUsePixivWebScraping;
+            Config.PixivAccount = PixivAccount;
         }
         #endregion
 
