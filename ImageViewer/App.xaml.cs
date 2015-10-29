@@ -67,6 +67,21 @@ namespace ImageViewer
                 }
             }
 
+            var OpenInBrowser = new Func<string, int>(a => 
+            {
+                if (Config.DefaultBrowserPath == null)
+                {
+                    Process.Start(a);
+                }
+                else
+                {
+                    var psi = new ProcessStartInfo { Arguments = a, FileName = Config.DefaultBrowserPath };
+                    Process.Start(psi);
+                }
+
+                return 0;
+            });
+
             string uri = e.Args[0];
             string imageUri;
             if (UriRouter.IsImageUri(ref uri, out imageUri))
@@ -106,23 +121,17 @@ namespace ImageViewer
                         {
                             window.VM.AddTab(imageUri, args[0]);
                         }
+                        else
+                        {
+                            OpenInBrowser(args[0]);
+                        }
                     });
                     RemotingServices.Marshal(message, "Message");
                 }
             }
             else
             {
-                if (Config.DefaultBrowserPath == null)
-                {
-                    Process.Start(uri);
-                }
-                else
-                {
-                    var psi = new ProcessStartInfo { Arguments = uri, FileName = Config.DefaultBrowserPath };
-                    Process.Start(psi);
-                }
-
-                Environment.Exit(0);
+                Environment.Exit(OpenInBrowser(uri));
             }
         }
 
@@ -155,6 +164,21 @@ namespace ImageViewer
                     this.Shutdown();
                 }
             }
+
+            var OpenInBrowser = new Func<string, int>(a =>
+            {
+                if (Config.DefaultBrowserPath == null)
+                {
+                    Process.Start(a);
+                }
+                else
+                {
+                    var psi = new ProcessStartInfo { Arguments = a, FileName = Config.DefaultBrowserPath };
+                    Process.Start(psi);
+                }
+
+                return 0;
+            });
 
             string imageUri;
             if (UriRouter.IsImageUri(ref testUri, out imageUri))
@@ -193,6 +217,10 @@ namespace ImageViewer
                         if (UriRouter.IsImageUri(ref args[0], out imageUri))
                         {
                             window.VM.AddTab(imageUri, args[0]);
+                        }
+                        else
+                        {
+                            OpenInBrowser(args[0]);
                         }
                     });
                     RemotingServices.Marshal(message, "Message");
