@@ -69,6 +69,7 @@
                 </Style>
             </ListView.Resources>
             <ListViewItem Content="全般"/>
+            <ListViewItem Content="ビューアー"/>
             <ListViewItem Content="サイト別設定"/>
             <ListViewItem Content="外部アプリケーション"/>
             <ListViewItem Content="バージョン情報"/>
@@ -99,6 +100,22 @@
                 </StackPanel>
             </TabItem>
 
+            <!--ビューアー-->
+            <TabItem>
+                <StackPanel>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="64"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="マウスセンシ" Padding="0,0,8,0" HorizontalAlignment="Left" VerticalAlignment="Center" />
+                        <Slider Grid.Column="1" Value="{Binding MouseSensibility, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Minimum="0.1" TickPlacement="Both"/>
+                        <TextBox Grid.Column="2" Text="{Binding MouseSensibility, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat=N6}" VerticalContentAlignment="Center" HorizontalContentAlignment="Right" />
+                    </Grid>
+                </StackPanel>
+            </TabItem>
+            
             <!--サイト別設定-->
             <TabItem>
                 <StackPanel>

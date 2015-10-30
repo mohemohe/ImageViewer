@@ -20,6 +20,8 @@ namespace ImageViewer.Models
 
         public Rect WindowPosition;
 
+        public double? MouseSensibility;
+
         public bool? IsEnablePseudoSingleInstance;
 
         public bool? IsChildWindow;
@@ -48,6 +50,7 @@ namespace ImageViewer.Models
         {
             public static string _DefaultBrowserPath { get; set; }
             public static Rect _WindowPosition { get; set; }
+            public static double _MouseSensibility { get; set; }
             public static bool _IsEnablePseudoSingleInstance { get; set; }
             public static bool _IsChildWindow { get; set; }
             public static bool _IsFallbackTwitterGifMovie { get; set; }
@@ -73,11 +76,18 @@ namespace ImageViewer.Models
             set { _Config._WindowPosition = value; }
         }
 
+        public static double MouseSensibility
+        {
+            get { return _Config._MouseSensibility; }
+            set { _Config._MouseSensibility = value; }
+        }
+
         public static bool IsEnablePseudoSingleInstance
         {
             get { return _Config._IsEnablePseudoSingleInstance; }
             set { _Config._IsEnablePseudoSingleInstance = value; }
         }
+
         public static bool IsChildWindow
         {
             get { return _Config._IsChildWindow; }
@@ -131,6 +141,7 @@ namespace ImageViewer.Models
 
             _Config._DefaultBrowserPath = TryReadValue(xmlSettings.DefaultBrowserPath, null, null);
             _Config._WindowPosition = TryReadValue(xmlSettings.WindowPosition, null, null);
+            _Config._MouseSensibility = TryReadValue(xmlSettings.MouseSensibility, null, 2.0);
             _Config._IsEnablePseudoSingleInstance = TryReadValue(xmlSettings.IsEnablePseudoSingleInstance, null, true);
             _Config._IsChildWindow = TryReadValue(xmlSettings.IsChildWindow, null, true);
             _Config._IsFallbackTwitterGifMovie = TryReadValue(xmlSettings.IsFallbackTwitterGifMovie, null, true);
@@ -157,6 +168,7 @@ namespace ImageViewer.Models
             {
                 DefaultBrowserPath = _Config._DefaultBrowserPath,
                 WindowPosition = _Config._WindowPosition,
+                MouseSensibility = _Config._MouseSensibility,
                 IsEnablePseudoSingleInstance = _Config._IsEnablePseudoSingleInstance,
                 IsChildWindow = _Config._IsChildWindow,
                 IsFallbackTwitterGifMovie = _Config._IsFallbackTwitterGifMovie,

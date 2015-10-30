@@ -175,9 +175,9 @@ namespace ImageViewer.Views
                         : VM.ImageRenderHeight;
 
                     VM.DeferredImageItems[VM.SelectedIndex].Translate.X += 
-                        (currentPosition.X - _mousePosition.X) / ((double)longerLength / VM.Zoom) * (DPI * (100.0 / VM.Zoom));
+                        ((currentPosition.X - _mousePosition.X) * Config.MouseSensibility) / ((double)longerLength / VM.Zoom) * (DPI * (100.0 / VM.Zoom));
                     VM.DeferredImageItems[VM.SelectedIndex].Translate.Y += 
-                        (currentPosition.Y - _mousePosition.Y) / ((double)longerLength / VM.Zoom) * (DPI * (100.0 / VM.Zoom));
+                        ((currentPosition.Y - _mousePosition.Y) * Config.MouseSensibility) / ((double)longerLength / VM.Zoom) * (DPI * (100.0 / VM.Zoom));
                     
                 }
                 _isMove = false;

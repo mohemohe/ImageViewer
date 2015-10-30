@@ -102,6 +102,27 @@ namespace ImageViewer.ViewModels
 
         #endregion 全般
 
+        #region ビューアー
+
+        #region MouseSensibility変更通知プロパティ
+        private double _MouseSensibility;
+
+        public double MouseSensibility
+        {
+            get
+            { return _MouseSensibility; }
+            set
+            { 
+                if (_MouseSensibility == value)
+                    return;
+                _MouseSensibility = value;
+                RaisePropertyChanged();
+            }
+        }
+        #endregion
+
+        #endregion
+
         #region サイト別設定
 
         #region IsFallbackTwitterGifMovie変更通知プロパティ
@@ -217,6 +238,7 @@ namespace ImageViewer.ViewModels
             IsWarningTwitter30secMovie = Config.IsWarningTwitter30secMovie;
             IsUsePixivWebScraping = Config.IsUsePixivWebScraping;
             PixivAccount = Config.PixivAccount;
+            MouseSensibility = Config.MouseSensibility;
         }
 
         #region Version変更通知プロパティ
@@ -303,6 +325,7 @@ namespace ImageViewer.ViewModels
             Config.IsWarningTwitter30secMovie = IsWarningTwitter30secMovie;
             Config.IsUsePixivWebScraping = IsUsePixivWebScraping;
             Config.PixivAccount = PixivAccount;
+            Config.MouseSensibility = MouseSensibility;
         }
         #endregion
 
