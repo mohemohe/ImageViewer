@@ -90,7 +90,8 @@ namespace ImageViewer.Infrastructures
 
             doc.LoadHtml(html);
 
-            var imageUri = doc.DocumentNode.SelectSingleNode(@"//img[@class='original-image']")?.GetAttributeValue(@"data-src", string.Empty);
+            var imageUri = doc.DocumentNode.SelectSingleNode(@"//img[@class='original-image']")?.GetAttributeValue(@"data-src", string.Empty) ??
+                           doc.DocumentNode.SelectSingleNode(@"//meta[@property='og:image']")?.GetAttributeValue(@"content", string.Empty)?.Replace(@"150x150", @"1200x1200");
             if (!string.IsNullOrEmpty(imageUri))
             {
                 result.ImageUri = imageUri;
