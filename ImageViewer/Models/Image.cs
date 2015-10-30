@@ -75,6 +75,8 @@ namespace ImageViewer.Models
 
         public BitmapImage SetData(byte[] data)
         {
+            OriginalData = data;
+
             var bi = new BitmapImage();
             using (var ms = new MemoryStream(data))
             {
