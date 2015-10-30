@@ -1,4 +1,4 @@
-﻿using System;
+﻿using ImageViewer.Models;
 using System.Collections.Generic;
 using System.Drawing.Imaging;
 using System.IO;
@@ -6,23 +6,43 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
-using ImageViewer.Models;
 
 namespace ImageViewer.Infrastructures
 {
-    internal static class UriRouter
+    public static class UriRouter
     {
         private static List<string> _IsImageList;
+
+        private static readonly List<string> BlackList = new List<string>
+        {
+            @"http(s)?://(www.)?1drv.ms/.*",
+            @"http(s)?://(www.)?(nicovideo.jp|nico.ms)/.*",
+            @"http(s)?://(www.)?(ustre.am|ustream.tv)/.*",
+            @"http(s)?://(www.)?vine.co/.*",
+            @"http(s)?://(www.)?vimeo.com/.*",
+            @"http(s)?://(www.)?(youtube.com|youtu.be)/.*"
+        };
+
+        private static readonly List<FuncDelegate<string, string, bool>> WhiteList = new List
+            <FuncDelegate<string, string, bool>>
+        {
+            IsTwipplePhoto,
+            IsInstagramPhoto,
+            IsGyazoPhoto,
+            IsGamenNowPhoto,
+            IsPixivPhoto
+        };
+
         private static List<string> IsImageList
         {
             get
             {
-                if(_IsImageList == null)
+                if (_IsImageList == null)
                 {
                     _IsImageList = new List<string>
                     {
                         @":orig",
-                        @":large",
+                        @":large"
                     };
 
                     var decoders = ImageCodecInfo.GetImageDecoders();
@@ -36,30 +56,10 @@ namespace ImageViewer.Infrastructures
             }
         }
 
-        private static readonly List<string> BlackList = new List<string>
-        {
-            @"http(s)?://(www.)?1drv.ms/.*",
-            @"http(s)?://(www.)?(nicovideo.jp|nico.ms)/.*",
-            @"http(s)?://(www.)?(ustre.am|ustream.tv)/.*",
-            @"http(s)?://(www.)?vine.co/.*",
-            @"http(s)?://(www.)?vimeo.com/.*",
-            @"http(s)?://(www.)?(youtube.com|youtu.be)/.*",
-        };
-
-        delegate V FuncDelegate<T, U, V>(T uri, out U imageUri);
-        private static readonly List<FuncDelegate<string, string, bool>> WhiteList = new List<FuncDelegate<string, string, bool>>
-        {
-            new FuncDelegate<string, string, bool>(IsTwipplePhoto),
-            new FuncDelegate<string, string, bool>(IsInstagramPhoto),
-            new FuncDelegate<string, string, bool>(IsGyazoPhoto),
-            new FuncDelegate<string, string, bool>(IsGamenNowPhoto),
-            new FuncDelegate<string, string, bool>(IsPixivPhoto)
-        };
-
         public static bool IsImageUri(ref string uri, out string imageUri)
         {
             var result = false;
-            string queryUri = uri;
+            var queryUri = uri;
             string targetUri = null;
 
             if (IsBlackListedUri(uri))
@@ -70,16 +70,16 @@ namespace ImageViewer.Infrastructures
 
             if (Config.IsFallbackTwitterGifMovie && IsVideoThumbUri(queryUri))
             {
-                var regex = new Regex(@"(?<baseUri>http(s)?://pbs.twimg.com/)(?<thumb>tweet_video_thumb)(?<mediaId>.*)(?<ext>\..*)(?<size>:(orig|large))?");
+                var regex =
+                    new Regex(
+                        @"(?<baseUri>http(s)?://pbs.twimg.com/)(?<thumb>tweet_video_thumb)(?<mediaId>.*)(?<ext>\..*)(?<size>:(orig|large))?");
                 if (regex.IsMatch(uri))
                 {
                     var match = regex.Matches(uri);
-                    // 画像ではなく動画なので false
-                    result = false;
-                    
+
                     // .mp4 決め打ちでいいんだろうか
                     // GIFはmp4に変換してるからいいとは思うんだけど
-                    uri = match[0].Groups["baseUri"] + @"tweet_video" + match[0].Groups["mediaId"] + @".mp4";
+                    uri = match[0].Groups[@"baseUri"] + @"tweet_video" + match[0].Groups[@"mediaId"] + @".mp4";
                 }
                 imageUri = null;
                 return result;
@@ -141,17 +141,62 @@ namespace ImageViewer.Infrastructures
             return regex.IsMatch(uri);
         }
 
+        private static bool GetAzyobuziApiResult(string uri, out string resultUri)
+        {
+            const string apiBaseUri = @"http://img.azyobuzi.net/api/all_sizes.json?uri=";
+
+            var req = WebRequest.Create(apiBaseUri + uri);
+            req.Timeout = 3000;
+
+            try
+            {
+                var res = (HttpWebResponse) req.GetResponse();
+                if (res.StatusCode == HttpStatusCode.OK)
+                {
+                    using (var resStream = res.GetResponseStream())
+                    {
+                        if (resStream != null)
+                        {
+                            using (var sr = new StreamReader(resStream, Encoding.UTF8))
+                            {
+                                var resBody = sr.ReadToEnd();
+                                var resJson = new JsonList(resBody);
+                                resultUri =
+                                    resJson.Where(x => x.Name.Contains(@"full")).Where(x => x.Value != null).ToList()[0]
+                                        ?
+                                        .Value
+                                        .ToString();
+                                return true;
+                            }
+                        }
+                    }
+                }
+                resultUri = null;
+                return false;
+            }
+            catch
+            {
+                resultUri = null;
+                return false;
+            }
+        }
+
+        private delegate V FuncDelegate<T, U, V>(T uri, out U imageUri);
+
         #region WhiteListMethods
+
         private static bool IsTwipplePhoto(string uri, out string resultUri)
         {
             var result = false;
             resultUri = null;
-            var regex = new Regex(@"(?<baseUri>http(s)?://(p.twipple.jp|p.twpl.jp)/)(show/)?(thumb/|large/|orig/)?(?<imageId>.*)");
+            var regex =
+                new Regex(
+                    @"(?<baseUri>http(s)?://(p.twipple.jp|p.twpl.jp)/)(show/)?(thumb/|large/|orig/)?(?<imageId>.*)");
             if (regex.IsMatch(uri))
             {
                 var match = regex.Matches(uri);
                 result = true;
-                resultUri = match[0].Groups["baseUri"] + @"show/orig/" + match[0].Groups["imageId"];
+                resultUri = match[0].Groups[@"baseUri"] + @"show/orig/" + match[0].Groups[@"imageId"];
             }
 
             return result;
@@ -175,32 +220,35 @@ namespace ImageViewer.Infrastructures
         {
             const string apiBaseUri = @"https://api.gyazo.com/api/oembed/?url=";
 
-            var result = false;
             resultUri = null;
             var regex = new Regex(@"(?<baseUri>http(s)?://gyazo.com/)(?<imageId>.*)");
             if (regex.IsMatch(uri))
             {
-                result = true;
-
                 var req = WebRequest.Create(apiBaseUri + uri);
                 req.Timeout = 3000;
 
                 try
                 {
-                    var res = (HttpWebResponse)req.GetResponse();
+                    var res = (HttpWebResponse) req.GetResponse();
                     if (res.StatusCode == HttpStatusCode.OK)
                     {
                         using (var resStream = res.GetResponseStream())
-                        using (var sr = new StreamReader(resStream, Encoding.UTF8))
                         {
-                            var resBody = sr.ReadToEnd();
-                            var resJson = new JsonList(resBody);
-                            resultUri =
-                                resJson.Where(x => x.Name == "url").Where(x => x.Value != null).ToList()[0]?.Value.ToString();
-                            return true;
+                            if (resStream != null)
+                            {
+                                using (var sr = new StreamReader(resStream, Encoding.UTF8))
+                                {
+                                    var resBody = sr.ReadToEnd();
+                                    var resJson = new JsonList(resBody);
+                                    resultUri =
+                                        resJson.Where(x => x.Name == "url").Where(x => x.Value != null).ToList()[0]?
+                                            .Value
+                                            .ToString();
+                                    return true;
+                                }
+                            }
                         }
                     }
-                    resultUri = null;
                     return false;
                 }
                 catch
@@ -210,7 +258,7 @@ namespace ImageViewer.Infrastructures
                 }
             }
 
-            return result;
+            return false;
         }
 
         private static bool IsGamenNowPhoto(string uri, out string resultUri)
@@ -244,38 +292,7 @@ namespace ImageViewer.Infrastructures
             }
             return result;
         }
+
         #endregion WhiteListMethods
-
-        private static bool GetAzyobuziApiResult(string uri, out string resultUri)
-        {
-            const string apiBaseUri = @"http://img.azyobuzi.net/api/all_sizes.json?uri=";
-
-            var req = WebRequest.Create(apiBaseUri + uri);
-            req.Timeout = 3000;
-
-            try
-            {
-                var res = (HttpWebResponse) req.GetResponse();
-                if (res.StatusCode == HttpStatusCode.OK)
-                {
-                    using (var resStream = res.GetResponseStream())
-                    using (var sr = new StreamReader(resStream, Encoding.UTF8))
-                    {
-                        var resBody = sr.ReadToEnd();
-                        var resJson = new JsonList(resBody);
-                        resultUri =
-                            resJson.Where(x => x.Name.Contains("full")).Where(x => x.Value != null).ToList()[0]?.Value.ToString();
-                        return true;
-                    }
-                }
-                resultUri = null;
-                return false;
-            }
-            catch
-            {
-                resultUri = null;
-                return false;
-            }
-        }
     }
 }

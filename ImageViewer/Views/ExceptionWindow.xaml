@@ -3,37 +3,41 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
         xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions"
-        Title="不明なエラー" 
+        Title="不明なエラー"
         SizeToContent="WidthAndHeight" ResizeMode="NoResize">
 
     <StackPanel Name="WindowRoot">
         <StackPanel Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="8,8,32,0">
-            <Image x:Name="Icon" Width="32" Height="{Binding Width, RelativeSource={RelativeSource Self}}" RenderOptions.BitmapScalingMode="Linear" VerticalAlignment="Top"/>
+            <Image x:Name="ErrorIcon" Width="32" Height="{Binding Width, RelativeSource={RelativeSource Self}}"
+                   RenderOptions.BitmapScalingMode="Linear" VerticalAlignment="Top" />
             <StackPanel Orientation="Vertical" Margin="8,0,0,0">
-                <TextBlock Text="エラーが発生しました" FontSize="24"/>
-                <TextBlock Text="ごめんな 🙏" Margin="0,8,0,0" FontFamily="Yu Gothic UI, Segoe UI Symbol"/>
+                <TextBlock Text="エラーが発生しました" FontSize="24" />
+                <TextBlock Text="ごめんな 🙏" Margin="0,8,0,0" FontFamily="Yu Gothic UI, Segoe UI Symbol" />
             </StackPanel>
         </StackPanel>
         <Expander Header="詳細を表示" Margin="0,16,0,0">
             <StackPanel Orientation="Vertical" VerticalAlignment="Top" HorizontalAlignment="Left">
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Left">
-                    <TextBlock Text="Exception: "/>
-                    <TextBlock Name="ExceptionTitle"/>
+                    <TextBlock Text="Exception: " />
+                    <TextBlock Name="ExceptionTitle" />
                 </StackPanel>
-                <StackPanel Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,12,0,0">
-                    <TextBlock Text="Message: "/>
-                    <TextBlock Name="Message"/>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Left"
+                            Margin="0,12,0,0">
+                    <TextBlock Text="Message: " />
+                    <TextBlock Name="Message" />
                 </StackPanel>
-                <StackPanel Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,12,0,0">
-                    <TextBlock Text="Stack Trace: "/>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Left"
+                            Margin="0,12,0,0">
+                    <TextBlock Text="Stack Trace: " />
                     <ScrollViewer MaxHeight="300">
-                        <TextBlock Name="StackTrace"/>
+                        <TextBlock Name="StackTrace" />
                     </ScrollViewer>
                 </StackPanel>
             </StackPanel>
         </Expander>
         <StackPanel Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Right" Height="32">
-            <Button Name="Exit" Content="終了" Width="80" Height="24" VerticalAlignment="Center" Margin="0,0,8,0" Click="Exit_Click"/>
+            <Button Name="Exit" Content="終了" Width="80" Height="24" VerticalAlignment="Center" Margin="0,0,8,0"
+                    Click="Exit_Click" />
         </StackPanel>
     </StackPanel>
 </Window>

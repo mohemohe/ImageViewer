@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace ImageViewer.Infrastructures
 {
@@ -54,11 +53,11 @@ namespace ImageViewer.Infrastructures
                 IV = GenerateIvKey(512, 512),
                 Key = GenerateIvKey(2048, 2048),
                 Mode = CipherMode.CBC,
-                Padding = PaddingMode.PKCS7,
+                Padding = PaddingMode.PKCS7
             })
             using (var enc = aes.CreateEncryptor())
             {
-                byte[] dest = enc.TransformFinalBlock(src, 0, src.Length);
+                var dest = enc.TransformFinalBlock(src, 0, src.Length);
                 return Convert.ToBase64String(dest);
             }
         }
@@ -74,7 +73,7 @@ namespace ImageViewer.Infrastructures
                 IV = GenerateIvKey(512, 512),
                 Key = GenerateIvKey(2048, 2048),
                 Mode = CipherMode.CBC,
-                Padding = PaddingMode.PKCS7,
+                Padding = PaddingMode.PKCS7
             })
             using (var dec = aes.CreateDecryptor())
             {
@@ -101,7 +100,7 @@ namespace ImageViewer.Infrastructures
             using (var deriveBytes = new Rfc2898DeriveBytes(pass, salt))
             {
                 deriveBytes.IterationCount = deriveBytesIterations;
-                return deriveBytes.GetBytes(128 / 8);
+                return deriveBytes.GetBytes(128/8);
             }
         }
     }
