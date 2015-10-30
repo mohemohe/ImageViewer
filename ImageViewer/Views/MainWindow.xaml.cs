@@ -7,8 +7,8 @@ using System.Runtime;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using POINT = System.Drawing.Point;
 using Image = System.Windows.Controls.Image;
+using POINT = System.Drawing.Point;
 
 namespace ImageViewer.Views
 {
@@ -23,34 +23,40 @@ namespace ImageViewer.Views
     /// <summary>
     ///     MainWindow.xaml の相互作用ロジック
     /// </summary>
+    // ReSharper disable once RedundantExtendsListEntry
     public partial class MainWindow : Window
     {
-        private bool _isTranslate = false;
-        public double DPI;
+        private bool _isMove;
+        private bool _isTranslate;
+
+        private POINT _mousePosition;
+        public double DPI = 1;
+
         public MainWindow()
         {
             InitializeComponent();
 
-            StateChanged += (sender, args) =>
-            {
-                if (WindowState == WindowState.Maximized)
+            StateChanged +=
+                (sender, args) =>
                 {
-                    // なんでずれるのかわからない
-                    WindowRoot.Margin = new Thickness(SystemParameters.ResizeFrameVerticalBorderWidth*2);
-                }
-                else
-                {
-                    WindowRoot.Margin = new Thickness(0);
-                }
-            };
+                    WindowRoot.Margin = WindowState == WindowState.Maximized
+                        ? new Thickness(SystemParameters.ResizeFrameVerticalBorderWidth*2)
+                        : new Thickness(0);
+                };
 
             Loaded += (sender, args) =>
             {
-                DPI = PresentationSource.FromVisual(this).CompositionTarget.TransformToDevice.Transform(new Point(1, 1)).X;
+                var fromVisual = PresentationSource.FromVisual(this);
+                if (fromVisual != null && fromVisual.CompositionTarget != null)
+                {
+                    var presentationSource = PresentationSource.FromVisual(this);
+                    if (presentationSource?.CompositionTarget != null)
+                        DPI = presentationSource.CompositionTarget.TransformToDevice.Transform(new Point(1, 1)).X;
+                }
 
                 VM.View = this;
                 Win32Helper.MainWindowAppendMenu(Win32Helper.MenuFlags.SEPARATOR, @"", null);
-                Win32Helper.MainWindowAppendMenu(Win32Helper.MenuFlags.STRING, @"Force Full GC", new Action(() =>
+                Win32Helper.MainWindowAppendMenu(Win32Helper.MenuFlags.STRING, @"Force Full GC", () =>
                 {
                     var selectedIndex = VM.SelectedIndex;
                     //HACK: 2ループ（4回）GCを呼び出すと回収された　何故？
@@ -66,13 +72,10 @@ namespace ImageViewer.Views
                         VM.DeferredImageItems = tmpImageItems;
                     }
                     VM.SelectedIndex = selectedIndex;
-                }));
+                });
             };
 
-            Closing += (sender, args) =>
-            {
-                Config.WindowPosition = this.RestoreBounds;
-            };
+            Closing += (sender, args) => { Config.WindowPosition = RestoreBounds; };
         }
 
         //HACK: 最高にやばい
@@ -84,31 +87,31 @@ namespace ImageViewer.Views
         private void Image_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             var image = sender as Image;
-            if (image.Source != null)
+            if (image?.Source != null)
             {
                 var zoom = VM.DeferredImageItems[VM.SelectedIndex].Zoom;
-                VM.ImageRenderWidth = Convert.ToInt32(image.DesiredSize.Width * DPI * zoom);
-                VM.ImageRenderHeight = Convert.ToInt32(image.DesiredSize.Height * DPI * zoom);
+                VM.ImageRenderWidth = Convert.ToInt32(image.DesiredSize.Width*DPI*zoom);
+                VM.ImageRenderHeight = Convert.ToInt32(image.DesiredSize.Height*DPI*zoom);
             }
         }
 
         private void MoveLeft(object sender, RoutedEventArgs e)
         {
             var template = TabControl.Template;
-            var sv = (ScrollViewer)template.FindName("ScrollableTab", TabControl);
+            var sv = (ScrollViewer) template.FindName("ScrollableTab", TabControl);
             sv.LineLeft();
         }
 
         private void MoveRight(object sender, RoutedEventArgs e)
         {
             var template = TabControl.Template;
-            var sv = (ScrollViewer)template.FindName("ScrollableTab", TabControl);
+            var sv = (ScrollViewer) template.FindName("ScrollableTab", TabControl);
             sv.LineRight();
         }
 
-        private void Zoom(object sender, System.Windows.Input.MouseWheelEventArgs e)
+        private void Zoom(object sender, MouseWheelEventArgs e)
         {
-            var maxSize = int.MaxValue / 2.0 / Math.Sqrt(2);
+            var maxSize = int.MaxValue/2.0/Math.Sqrt(2);
             var minSize = 0.01;
             if (Math.Sign(e.Delta) > 0)
             {
@@ -125,14 +128,12 @@ namespace ImageViewer.Views
                 }
             }
 
-            VM.DeferredImageItems[VM.SelectedIndex].Zoom += (Math.Sign(e.Delta) * VM.DeferredImageItems[VM.SelectedIndex].Zoom * 0.1) / DPI;
-            Image_SizeChanged(((Image)((Grid)sender).Children[0]), null);
+            VM.DeferredImageItems[VM.SelectedIndex].Zoom += (Math.Sign(e.Delta)*
+                                                             VM.DeferredImageItems[VM.SelectedIndex].Zoom*0.1)/DPI;
+            Image_SizeChanged(((Image) ((Grid) sender).Children[0]), null);
         }
 
-        POINT _mousePosition;
-        bool _isMove;
-
-        private void StartTranslate(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        private void StartTranslate(object sender, MouseButtonEventArgs e)
         {
             if (e.ChangedButton == MouseButton.Left)
             {
@@ -140,16 +141,16 @@ namespace ImageViewer.Views
                 Win32Helper.ShowCursor(false);
                 _isTranslate = true;
             }
-            else if(e.ChangedButton == MouseButton.Middle)
+            else if (e.ChangedButton == MouseButton.Middle)
             {
                 VM.DeferredImageItems[VM.SelectedIndex].Zoom = 1.0;
                 VM.DeferredImageItems[VM.SelectedIndex].Translate.X = 0.5;
                 VM.DeferredImageItems[VM.SelectedIndex].Translate.Y = 0.5;
-                Image_SizeChanged(((Image)((Grid)sender).Children[0]), null);
+                Image_SizeChanged(((Image) ((Grid) sender).Children[0]), null);
             }
         }
 
-        private void StopTranslate(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        private void StopTranslate(object sender, MouseButtonEventArgs e)
         {
             if (_isTranslate)
             {
@@ -159,7 +160,7 @@ namespace ImageViewer.Views
             }
         }
 
-        private void Translate(object sender, System.Windows.Input.MouseEventArgs e)
+        private void Translate(object sender, MouseEventArgs e)
         {
             if (!_isMove)
             {
@@ -169,8 +170,17 @@ namespace ImageViewer.Views
                     POINT currentPosition;
                     Win32Helper.GetCursorPos(out currentPosition);
                     Win32Helper.SetCursorPos(_mousePosition.X, _mousePosition.Y);
-                    VM.DeferredImageItems[VM.SelectedIndex].Translate.X += (currentPosition.X - _mousePosition.X) / (VM.Zoom / (100.0 * DPI));
-                    VM.DeferredImageItems[VM.SelectedIndex].Translate.Y += (currentPosition.Y - _mousePosition.Y) / (VM.Zoom / (100.0 * DPI));
+
+                    var longerLength = VM.ImageRenderWidth > VM.ImageRenderHeight
+                        ? VM.ImageRenderWidth
+                        : VM.ImageRenderHeight;
+
+                    VM.DeferredImageItems[VM.SelectedIndex].Translate.X +=
+                        ((currentPosition.X - _mousePosition.X)*Config.MouseSensibility)/((double) longerLength/VM.Zoom)*
+                        (DPI*(100.0/VM.Zoom));
+                    VM.DeferredImageItems[VM.SelectedIndex].Translate.Y +=
+                        ((currentPosition.Y - _mousePosition.Y)*Config.MouseSensibility)/((double) longerLength/VM.Zoom)*
+                        (DPI*(100.0/VM.Zoom));
                 }
                 _isMove = false;
             }
@@ -178,29 +188,25 @@ namespace ImageViewer.Views
 
         private void CaptionBar_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            if(e.ChangedButton == MouseButton.Left)
+            if (e.ChangedButton == MouseButton.Left)
             {
                 if (e.ClickCount == 1)
                 {
                     try
                     {
-                        this.DragMove();
+                        DragMove();
                     }
-                    catch { }
+                        // ReSharper disable once EmptyGeneralCatchClause
+                    catch
+                    {
+                    }
                 }
                 else
                 {
-                    if(this.WindowState == WindowState.Maximized)
-                    {
-                        this.WindowState = WindowState.Normal;
-                    }
-                    else
-                    {
-                        this.WindowState = WindowState.Maximized;
-                    }
+                    WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
                 }
             }
-            else if(e.ChangedButton == MouseButton.Right)
+            else if (e.ChangedButton == MouseButton.Right)
             {
                 POINT currentPosition;
                 Win32Helper.GetCursorPos(out currentPosition);
@@ -210,9 +216,9 @@ namespace ImageViewer.Views
 
         private void Tab_MouseWheel(object sender, MouseWheelEventArgs e)
         {
-            this.Focus();
+            Focus();
 
-            if(e.Delta > 0)
+            if (e.Delta > 0)
             {
                 if (VM.SelectedIndex != 0)
                 {
@@ -227,18 +233,20 @@ namespace ImageViewer.Views
                     VM.SelectedIndex++;
                     MoveRight(null, null);
                 }
-                
             }
         }
 
         private void Tab_PreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
-            if(e.MiddleButton == MouseButtonState.Pressed)
+            if (e.MiddleButton == MouseButtonState.Pressed)
             {
                 var tab = sender as Border;
-                var item = tab.DataContext as ImageItem;
-                var index = TabControl.Items.IndexOf(item);
-                VM.TabClose(index);
+                var item = (ImageItem) tab?.DataContext;
+                if (tab != null)
+                {
+                    var index = TabControl.Items.IndexOf(item);
+                    VM.TabClose(index);
+                }
                 e.Handled = true;
             }
         }

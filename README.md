@@ -79,5 +79,7 @@
 
 ## らいぶらり
 
+- [Html Agility Pack](https://htmlagilitypack.codeplex.com/)
+- [IcoMoon](https://icomoon.io/)
 - [Livet](https://github.com/ugaya40/Livet)
 - [QuickConverter](https://quickconverter.codeplex.com/)

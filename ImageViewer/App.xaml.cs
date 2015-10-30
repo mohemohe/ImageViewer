@@ -1,7 +1,9 @@
 ﻿using ImageViewer.Helpers;
+using ImageViewer.Infrastructures;
 using ImageViewer.Models;
 using ImageViewer.Views;
 using Livet;
+using QuickConverter;
 using System;
 using System.Diagnostics;
 using System.Runtime.Remoting;
@@ -10,100 +12,126 @@ using System.Runtime.Remoting.Channels.Ipc;
 using System.Threading;
 using System.Windows;
 using System.Windows.Interop;
-using System.Windows.Threading;
+using System.Windows.Media;
 
 namespace ImageViewer
 {
     /// <summary>
     ///     App.xaml の相互作用ロジック
     /// </summary>
+    // ReSharper disable once RedundantExtendsListEntry
     public partial class App : Application
     {
-        private static Mutex mutex = new Mutex(false, Application.ResourceAssembly.GetName().Name);
+        private MainWindow _mainWindow;
+        private Mutex _mutex = new Mutex(false, ResourceAssembly.GetName().Name);
 
-        public App() : base()
+        public App()
         {
-            QuickConverter.EquationTokenizer.AddAssembly(typeof(object).Assembly);
-            QuickConverter.EquationTokenizer.AddNamespace(typeof(object));
-            QuickConverter.EquationTokenizer.AddNamespace(typeof(string));
-            QuickConverter.EquationTokenizer.AddNamespace(typeof(System.Windows.Media.SolidColorBrush));
-            QuickConverter.EquationTokenizer.AddNamespace(typeof(System.Windows.Media.Colors));
+            EquationTokenizer.AddAssembly(typeof (object).Assembly);
+            EquationTokenizer.AddNamespace(typeof (object));
+            EquationTokenizer.AddNamespace(typeof (string));
+            EquationTokenizer.AddNamespace(typeof (SolidColorBrush));
+            EquationTokenizer.AddNamespace(typeof (Colors));
         }
 
-#if !DEBUG
-
-        private void Application_Startup(object sender, System.Windows.StartupEventArgs e)
+        ~App()
         {
+            _mutex.Close();
+            _mutex.Dispose();
+            _mutex = null;
+        }
+
+        private void Application_Startup(object sender, StartupEventArgs e)
+        {
+#if !DEBUG
             if (e.Args.Length == 0)
             {
                 Environment.Exit(0);
             }
-
+#endif
             DispatcherHelper.UIDispatcher = Dispatcher;
-            AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
-            
+            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+
             Config.ReadConfig();
-            this.Exit += (s, a) =>
+            Exit += (s, a) => { Config.WriteConfig(); };
+
+            if (Config.IsEnablePseudoSingleInstance && _mutex.WaitOne(0, false) == false)
             {
-                Config.WriteConfig();
-            };
+                var ipc = new IpcClientChannel();
+                ChannelServices.RegisterChannel(ipc, true);
+                var message =
+                    (Message)
+                        RemotingServices.Connect(typeof (Message),
+                            @"ipc://" + ResourceAssembly.GetName().Name + @"/Message");
+                message.RaiseHandler(e.Args);
 
-            if (Config.IsEnablePseudoSingleInstance)
-            {
-                if (mutex.WaitOne(0, false) == false)
-                {
-                    IpcClientChannel ipc = new IpcClientChannel();
-                    ChannelServices.RegisterChannel(ipc, true);
-                    Message message = (Message)RemotingServices.Connect(typeof(Message), @"ipc://" + Application.ResourceAssembly.GetName().Name + @"/Message");
-                    message.RaiseHandler(e.Args);
-
-                    mutex.Close();
-                    mutex = null;
-
-                    // Note: うまく終了しないことがある
-                    //this.Shutdown();
-                    Environment.Exit(0);
-                }
+                // Note: うまく終了しないことがある
+                //this.Shutdown();
+                Environment.Exit(0);
             }
 
-            string uri = e.Args[0];
-            string imageUri;
-            if (UriRouter.IsImageUri(ref uri, out imageUri))
+            var openInBrowser = new Func<string, int>(a =>
             {
-                var window = new MainWindow();
-
-                if (Config.IsChildWindow)
+                if (Config.DefaultBrowserPath == null)
                 {
-                    var wih = new WindowInteropHelper(window);
-                    wih.Owner = Win32Helper.GetForegroundWindow();
-                    window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                    Process.Start(a);
                 }
                 else
                 {
-                    window.WindowStartupLocation = WindowStartupLocation.Manual;
-                    window.Top = Config.WindowPosition.Top;
-                    window.Left = Config.WindowPosition.Left;
+                    var psi = new ProcessStartInfo {Arguments = a, FileName = Config.DefaultBrowserPath};
+                    Process.Start(psi);
                 }
 
-                if (Config.WindowPosition.Width != 0)
+                return 0;
+            });
+
+#if !DEBUG
+            var uri = e.Args[0];
+#else
+            var uri = "http://pbs.twimg.com/media/CPFBu36VEAA16jI.png:orig";
+#endif
+
+            string imageUri;
+            if (UriRouter.IsImageUri(ref uri, out imageUri))
+            {
+                _mainWindow = new MainWindow();
+
+                if (Config.IsChildWindow)
                 {
-                    window.Width = Config.WindowPosition.Width;
-                    window.Height = Config.WindowPosition.Height;
+                    var wih = new WindowInteropHelper(_mainWindow);
+                    wih.Owner = Win32Helper.GetForegroundWindow();
+                    _mainWindow.WindowStartupLocation = WindowStartupLocation.CenterOwner;
                 }
-                window.Show();
+                else
+                {
+                    _mainWindow.WindowStartupLocation = WindowStartupLocation.Manual;
+                    _mainWindow.Top = Config.WindowPosition.Top;
+                    _mainWindow.Left = Config.WindowPosition.Left;
+                }
 
-                window.VM.AddTab(imageUri, uri);
+                if ((int) Config.WindowPosition.Width != 0)
+                {
+                    _mainWindow.Width = Config.WindowPosition.Width;
+                    _mainWindow.Height = Config.WindowPosition.Height;
+                }
+                _mainWindow.Show();
+
+                _mainWindow.VM.AddTab(imageUri, uri);
 
                 if (Config.IsEnablePseudoSingleInstance)
                 {
-                    IpcServerChannel ipc = new IpcServerChannel(Application.ResourceAssembly.GetName().Name);
+                    var ipc = new IpcServerChannel(ResourceAssembly.GetName().Name);
                     ChannelServices.RegisterChannel(ipc, true);
-                    Message message = new Message();
-                    message.MessageHandler += ((string[] args) =>
+                    var message = new Message();
+                    message.MessageHandler += (args =>
                     {
                         if (UriRouter.IsImageUri(ref args[0], out imageUri))
                         {
-                            window.VM.AddTab(imageUri, args[0]);
+                            _mainWindow.VM.AddTab(imageUri, args[0]);
+                        }
+                        else
+                        {
+                            openInBrowser(args[0]);
                         }
                     });
                     RemotingServices.Marshal(message, "Message");
@@ -111,129 +139,44 @@ namespace ImageViewer
             }
             else
             {
-                if (Config.DefaultBrowserPath == null)
-                {
-                    Process.Start(uri);
-                }
-                else
-                {
-                    var psi = new ProcessStartInfo { Arguments = uri, FileName = Config.DefaultBrowserPath };
-                    Process.Start(psi);
-                }
-
-                Environment.Exit(0);
+                Environment.Exit(openInBrowser(uri));
             }
         }
-
-#endif
-#if DEBUG
-        private void Application_Startup(object sender, System.Windows.StartupEventArgs e)
-        {
-            DispatcherHelper.UIDispatcher = Dispatcher;
-            AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
-
-            Config.ReadConfig();
-            this.Exit += (s, a) =>
-            {
-                Config.WriteConfig();
-            };
-
-            string testUri = "http://s.kuku.lu/23l3e6768";
-
-            if (Config.IsEnablePseudoSingleInstance)
-            {
-                if (mutex.WaitOne(0, false) == false)
-                {
-                    var ipc = new IpcClientChannel();
-                    ChannelServices.RegisterChannel(ipc, true);
-                    var message = (Message)RemotingServices.Connect(typeof(Message), @"ipc://" + Application.ResourceAssembly.GetName().Name + @"/Message");
-                    message.RaiseHandler(new string[] { testUri });
-
-                    mutex.Close();
-                    mutex = null;
-                    this.Shutdown();
-                }
-            }
-
-            string imageUri;
-            if (UriRouter.IsImageUri(ref testUri, out imageUri))
-            {
-                var window = new MainWindow();
-
-                if (Config.IsChildWindow)
-                {
-                    var wih = new WindowInteropHelper(window);
-                    wih.Owner = Win32Helper.GetForegroundWindow();
-                    window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
-                }
-                else
-                {
-                    window.WindowStartupLocation = WindowStartupLocation.Manual;
-                    window.Top = Config.WindowPosition.Top;
-                    window.Left = Config.WindowPosition.Left;
-                }
-
-                if (Config.WindowPosition.Width != 0)
-                {
-                    window.Width = Config.WindowPosition.Width;
-                    window.Height = Config.WindowPosition.Height;
-                }
-                window.Show();
-
-                window.VM.AddTab(imageUri, testUri);
-
-                if (Config.IsEnablePseudoSingleInstance)
-                {
-                    var ipc = new IpcServerChannel(Application.ResourceAssembly.GetName().Name);
-                    ChannelServices.RegisterChannel(ipc, true);
-                    var message = new Message();
-                    message.MessageHandler += ((string[] args) =>
-                    {
-                        if (UriRouter.IsImageUri(ref args[0], out imageUri))
-                        {
-                            window.VM.AddTab(imageUri, args[0]);
-                        }
-                    });
-                    RemotingServices.Marshal(message, "Message");
-                }
-            }
-        }
-#endif
 
         //集約エラーハンドラ
         private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
+            _mainWindow?.Hide();
+
             var window = new ExceptionWindow(e);
-            window.Owner = Application.Current.MainWindow;
+            window.Owner = Current.MainWindow;
             window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
 
             // true: 続行, false: 終了
             var result = window.ShowDialog();
             if (result != null)
             {
-                if ((bool)result)
-                {
-                    Process.Start(Application.ResourceAssembly.Location);
-                }
-
                 // 遅い
                 //Environment.Exit(1);
 
                 // 終了コード-1を返したい
+                _mutex.Close();
+                _mutex.Dispose();
+                _mutex = null;
                 Process.GetCurrentProcess().Kill();
             }
         }
     }
 
-    delegate void MessageHandler(string[] args);
+    internal delegate void MessageHandler(string[] args);
 
-    class Message : MarshalByRefObject
+    internal class Message : MarshalByRefObject
     {
         public MessageHandler MessageHandler;
 
         public void RaiseHandler(string[] args)
         {
-            DispatcherHelper.UIDispatcher.BeginInvoke(MessageHandler, new object[] { args });
+            DispatcherHelper.UIDispatcher.BeginInvoke(MessageHandler, new object[] {args});
         }
 
         public override object InitializeLifetimeService()

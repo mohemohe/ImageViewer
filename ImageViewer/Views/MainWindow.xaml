@@ -7,7 +7,9 @@
         xmlns:v="clr-namespace:ImageViewer.Views"
         xmlns:vm="clr-namespace:ImageViewer.ViewModels"
         xmlns:qc="http://QuickConverter.CodePlex.com/"
-        Title="ImageViewer" Height="520" Width="780" MinHeight="128" MinWidth="{Binding ElementName=StatusBarElements, Path=ActualWidth, UpdateSourceTrigger=PropertyChanged}" ResizeMode="CanResizeWithGrip" Background="{DynamicResource MatteBlack}">
+        Title="ImageViewer" Height="520" Width="780" MinHeight="128"
+        MinWidth="{Binding ElementName=StatusBarElements, Path=ActualWidth, UpdateSourceTrigger=PropertyChanged}"
+        ResizeMode="CanResizeWithGrip" Background="{DynamicResource MatteBlack}">
 
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="32" />
@@ -26,10 +28,10 @@
     </Window.DataContext>
 
     <Window.InputBindings>
-        <KeyBinding Key="S" Modifiers="Control" Command="{Binding SaveImageCommand}"></KeyBinding>
-        <KeyBinding Key="C" Modifiers="Control" Command="{Binding CopyToClipboardCommand}"></KeyBinding>
-        <KeyBinding Key="O" Modifiers="Control" Command="{Binding OpenInBrowserCommand}"></KeyBinding>
-        <KeyBinding Key="F" Modifiers="Control" Command="{Binding SearchByGoogleCommand}"></KeyBinding>
+        <KeyBinding Key="S" Modifiers="Control" Command="{Binding SaveImageCommand}" />
+        <KeyBinding Key="C" Modifiers="Control" Command="{Binding CopyToClipboardCommand}" />
+        <KeyBinding Key="O" Modifiers="Control" Command="{Binding OpenInBrowserCommand}" />
+        <KeyBinding Key="F" Modifiers="Control" Command="{Binding SearchByGoogleCommand}" />
     </Window.InputBindings>
 
     <i:Interaction.Triggers>
@@ -50,12 +52,14 @@
 
         <!--WindowのCloseキャンセル処理に対応する場合は、WindowCloseCancelBehaviorの使用を検討してください-->
 
-        <l:InteractionMessageTrigger MessageKey="WindowMessage" Messenger="{Binding Messenger}" InvokeActionsOnlyWhileAttatchedObjectLoaded="True">
+        <l:InteractionMessageTrigger MessageKey="WindowMessage" Messenger="{Binding Messenger}"
+                                     InvokeActionsOnlyWhileAttatchedObjectLoaded="True">
             <l:WindowInteractionMessageAction />
         </l:InteractionMessageTrigger>
 
         <l:InteractionMessageTrigger MessageKey="OpenMessage" Messenger="{Binding Messenger}">
-            <l:TransitionInteractionMessageAction WindowType="{x:Type v:SettingsWindow}" Mode="Modal" IsOwned="True" InvokeActionOnlyWhenWindowIsActive="False"/>
+            <l:TransitionInteractionMessageAction WindowType="{x:Type v:SettingsWindow}" Mode="Modal" IsOwned="True"
+                                                  InvokeActionOnlyWhenWindowIsActive="False" />
         </l:InteractionMessageTrigger>
 
         <l:InteractionMessageTrigger MessageKey="Save" Messenger="{Binding Messenger}">
@@ -65,12 +69,17 @@
 
     <Grid Name="WindowRoot" Margin="0">
         <Grid.RowDefinitions>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="24"/>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="24" />
         </Grid.RowDefinitions>
 
         <Grid Grid.Row="0">
-            <TabControl x:Name="TabControl" ItemsSource="{Binding DeferredImageItems, UpdateSourceTrigger=PropertyChanged}" AlternationCount="{Binding DeferredImageItems.Count, UpdateSourceTrigger=PropertyChanged}" SelectedIndex="{Binding SelectedIndex, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ScrollViewer.VerticalScrollBarVisibility="Disabled" WindowChrome.IsHitTestVisibleInChrome="False">
+            <TabControl x:Name="TabControl"
+                        ItemsSource="{Binding DeferredImageItems, UpdateSourceTrigger=PropertyChanged}"
+                        AlternationCount="{Binding DeferredImageItems.Count, UpdateSourceTrigger=PropertyChanged}"
+                        SelectedIndex="{Binding SelectedIndex, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                        ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                        WindowChrome.IsHitTestVisibleInChrome="False">
                 <TabControl.Template>
                     <ControlTemplate TargetType="TabControl">
                         <Grid>
@@ -81,18 +90,41 @@
                             </Grid.RowDefinitions>
                             <Grid Grid.Row="0" Panel.ZIndex="1">
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="{Binding ElementName=CaptionButtons, Path=ActualWidth, UpdateSourceTrigger=PropertyChanged}"/>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition
+                                        Width="{Binding ElementName=CaptionButtons, Path=ActualWidth, UpdateSourceTrigger=PropertyChanged}" />
                                 </Grid.ColumnDefinitions>
-                                
-                                <Grid Grid.Column="0" Panel.ZIndex="2" Margin="0" Background="{DynamicResource MatteBlack}">
-                                    <RepeatButton Delay="300" Interval="15" Template="{DynamicResource TabScrollRepeatButton}" Content="3" FontFamily="Marlett" Height="{Binding ElementName=Tabs, Path=ActualHeight, UpdateSourceTrigger=PropertyChanged}" Width="{Binding RelativeSource={RelativeSource Self}, Path=ActualHeight }" HorizontalAlignment="Left" Click="MoveLeft" WindowChrome.IsHitTestVisibleInChrome="True" VerticalAlignment="Bottom"/>
-                                    <ScrollViewer Name="ScrollableTab" HorizontalScrollBarVisibility="Hidden"  VerticalScrollBarVisibility="Hidden" MinHeight="24" Margin="25,0" CanContentScroll="True">
-                                        <StackPanel x:Name="Tabs" IsItemsHost="true" HorizontalAlignment="Left" VerticalAlignment="Bottom" Orientation="Horizontal" WindowChrome.IsHitTestVisibleInChrome="True"/>
+
+                                <Grid Grid.Column="0" Panel.ZIndex="2" Margin="0"
+                                      Background="{DynamicResource MatteBlack}">
+                                    <RepeatButton Delay="300" Interval="15"
+                                                  Template="{DynamicResource TabScrollRepeatButton}" Content="3"
+                                                  FontFamily="Marlett"
+                                                  Height="{Binding ElementName=Tabs, Path=ActualHeight, UpdateSourceTrigger=PropertyChanged}"
+                                                  Width="{Binding RelativeSource={RelativeSource Self}, Path=ActualHeight }"
+                                                  HorizontalAlignment="Left" Click="MoveLeft"
+                                                  WindowChrome.IsHitTestVisibleInChrome="True"
+                                                  VerticalAlignment="Bottom" />
+                                    <ScrollViewer Name="ScrollableTab" HorizontalScrollBarVisibility="Hidden"
+                                                  VerticalScrollBarVisibility="Hidden" MinHeight="24" Margin="25,0"
+                                                  CanContentScroll="True">
+                                        <StackPanel x:Name="Tabs" IsItemsHost="true" HorizontalAlignment="Left"
+                                                    VerticalAlignment="Bottom" Orientation="Horizontal"
+                                                    WindowChrome.IsHitTestVisibleInChrome="True" />
                                     </ScrollViewer>
-                                    <RepeatButton Delay="300" Interval="15" Template="{DynamicResource TabScrollRepeatButton}" Content="4" FontFamily="Marlett" Height="{Binding ElementName=Tabs, Path=ActualHeight, UpdateSourceTrigger=PropertyChanged}" Width="{Binding RelativeSource={RelativeSource Self}, Path=ActualHeight }" HorizontalAlignment="Right" Click="MoveRight" WindowChrome.IsHitTestVisibleInChrome="True" VerticalAlignment="Bottom"/>
+                                    <RepeatButton Delay="300" Interval="15"
+                                                  Template="{DynamicResource TabScrollRepeatButton}" Content="4"
+                                                  FontFamily="Marlett"
+                                                  Height="{Binding ElementName=Tabs, Path=ActualHeight, UpdateSourceTrigger=PropertyChanged}"
+                                                  Width="{Binding RelativeSource={RelativeSource Self}, Path=ActualHeight }"
+                                                  HorizontalAlignment="Right" Click="MoveRight"
+                                                  WindowChrome.IsHitTestVisibleInChrome="True"
+                                                  VerticalAlignment="Bottom" />
                                 </Grid>
-                                <Grid Grid.Column="1" x:Name="CaptionButtons" Panel.ZIndex="1" Background="{DynamicResource MatteBlack}" WindowChrome.IsHitTestVisibleInChrome="True" MouseDown="CaptionBar_MouseDown" HorizontalAlignment="Right">
+                                <Grid Grid.Column="1" x:Name="CaptionButtons" Panel.ZIndex="1"
+                                      Background="{DynamicResource MatteBlack}"
+                                      WindowChrome.IsHitTestVisibleInChrome="True" MouseDown="CaptionBar_MouseDown"
+                                      HorizontalAlignment="Right">
                                     <Grid.DataContext>
                                         <vm:CaptionBarViewModel />
                                     </Grid.DataContext>
@@ -101,58 +133,77 @@
                                         <i:EventTrigger EventName="Loaded">
                                             <l:LivetCallMethodAction MethodTarget="{Binding}" MethodName="Initialize" />
                                         </i:EventTrigger>
-                                        <l:InteractionMessageTrigger MessageKey="WindowMessage" Messenger="{Binding Messenger}" InvokeActionsOnlyWhileAttatchedObjectLoaded="True">
+                                        <l:InteractionMessageTrigger MessageKey="WindowMessage"
+                                                                     Messenger="{Binding Messenger}"
+                                                                     InvokeActionsOnlyWhileAttatchedObjectLoaded="True">
                                             <l:WindowInteractionMessageAction />
                                         </l:InteractionMessageTrigger>
                                     </i:Interaction.Triggers>
 
-                                    <StackPanel Orientation="Horizontal" Margin="5,0" HorizontalAlignment="Right" VerticalAlignment="Top" WindowChrome.IsHitTestVisibleInChrome="True" Panel.ZIndex="1" Background="{DynamicResource MatteBlack}">
+                                    <StackPanel Orientation="Horizontal" Margin="5,0" HorizontalAlignment="Right"
+                                                VerticalAlignment="Top" WindowChrome.IsHitTestVisibleInChrome="True"
+                                                Panel.ZIndex="1" Background="{DynamicResource MatteBlack}">
                                         <Grid DataContext="{Binding DataContext, ElementName=WindowRoot}">
-                                            <Button Command="{Binding OpenSettingsWindowCommand}" MinWidth="28" Height="20" Margin="0,0,1,0" Template="{DynamicResource CaptionButton}">
+                                            <Button Command="{Binding OpenSettingsWindowCommand}" MinWidth="28"
+                                                    Height="20" Margin="0,0,1,0"
+                                                    Template="{DynamicResource CaptionButton}">
                                                 <StackPanel Orientation="Horizontal" Margin="8,0">
-                                                    <TextBlock Text="&#xE2F9;" FontFamily="Segoe UI Symbol" FontSize="18" Foreground="{DynamicResource EvilWhite}" VerticalAlignment="Center" HorizontalAlignment="Center" />
-                                                    <TextBlock Text="Settings" FontFamily="Meiryo UI" FontSize="10" Foreground="{DynamicResource EvilWhite}" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="4,0,0,0" />
+                                                    <TextBlock Text="&#xE2F9;" FontFamily="Segoe UI Symbol"
+                                                               FontSize="18" Foreground="{DynamicResource EvilWhite}"
+                                                               VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                                    <TextBlock Text="Settings" FontFamily="Meiryo UI" FontSize="10"
+                                                               Foreground="{DynamicResource EvilWhite}"
+                                                               VerticalAlignment="Center" HorizontalAlignment="Center"
+                                                               Margin="4,0,0,0" />
                                                 </StackPanel>
                                             </Button>
                                         </Grid>
-                                        <Button Content="0" FontFamily="Marlett" Width="28" Height="20" Margin="0,0,1,0" Template="{DynamicResource CaptionButton}" Command="{Binding MinimizeCommand}" />
-                                        <Button Content="{Binding MaximizeButtonContent}" FontFamily="Marlett" Width="28" Height="20" Margin="0,0,1,0" Template="{DynamicResource CaptionButton}" Command="{Binding MaximizeCommand}" />
-                                        <Button Content="r" FontFamily="Marlett" Width="48" Height="20" Margin="0" Template="{DynamicResource CloseButton}" Command="{Binding CloseCommand}" />
+                                        <Button Content="0" FontFamily="Marlett" Width="28" Height="20"
+                                                Margin="0,0,1,0" Template="{DynamicResource CaptionButton}"
+                                                Command="{Binding MinimizeCommand}" />
+                                        <Button Content="{Binding MaximizeButtonContent}" FontFamily="Marlett"
+                                                Width="28" Height="20" Margin="0,0,1,0"
+                                                Template="{DynamicResource CaptionButton}"
+                                                Command="{Binding MaximizeCommand}" />
+                                        <Button Content="r" FontFamily="Marlett" Width="48" Height="20" Margin="0"
+                                                Template="{DynamicResource CloseButton}"
+                                                Command="{Binding CloseCommand}" />
                                     </StackPanel>
                                 </Grid>
                             </Grid>
-                            <Border BorderBrush="{DynamicResource MetroBlue}" BorderThickness="0,4,0,0" Grid.Row="1" Panel.ZIndex="1"/>
-                            <ContentPresenter ContentSource="SelectedContent" Grid.Row="2" Panel.ZIndex="0"/>
+                            <Border BorderBrush="{DynamicResource MetroBlue}" BorderThickness="0,4,0,0" Grid.Row="1"
+                                    Panel.ZIndex="1" />
+                            <ContentPresenter ContentSource="SelectedContent" Grid.Row="2" Panel.ZIndex="0" />
                         </Grid>
                     </ControlTemplate>
                 </TabControl.Template>
 
                 <TabControl.ItemTemplate>
                     <DataTemplate>
-                        <Border Name="Tab" WindowChrome.IsHitTestVisibleInChrome="True" MouseWheel="Tab_MouseWheel" PreviewMouseDown="Tab_PreviewMouseDown">
+                        <Border Name="Tab" WindowChrome.IsHitTestVisibleInChrome="True" MouseWheel="Tab_MouseWheel"
+                                PreviewMouseDown="Tab_PreviewMouseDown">
                             <WrapPanel>
-                                <TextBlock Text="{Binding Name}" Padding="12,0"/>
-                                <Button 
-                                    x:Name="CloseButton" 
+                                <TextBlock Text="{Binding Name}" Padding="12,0" />
+                                <Button
+                                    x:Name="CloseButton"
                                     ToolTip="Close"
                                     Content="r"
                                     FontFamily="Marlett"
-                                    Margin="0" 
+                                    Margin="0"
                                     Template="{DynamicResource TabCloseButton}"
                                     Width="{Binding RelativeSource={RelativeSource Self}, Path=ActualHeight}">
 
                                     <i:Interaction.Triggers>
                                         <i:EventTrigger EventName="Click">
-                                            <l:LivetCallMethodAction 
+                                            <l:LivetCallMethodAction
                                                 MethodTarget="{
-                                                    Binding Path=DataContext, 
-                                                    RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type TabControl}}, 
-                                                    Mode=OneWay}" 
-                                                MethodName="TabClose" 
+                                                    Binding Path=DataContext,
+                                                    RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type TabControl}},
+                                                    Mode=OneWay}"
+                                                MethodName="TabClose"
                                                 MethodParameter="{
-                                                    Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type TabItem}}, 
-                                                    Path=(ItemsControl.AlternationIndex)}"
-                                                />
+                                                    Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type TabItem}},
+                                                    Path=(ItemsControl.AlternationIndex)}" />
                                         </i:EventTrigger>
                                     </i:Interaction.Triggers>
                                 </Button>
@@ -164,13 +215,19 @@
                 <TabControl.ContentTemplate>
                     <DataTemplate>
                         <Grid x:Name="ImageWrapper" Background="{x:Null}">
-                            <Grid DataContext="{Binding DataContext, ElementName=WindowRoot}" Background="#00000000"  MouseWheel="Zoom" MouseDown="StartTranslate" MouseUp="StopTranslate" MouseMove="Translate">
+                            <Grid DataContext="{Binding DataContext, ElementName=WindowRoot}" Background="#00000000"
+                                  MouseWheel="Zoom" MouseDown="StartTranslate" MouseUp="StopTranslate"
+                                  MouseMove="Translate">
                                 <Grid.ContextMenu>
                                     <ContextMenu>
-                                        <MenuItem Header="SaveAs" InputGestureText="Ctrl+S" Command="{Binding SaveImageCommand}"/>
-                                        <MenuItem Header="Copy to Clipboard" InputGestureText="Ctrl+C" Command="{Binding CopyToClipboardCommand}"/>
-                                        <MenuItem Header="Open in Browser" InputGestureText="Ctrl+O" Command="{Binding OpenInBrowserCommand}"/>
-                                        <MenuItem Header="Search by Google Images" InputGestureText="Ctrl+F" Command="{Binding SearchByGoogleCommand}"/>
+                                        <MenuItem Header="SaveAs" InputGestureText="Ctrl+S"
+                                                  Command="{Binding SaveImageCommand}" />
+                                        <MenuItem Header="Copy to Clipboard" InputGestureText="Ctrl+C"
+                                                  Command="{Binding CopyToClipboardCommand}" />
+                                        <MenuItem Header="Open in Browser" InputGestureText="Ctrl+O"
+                                                  Command="{Binding OpenInBrowserCommand}" />
+                                        <MenuItem Header="Search by Google Images" InputGestureText="Ctrl+F"
+                                                  Command="{Binding SearchByGoogleCommand}" />
                                     </ContextMenu>
                                 </Grid.ContextMenu>
 
@@ -184,22 +241,26 @@
                                                                                RepeatBehavior="Forever">
                                                     <DiscreteObjectKeyFrame KeyTime="0:0:0">
                                                         <DiscreteObjectKeyFrame.Value>
-                                                            <BitmapImage UriSource="/ImageViewer;component/Resources/loading0.png"  />
+                                                            <BitmapImage
+                                                                UriSource="/ImageViewer;component/Resources/loading0.png" />
                                                         </DiscreteObjectKeyFrame.Value>
                                                     </DiscreteObjectKeyFrame>
                                                     <DiscreteObjectKeyFrame KeyTime="0:0:0.1">
                                                         <DiscreteObjectKeyFrame.Value>
-                                                            <BitmapImage UriSource="/ImageViewer;component/Resources/loading1.png" />
+                                                            <BitmapImage
+                                                                UriSource="/ImageViewer;component/Resources/loading1.png" />
                                                         </DiscreteObjectKeyFrame.Value>
                                                     </DiscreteObjectKeyFrame>
                                                     <DiscreteObjectKeyFrame KeyTime="0:0:0.2">
                                                         <DiscreteObjectKeyFrame.Value>
-                                                            <BitmapImage UriSource="/ImageViewer;component/Resources/loading2.png" />
+                                                            <BitmapImage
+                                                                UriSource="/ImageViewer;component/Resources/loading2.png" />
                                                         </DiscreteObjectKeyFrame.Value>
                                                     </DiscreteObjectKeyFrame>
                                                     <DiscreteObjectKeyFrame KeyTime="0:0:0.3">
                                                         <DiscreteObjectKeyFrame.Value>
-                                                            <BitmapImage UriSource="/ImageViewer;component/Resources/loading3.png" />
+                                                            <BitmapImage
+                                                                UriSource="/ImageViewer;component/Resources/loading3.png" />
                                                         </DiscreteObjectKeyFrame.Value>
                                                     </DiscreteObjectKeyFrame>
                                                 </ObjectAnimationUsingKeyFrames>
@@ -208,41 +269,53 @@
                                     </EventTrigger>
                                 </Grid.Triggers>
 
-                                <Image Name="Image" 
-                                       Source="{Binding Bitmap, UpdateSourceTrigger=PropertyChanged}" 
+                                <Image Name="Image"
+                                       Source="{Binding Bitmap, UpdateSourceTrigger=PropertyChanged}"
                                        DataContext="{Binding DataContext, ElementName=ImageWrapper}"
-                                       RenderOptions.BitmapScalingMode="Fant" 
-                                       SizeChanged="Image_SizeChanged" 
+                                       RenderOptions.BitmapScalingMode="Fant"
+                                       SizeChanged="Image_SizeChanged"
                                        RenderTransformOrigin="0.5, 0.5">
                                     <Image.RenderTransform>
                                         <TransformGroup>
-                                            <ScaleTransform ScaleX="{Binding Zoom, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ScaleY="{Binding Zoom, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" CenterX="{qc:Binding '$P * -1', P={Binding Translate.X, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}}" CenterY="{qc:Binding '$P * -1', P={Binding Translate.Y, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}}"/>
-                                            <SkewTransform/>
-                                            <RotateTransform/>
-                                            <TranslateTransform X="{Binding Translate.X, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Y="{Binding Translate.Y, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                            <ScaleTransform
+                                                ScaleX="{Binding Zoom, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                ScaleY="{Binding Zoom, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                CenterX="{qc:Binding '$P * -1', P={Binding Translate.X, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}}"
+                                                CenterY="{qc:Binding '$P * -1', P={Binding Translate.Y, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}}" />
+                                            <SkewTransform />
+                                            <RotateTransform />
+                                            <TranslateTransform
+                                                X="{Binding Translate.X, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                Y="{Binding Translate.Y, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                                         </TransformGroup>
                                     </Image.RenderTransform>
                                 </Image>
-                                <Image Name="Loading" 
-                                       RenderOptions.BitmapScalingMode="NearestNeighbor" 
+                                <Image Name="Loading"
+                                       RenderOptions.BitmapScalingMode="NearestNeighbor"
                                        Stretch="None" Visibility="{Binding IsLoading}"
-                                       DataContext="{Binding DataContext, ElementName=ImageWrapper}"/>
+                                       DataContext="{Binding DataContext, ElementName=ImageWrapper}" />
                             </Grid>
                         </Grid>
                     </DataTemplate>
                 </TabControl.ContentTemplate>
             </TabControl>
             <WrapPanel HorizontalAlignment="Left" VerticalAlignment="Bottom">
-                <Button Command="{Binding SaveImageCommand}" ToolTip="SaveAs" VerticalAlignment="Bottom" HorizontalAlignment="Left" Template="{DynamicResource TransparentButton}">
+                <Button Command="{Binding SaveImageCommand}" ToolTip="SaveAs" VerticalAlignment="Bottom"
+                        HorizontalAlignment="Left" Template="{DynamicResource TransparentButton}">
                     <Image Source="/Resources/IcoMoon/save.png" Width="24" Height="24" />
                 </Button>
-                <Button Command="{Binding CopyToClipboardCommand}" ToolTip="Copy to Clipboard" VerticalAlignment="Bottom" HorizontalAlignment="Left" Template="{DynamicResource TransparentButton}">
+                <Button Command="{Binding CopyToClipboardCommand}" ToolTip="Copy to Clipboard"
+                        VerticalAlignment="Bottom" HorizontalAlignment="Left"
+                        Template="{DynamicResource TransparentButton}">
                     <Image Source="/ImageViewer;component/Resources/IcoMoon/copy.png" Width="24" Height="24" />
                 </Button>
-                <Button Command="{Binding OpenInBrowserCommand}" ToolTip="Open in Browser" VerticalAlignment="Bottom" HorizontalAlignment="Left" Template="{DynamicResource TransparentButton}">
+                <Button Command="{Binding OpenInBrowserCommand}" ToolTip="Open in Browser" VerticalAlignment="Bottom"
+                        HorizontalAlignment="Left" Template="{DynamicResource TransparentButton}">
                     <Image Source="/ImageViewer;component/Resources/IcoMoon/open.png" Width="24" Height="24" />
                 </Button>
-                <Button Command="{Binding SearchByGoogleCommand}" ToolTip="Search by Google Images" VerticalAlignment="Bottom" HorizontalAlignment="Left" Template="{DynamicResource TransparentButton}">
+                <Button Command="{Binding SearchByGoogleCommand}" ToolTip="Search by Google Images"
+                        VerticalAlignment="Bottom" HorizontalAlignment="Left"
+                        Template="{DynamicResource TransparentButton}">
                     <Image Source="/ImageViewer;component/Resources/IcoMoon/search.png" Width="24" Height="24" />
                 </Button>
             </WrapPanel>
@@ -250,20 +323,28 @@
         <Grid Grid.Row="1" Background="{DynamicResource MetroBlue}" Panel.ZIndex="1">
             <WrapPanel x:Name="StatusBarElements" HorizontalAlignment="Left">
                 <Label Content="" Padding="0,5" />
-                <Label Content="Render:" Padding="5,0" VerticalAlignment="Center" Foreground="{DynamicResource EvilWhite}" />
-                <Label Content="{Binding ImageRenderWidth, FallbackValue=0}" Padding="0" VerticalAlignment="Center" Foreground="{DynamicResource EvilWhite}" />
+                <Label Content="Render:" Padding="5,0" VerticalAlignment="Center"
+                       Foreground="{DynamicResource EvilWhite}" />
+                <Label Content="{Binding ImageRenderWidth, FallbackValue=0}" Padding="0" VerticalAlignment="Center"
+                       Foreground="{DynamicResource EvilWhite}" />
                 <Label Content="x" Padding="2,0" VerticalAlignment="Center" Foreground="{DynamicResource EvilWhite}" />
-                <Label Content="{Binding ImageRenderHeight, FallbackValue=0}" Padding="0" VerticalAlignment="Center" Foreground="{DynamicResource EvilWhite}" />
-                <Label Content="px" Padding="5,0" VerticalAlignment="Center" Foreground="{DynamicResource EvilWhite}"/>
+                <Label Content="{Binding ImageRenderHeight, FallbackValue=0}" Padding="0" VerticalAlignment="Center"
+                       Foreground="{DynamicResource EvilWhite}" />
+                <Label Content="px" Padding="5,0" VerticalAlignment="Center" Foreground="{DynamicResource EvilWhite}" />
 
-                <Label Content="Image:" Padding="5,0" VerticalAlignment="Center" Foreground="{DynamicResource EvilWhite}" />
-                <Label Content="{Binding SelectedImageWidth, FallbackValue=0, UpdateSourceTrigger=PropertyChanged}" Padding="0" VerticalAlignment="Center" Foreground="{DynamicResource EvilWhite}" />
+                <Label Content="Image:" Padding="5,0" VerticalAlignment="Center"
+                       Foreground="{DynamicResource EvilWhite}" />
+                <Label Content="{Binding SelectedImageWidth, FallbackValue=0, UpdateSourceTrigger=PropertyChanged}"
+                       Padding="0" VerticalAlignment="Center" Foreground="{DynamicResource EvilWhite}" />
                 <Label Content="x" Padding="2,0" VerticalAlignment="Center" Foreground="{DynamicResource EvilWhite}" />
-                <Label Content="{Binding SelectedImageHeight, FallbackValue=0, UpdateSourceTrigger=PropertyChanged}" Padding="0" VerticalAlignment="Center" Foreground="{DynamicResource EvilWhite}" />
-                <Label Content="px" Padding="5,0" VerticalAlignment="Center" Foreground="{DynamicResource EvilWhite}"/>
+                <Label Content="{Binding SelectedImageHeight, FallbackValue=0, UpdateSourceTrigger=PropertyChanged}"
+                       Padding="0" VerticalAlignment="Center" Foreground="{DynamicResource EvilWhite}" />
+                <Label Content="px" Padding="5,0" VerticalAlignment="Center" Foreground="{DynamicResource EvilWhite}" />
 
-                <Label Content="Zoom:" Padding="5,0" VerticalAlignment="Center" Foreground="{DynamicResource EvilWhite}" />
-                <Label Content="{Binding Zoom, FallbackValue=0}" Padding="0" VerticalAlignment="Center" Foreground="{DynamicResource EvilWhite}" />
+                <Label Content="Zoom:" Padding="5,0" VerticalAlignment="Center"
+                       Foreground="{DynamicResource EvilWhite}" />
+                <Label Content="{Binding Zoom, FallbackValue=0}" Padding="0" VerticalAlignment="Center"
+                       Foreground="{DynamicResource EvilWhite}" />
                 <Label Content="%" Padding="5,0" VerticalAlignment="Center" Foreground="{DynamicResource EvilWhite}" />
 
                 <Label Content="padding" Padding="5,0" VerticalAlignment="Center" Foreground="{x:Null}" />
