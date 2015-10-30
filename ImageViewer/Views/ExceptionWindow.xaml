@@ -33,7 +33,6 @@
             </StackPanel>
         </Expander>
         <StackPanel Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Right" Height="32">
-            <Button Name="Continue" Content="再起動" Width="80" Height="24" VerticalAlignment="Center" Margin="0,0,8,0" Click="Continue_Click" IsDefault="True"/>
             <Button Name="Exit" Content="終了" Width="80" Height="24" VerticalAlignment="Center" Margin="0,0,8,0" Click="Exit_Click"/>
         </StackPanel>
     </StackPanel>
