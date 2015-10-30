@@ -169,8 +169,16 @@ namespace ImageViewer.Views
                     POINT currentPosition;
                     Win32Helper.GetCursorPos(out currentPosition);
                     Win32Helper.SetCursorPos(_mousePosition.X, _mousePosition.Y);
-                    VM.DeferredImageItems[VM.SelectedIndex].Translate.X += (currentPosition.X - _mousePosition.X) / (VM.Zoom / (100.0 * DPI));
-                    VM.DeferredImageItems[VM.SelectedIndex].Translate.Y += (currentPosition.Y - _mousePosition.Y) / (VM.Zoom / (100.0 * DPI));
+
+                    var longerLength = VM.ImageRenderWidth > VM.ImageRenderHeight
+                        ? VM.ImageRenderWidth
+                        : VM.ImageRenderHeight;
+
+                    VM.DeferredImageItems[VM.SelectedIndex].Translate.X += 
+                        (currentPosition.X - _mousePosition.X) / ((double)longerLength / VM.Zoom) * (DPI * (100.0 / VM.Zoom));
+                    VM.DeferredImageItems[VM.SelectedIndex].Translate.Y += 
+                        (currentPosition.Y - _mousePosition.Y) / ((double)longerLength / VM.Zoom) * (DPI * (100.0 / VM.Zoom));
+                    
                 }
                 _isMove = false;
             }
