@@ -21,6 +21,7 @@ namespace ImageViewer.Models
         public string OriginalUri { get; private set; }
         public string ImageUri { get; private set; }
         public bool IsError { get; private set; }
+        public bool IsMovie { get; private set; }
 
         public int Width
         {
@@ -54,13 +55,13 @@ namespace ImageViewer.Models
             }
 
             // TODO: いくらなんでもここに書くのは汚いので後で移す
-            IsError |= (Config.IsWarningTwitter30secMovie &&
+            IsMovie |= (Config.IsWarningTwitter30secMovie &&
                         (uri.StartsWith(@"https://pbs.twimg.com/ext_tw_video_thumb/") ||
                          uri.StartsWith(@"http://pbs.twimg.com/ext_tw_video_thumb/")));
 
             try
             {
-                if (!IsError)
+                if (!IsError && !IsMovie)
                 {
                     bi = await base.DownloadDataAsync(uri, originalUri);
                 }
@@ -73,6 +74,11 @@ namespace ImageViewer.Models
             if (IsError)
             {
                 bi = new BitmapImage(new Uri(@"pack://application:,,,/Resources/IcoMoon/warning.png", UriKind.Absolute));
+                Bitmap = bi;
+            }
+            else if (IsMovie)
+            {
+                bi = new BitmapImage(new Uri(@"pack://application:,,,/Resources/IcoMoon/file-play.png", UriKind.Absolute));
                 Bitmap = bi;
             }
             IsLoading = Visibility.Hidden;
