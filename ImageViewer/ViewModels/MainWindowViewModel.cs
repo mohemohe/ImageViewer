@@ -106,8 +106,23 @@ namespace ImageViewer.ViewModels
                 {
                     return;
                 }
+                var zoomBase = (renderSize / (double)imageSize);
+                Zoom = Convert.ToInt32(zoomBase * 100);
+            }
+        }
 
-                Zoom = Convert.ToInt32((renderSize/(double) imageSize)*100);
+        private void CalcActualZoom()
+        {
+            if (_SelectedIndex != -1 && DeferredImageItems[_SelectedIndex].Bitmap != null)
+            {
+                var imageSize = DeferredImageItems[_SelectedIndex].Width;
+                var renderSize = ImageRenderWidth;
+                if (imageSize == 0)
+                {
+                    return;
+                }
+                var zoomBase = (renderSize / (double)imageSize);
+                DeferredImageItems[_SelectedIndex].ActualZoom = zoomBase;
             }
         }
 
@@ -145,6 +160,7 @@ namespace ImageViewer.ViewModels
                 _ImageRenderWidth = value;
                 RaisePropertyChanged();
                 CalcZoom();
+                CalcActualZoom();
             }
         }
 
@@ -308,9 +324,10 @@ namespace ImageViewer.ViewModels
 
         public void ResetZoom()
         {
-            DeferredImageItems[SelectedIndex].Zoom = 
-                (double)SelectedImageWidth / ImageRenderWidth;
+            DeferredImageItems[SelectedIndex].Zoom /= DeferredImageItems[SelectedIndex].ActualZoom;
             Zoom = 100;
+            ImageRenderWidth = DeferredImageItems[SelectedIndex].Width;
+            ImageRenderHeight = DeferredImageItems[SelectedIndex].Height;
         }
         #endregion
 

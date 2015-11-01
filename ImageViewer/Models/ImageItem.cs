@@ -1,5 +1,6 @@
 ﻿using ImageViewer.Helpers;
 using ImageViewer.Infrastructures;
+using Livet;
 using System;
 using System.IO;
 using System.Threading.Tasks;
@@ -135,10 +136,28 @@ namespace ImageViewer.Models
                     return;
                 _Zoom = value;
                 RaisePropertyChanged();
+                ActualZoom *= value;
             }
         }
 
         #endregion Zoom変更通知プロパティ
+
+        #region ActualZoom変更通知プロパティ
+        private double _ActualZoom;
+
+        public double ActualZoom
+        {
+            get
+            { return _ActualZoom; }
+            set
+            { 
+                if (_ActualZoom == value)
+                    return;
+                _ActualZoom = value;
+                RaisePropertyChanged();
+            }
+        }
+        #endregion
 
         #region Translate変更通知プロパティ
 
