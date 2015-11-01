@@ -183,6 +183,8 @@
     <Content Include="InfrastructureAssemblies\Livet.XML" />
     <Content Include="InfrastructureAssemblies\Microsoft.Expression.Interactions.dll" />
     <Content Include="InfrastructureAssemblies\System.Windows.Interactivity.dll" />
+    <Resource Include="Resources\IcoMoon\shrink.png" />
+    <Resource Include="Resources\IcoMoon\enlarge.png" />
     <Resource Include="Resources\IcoMoon\file-play.png" />
     <Resource Include="Resources\ImageViewer.ico" />
     <Resource Include="Resources\ImageViewer.png" />

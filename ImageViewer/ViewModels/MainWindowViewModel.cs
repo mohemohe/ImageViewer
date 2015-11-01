@@ -93,6 +93,7 @@ namespace ImageViewer.ViewModels
                 DeferredImageItems[DeferredImageItems.Count - 1].OriginalUri);
             SelectedImageWidth = DeferredImageItems[SelectedIndex].Width;
             SelectedImageHeight = DeferredImageItems[SelectedIndex].Height;
+            DeferredImageItems[DeferredImageItems.Count - 1].Zoom = 1.0;
         }
 
         private void CalcZoom()
@@ -267,6 +268,51 @@ namespace ImageViewer.ViewModels
         }
 
         #endregion DeferredImageItems変更通知プロパティ
+
+        #region MaximizeZoomCommand
+        private ViewModelCommand _MaximizeZoomCommand;
+
+        public ViewModelCommand MaximizeZoomCommand
+        {
+            get
+            {
+                if (_MaximizeZoomCommand == null)
+                {
+                    _MaximizeZoomCommand = new ViewModelCommand(MaximizeZoom);
+                }
+                return _MaximizeZoomCommand;
+            }
+        }
+
+        public void MaximizeZoom()
+        {
+            DeferredImageItems[SelectedIndex].Zoom = 1.0;
+            CalcZoom();
+        }
+        #endregion
+
+        #region ResetZoomCommand
+        private ViewModelCommand _ResetZoomCommand;
+
+        public ViewModelCommand ResetZoomCommand
+        {
+            get
+            {
+                if (_ResetZoomCommand == null)
+                {
+                    _ResetZoomCommand = new ViewModelCommand(ResetZoom);
+                }
+                return _ResetZoomCommand;
+            }
+        }
+
+        public void ResetZoom()
+        {
+            DeferredImageItems[SelectedIndex].Zoom = 
+                (double)SelectedImageWidth / ImageRenderWidth;
+            Zoom = 100;
+        }
+        #endregion
 
         #region SaveImageCommand
 

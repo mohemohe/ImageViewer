@@ -274,7 +274,8 @@
                                        DataContext="{Binding DataContext, ElementName=ImageWrapper}"
                                        RenderOptions.BitmapScalingMode="Fant"
                                        SizeChanged="Image_SizeChanged"
-                                       RenderTransformOrigin="0.5, 0.5">
+                                       RenderTransformOrigin="0.5, 0.5"
+                                       SnapsToDevicePixels="True">
                                     <Image.RenderTransform>
                                         <TransformGroup>
                                             <ScaleTransform
@@ -317,6 +318,17 @@
                         VerticalAlignment="Bottom" HorizontalAlignment="Left"
                         Template="{DynamicResource TransparentButton}">
                     <Image Source="/ImageViewer;component/Resources/IcoMoon/search.png" Width="24" Height="24" />
+                </Button>
+            </WrapPanel>
+            <WrapPanel HorizontalAlignment="Right" VerticalAlignment="Bottom">
+                <Button Command="{Binding MaximizeZoomCommand}" ToolTip="SaveAs" VerticalAlignment="Bottom"
+                        HorizontalAlignment="Left" Template="{DynamicResource TransparentButton}">
+                    <Image Source="/ImageViewer;component/Resources/IcoMoon/enlarge.png" Width="24" Height="24" />
+                </Button>
+                <Button Command="{Binding ResetZoomCommand}" ToolTip="Copy to Clipboard"
+                        VerticalAlignment="Bottom" HorizontalAlignment="Left"
+                        Template="{DynamicResource TransparentButton}">
+                    <Image Source="/ImageViewer;component/Resources/IcoMoon/shrink.png" Width="24" Height="24" />
                 </Button>
             </WrapPanel>
         </Grid>
