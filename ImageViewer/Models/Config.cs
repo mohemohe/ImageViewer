@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Reflection;
 using System.Windows;
 using System.Xml.Serialization;
@@ -10,7 +11,8 @@ namespace ImageViewer.Models
     /// </summary>
     public class Settings
     {
-        [XmlElement(IsNullable = true)] public string DefaultBrowserPath;
+        [XmlElement(IsNullable = true)]
+        public string DefaultBrowserPath;
 
         public bool? IsChildWindow;
 
@@ -24,7 +26,7 @@ namespace ImageViewer.Models
 
         public double? MouseSensibility;
 
-        [XmlElement(IsNullable = true)] public PixivAccount PixivAccount;
+        public PixivAccount PixivAccount;
 
         public Rect WindowPosition;
     }
@@ -49,8 +51,15 @@ namespace ImageViewer.Models
             {
                 using (var fs = new FileStream(filePath, FileMode.Open))
                 {
-                    xmlSettings = (Settings) xs.Deserialize(fs);
-                    fs.Close();
+                    try
+                    {
+                        xmlSettings = (Settings) xs.Deserialize(fs);
+                    }
+                    catch { }
+                    finally
+                    {
+                        fs.Close();
+                    }
                 }
             }
 
@@ -89,7 +98,7 @@ namespace ImageViewer.Models
                 IsFallbackTwitterGifMovie = _Config._IsFallbackTwitterGifMovie,
                 IsWarningTwitter30secMovie = _Config._IsWarningTwitter30secMovie,
                 IsUsePixivWebScraping = _Config._IsUsePixivWebScraping,
-                PixivAccount = _Config._PixivAccount
+                PixivAccount = _Config._PixivAccount,
             };
 
             var xs = new XmlSerializer(typeof (Settings));
