@@ -93,6 +93,7 @@ namespace ImageViewer.ViewModels
                 DeferredImageItems[DeferredImageItems.Count - 1].OriginalUri);
             SelectedImageWidth = DeferredImageItems[SelectedIndex].Width;
             SelectedImageHeight = DeferredImageItems[SelectedIndex].Height;
+            DeferredImageItems[DeferredImageItems.Count - 1].Zoom = 1.0;
         }
 
         private void CalcZoom()
@@ -105,8 +106,23 @@ namespace ImageViewer.ViewModels
                 {
                     return;
                 }
+                var zoomBase = (renderSize / (double)imageSize);
+                Zoom = Convert.ToInt32(zoomBase * 100);
+            }
+        }
 
-                Zoom = Convert.ToInt32((renderSize/(double) imageSize)*100);
+        private void CalcActualZoom()
+        {
+            if (_SelectedIndex != -1 && DeferredImageItems[_SelectedIndex].Bitmap != null)
+            {
+                var imageSize = DeferredImageItems[_SelectedIndex].Width;
+                var renderSize = ImageRenderWidth;
+                if (imageSize == 0)
+                {
+                    return;
+                }
+                var zoomBase = (renderSize / (double)imageSize);
+                DeferredImageItems[_SelectedIndex].ActualZoom = zoomBase;
             }
         }
 
@@ -144,6 +160,7 @@ namespace ImageViewer.ViewModels
                 _ImageRenderWidth = value;
                 RaisePropertyChanged();
                 CalcZoom();
+                CalcActualZoom();
             }
         }
 
@@ -267,6 +284,52 @@ namespace ImageViewer.ViewModels
         }
 
         #endregion DeferredImageItems変更通知プロパティ
+
+        #region MaximizeZoomCommand
+        private ViewModelCommand _MaximizeZoomCommand;
+
+        public ViewModelCommand MaximizeZoomCommand
+        {
+            get
+            {
+                if (_MaximizeZoomCommand == null)
+                {
+                    _MaximizeZoomCommand = new ViewModelCommand(MaximizeZoom);
+                }
+                return _MaximizeZoomCommand;
+            }
+        }
+
+        public void MaximizeZoom()
+        {
+            DeferredImageItems[SelectedIndex].Zoom = 1.0;
+            CalcZoom();
+        }
+        #endregion
+
+        #region ResetZoomCommand
+        private ViewModelCommand _ResetZoomCommand;
+
+        public ViewModelCommand ResetZoomCommand
+        {
+            get
+            {
+                if (_ResetZoomCommand == null)
+                {
+                    _ResetZoomCommand = new ViewModelCommand(ResetZoom);
+                }
+                return _ResetZoomCommand;
+            }
+        }
+
+        public void ResetZoom()
+        {
+            DeferredImageItems[SelectedIndex].Zoom /= DeferredImageItems[SelectedIndex].ActualZoom;
+            Zoom = 100;
+            ImageRenderWidth = DeferredImageItems[SelectedIndex].Width;
+            ImageRenderHeight = DeferredImageItems[SelectedIndex].Height;
+        }
+        #endregion
 
         #region SaveImageCommand
 

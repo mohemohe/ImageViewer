@@ -24,6 +24,11 @@ namespace ImageViewer.Models
                 {
                     strPtr = Marshal.SecureStringToGlobalAllocUnicode(Password);
                     return Marshal.PtrToStringUni(strPtr);
+
+                }
+                catch
+                {
+                    return null;
                 }
                 finally
                 {
@@ -42,7 +47,7 @@ namespace ImageViewer.Models
         [XmlElement(IsNullable = true)]
         public string EncryptedPassword
         {
-            get { return Encrypt.EncryptString(RawPassword); }
+            get { return RawPassword != null ? Encrypt.EncryptString(RawPassword) : null; }
             set { RawPassword = Encrypt.DecryptString(value); }
         }
     }
