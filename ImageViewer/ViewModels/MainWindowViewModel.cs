@@ -470,8 +470,18 @@ namespace ImageViewer.ViewModels
         {
             if (DeferredImageItems[SelectedIndex].Bitmap != null)
             {
-                Process.Start(@"https://www.google.com/searchbyimage?image_url=" +
-                              DeferredImageItems[SelectedIndex].ImageUri);
+                var uri = @"https://www.google.com/searchbyimage?image_url=" +
+                          DeferredImageItems[SelectedIndex].ImageUri;
+
+                if (Config.DefaultBrowserPath == null)
+                {
+                    Process.Start(uri);
+                }
+                else
+                {
+                    var psi = new ProcessStartInfo { Arguments = uri, FileName = Config.DefaultBrowserPath };
+                    Process.Start(psi);
+                }
             }
         }
 
