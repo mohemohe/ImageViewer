@@ -39,21 +39,43 @@ namespace ImageViewer.Models
             var uri = imageUri;
             var bi = new BitmapImage();
 
-            if (uri == @"{Pixiv}")
+            switch (uri)
             {
-                ImageUri = originalUri;
-                OriginalUri = originalUri;
-
-                var imageInfo = await PixivCrawler.GetImage(originalUri);
-                if (imageInfo.ImageData != null)
+                case @"{Pixiv}":
                 {
-                    SetData(imageInfo.ImageData);
-                    Name = Path.GetFileName(imageInfo.ImageUri);
-                    IsLoading = Visibility.Hidden;
-                    return (BitmapImage) Bitmap;
+                    ImageUri = originalUri;
+                    OriginalUri = originalUri;
+
+                    var imageInfo = await PixivCrawler.GetImage(originalUri);
+                    if (imageInfo.ImageData != null)
+                    {
+                        SetData(imageInfo.ImageData);
+                        Name = Path.GetFileName(imageInfo.ImageUri);
+                        IsLoading = Visibility.Hidden;
+                        return (BitmapImage) Bitmap;
+                    }
+                    IsError = true;
+                    break;
                 }
-                IsError = true;
+
+                case @"{Nijie}":
+                {
+                    ImageUri = originalUri;
+                    OriginalUri = originalUri;
+
+                    var imageInfo = await NijieCrawler.GetImage(originalUri);
+                    if (imageInfo.ImageData != null)
+                    {
+                        SetData(imageInfo.ImageData);
+                        Name = Path.GetFileName(imageInfo.ImageUri);
+                        IsLoading = Visibility.Hidden;
+                        return (BitmapImage) Bitmap;
+                    }
+                    IsError = true;
+                    break;
+                }
             }
+
 
             // TODO: いくらなんでもここに書くのは汚いので後で移す
             IsMovie |= (Config.IsWarningTwitter30secMovie &&

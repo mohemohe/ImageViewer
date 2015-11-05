@@ -6,7 +6,7 @@ using System.Xml.Serialization;
 
 namespace ImageViewer.Models
 {
-    public class PixivAccount
+    public class Account
     {
         [XmlElement(IsNullable = true)]
         public string Id { get; set; }
@@ -50,5 +50,15 @@ namespace ImageViewer.Models
             get { return RawPassword != null ? Encrypt.EncryptString(RawPassword) : null; }
             set { RawPassword = Encrypt.DecryptString(value); }
         }
+    }
+
+    public class PixivAccount : Account
+    {
+
+    }
+
+    public class NijieAccount : Account
+    {
+
     }
 }

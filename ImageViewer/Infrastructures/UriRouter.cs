@@ -30,7 +30,8 @@ namespace ImageViewer.Infrastructures
             IsInstagramPhoto,
             IsGyazoPhoto,
             IsGamenNowPhoto,
-            IsPixivPhoto
+            IsPixivPhoto,
+            IsNijiePhoto
         };
 
         private static List<string> IsImageList
@@ -289,6 +290,20 @@ namespace ImageViewer.Infrastructures
                     result = true;
                     resultUri = @"{Pixiv}";
                 }
+            }
+            return result;
+        }
+
+        private static bool IsNijiePhoto(string uri, out string resultUri)
+        {
+            var result = false;
+            resultUri = null;
+
+            var regex = new Regex(@"(?<baseUri>http(s)?://(www.)?nijie.info/view.php)(?<args>.*)");
+            if (regex.IsMatch(uri))
+            {
+                result = true;
+                resultUri = @"{Nijie}";
             }
             return result;
         }

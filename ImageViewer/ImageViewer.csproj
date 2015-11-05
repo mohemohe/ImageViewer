@@ -102,8 +102,9 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Infrastructures\Encrypt.cs" />
+    <Compile Include="Infrastructures\NijieCrawler.cs" />
     <Compile Include="Infrastructures\PixivCrawler.cs" />
-    <Compile Include="Models\PixivAccount.cs" />
+    <Compile Include="Models\Account.cs" />
     <Compile Include="ViewModels\SettingsWindowViewModel.cs" />
     <Compile Include="Views\ExceptionWindow.xaml.cs">
       <DependentUpon>ExceptionWindow.xaml</DependentUpon>
