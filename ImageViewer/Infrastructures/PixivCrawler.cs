@@ -57,9 +57,9 @@ namespace ImageViewer.Infrastructures
             }
         }
 
-        public static async Task<PixivImageInfo> GetImage(string uri)
+        public static async Task<ImagePack> GetImage(string uri)
         {
-            var result = new PixivImageInfo();
+            var result = new ImagePack();
 
             if (_cookie == null)
             {
@@ -113,12 +113,6 @@ namespace ImageViewer.Infrastructures
             }
 
             return result;
-        }
-
-        public class PixivImageInfo
-        {
-            public string ImageUri { get; set; }
-            public byte[] ImageData { get; set; }
         }
     }
 }

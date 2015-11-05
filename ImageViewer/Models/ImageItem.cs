@@ -42,38 +42,55 @@ namespace ImageViewer.Models
             switch (uri)
             {
                 case @"{Pixiv}":
-                {
-                    ImageUri = originalUri;
-                    OriginalUri = originalUri;
-
-                    var imageInfo = await PixivCrawler.GetImage(originalUri);
-                    if (imageInfo.ImageData != null)
                     {
-                        SetData(imageInfo.ImageData);
-                        Name = Path.GetFileName(imageInfo.ImageUri);
-                        IsLoading = Visibility.Hidden;
-                        return (BitmapImage) Bitmap;
+                        ImageUri = originalUri;
+                        OriginalUri = originalUri;
+
+                        var imageInfo = await PixivCrawler.GetImage(originalUri);
+                        if (imageInfo.ImageData != null)
+                        {
+                            SetData(imageInfo.ImageData);
+                            Name = Path.GetFileName(imageInfo.ImageUri);
+                            IsLoading = Visibility.Hidden;
+                            return (BitmapImage) Bitmap;
+                        }
+                        IsError = true;
+                        break;
                     }
-                    IsError = true;
-                    break;
-                }
 
                 case @"{Nijie}":
-                {
-                    ImageUri = originalUri;
-                    OriginalUri = originalUri;
-
-                    var imageInfo = await NijieCrawler.GetImage(originalUri);
-                    if (imageInfo.ImageData != null)
                     {
-                        SetData(imageInfo.ImageData);
-                        Name = Path.GetFileName(imageInfo.ImageUri);
-                        IsLoading = Visibility.Hidden;
-                        return (BitmapImage) Bitmap;
+                        ImageUri = originalUri;
+                        OriginalUri = originalUri;
+
+                        var imageInfo = await NijieCrawler.GetImage(originalUri);
+                        if (imageInfo.ImageData != null)
+                        {
+                            SetData(imageInfo.ImageData);
+                            Name = Path.GetFileName(imageInfo.ImageUri);
+                            IsLoading = Visibility.Hidden;
+                            return (BitmapImage)Bitmap;
+                        }
+                        IsError = true;
+                        break;
                     }
-                    IsError = true;
-                    break;
-                }
+
+                case @"{Seiga}":
+                    {
+                        ImageUri = originalUri;
+                        OriginalUri = originalUri;
+
+                        var imageInfo = await SeigaCrawler.GetImage(originalUri);
+                        if (imageInfo.ImageData != null)
+                        {
+                            SetData(imageInfo.ImageData);
+                            Name = Path.GetFileName(imageInfo.ImageUri);
+                            IsLoading = Visibility.Hidden;
+                            return (BitmapImage)Bitmap;
+                        }
+                        IsError = true;
+                        break;
+                    }
             }
 
 

@@ -31,7 +31,8 @@ namespace ImageViewer.Infrastructures
             IsGyazoPhoto,
             IsGamenNowPhoto,
             IsPixivPhoto,
-            IsNijiePhoto
+            IsNijiePhoto,
+            IsSeigaPhoto,
         };
 
         private static List<string> IsImageList
@@ -304,6 +305,20 @@ namespace ImageViewer.Infrastructures
             {
                 result = true;
                 resultUri = @"{Nijie}";
+            }
+            return result;
+        }
+
+        private static bool IsSeigaPhoto(string uri, out string resultUri)
+        {
+            var result = false;
+            resultUri = null;
+
+            var regex = new Regex(@"(?<baseUri>http(s)?://seiga.nicovideo.jp/seiga/)(?<imageId>.*)");
+            if (regex.IsMatch(uri))
+            {
+                result = true;
+                resultUri = @"{Seiga}";
             }
             return result;
         }

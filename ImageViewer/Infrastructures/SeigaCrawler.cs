@@ -1,4 +1,5 @@
-﻿using ImageViewer.Models;
+﻿using System;
+using ImageViewer.Models;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -9,8 +10,15 @@ using HAP = HtmlAgilityPack;
 
 namespace ImageViewer.Infrastructures
 {
-    public static class NijieCrawler
+    public static class SeigaCrawler
     {
+        private static CookieContainer _cookie;
+
+        private static async void Login()
+        {
+            throw new NotImplementedException();
+        }
+
         public static async Task<ImagePack> GetImage(string uri)
         {
             var result = new ImagePack();
@@ -39,8 +47,7 @@ namespace ImageViewer.Infrastructures
             doc.LoadHtml(html);
 
             var imageUri = doc.DocumentNode.SelectSingleNode(@"//meta[@property='og:image']")?
-                                           .GetAttributeValue(@"content", string.Empty)?
-                                           .Replace(@"/sp/", @"/");
+                                           .GetAttributeValue(@"content", string.Empty);
             if (!string.IsNullOrEmpty(imageUri))
             {
                 result.ImageUri = imageUri;
