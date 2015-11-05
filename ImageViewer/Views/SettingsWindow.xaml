@@ -152,7 +152,7 @@
                             </StackPanel>
                             <StackPanel>
                                 <TextBlock Text="取得ソース（よく分からない場合は変更しないでください）" Margin="2,10,0,0" />
-                                <RadioButton Content="img.azyobuzi.net" IsChecked="True" Margin="16,4,0,0" />
+                                <RadioButton Content="img.azyobuzi.net （全年齢のみ）" IsChecked="True" Margin="16,4,0,0" />
                                 <RadioButton x:Name="PixivWebScrapingRadioButton" Content="独自Webスクレイピング"
                                              IsChecked="{Binding IsUsePixivWebScraping, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                              Margin="16,4,0,0" />
@@ -191,7 +191,7 @@
 
                         <StackPanel Margin="0,0,0,24">
                             <StackPanel>
-                                <TextBlock Text="ニコニコ静画" FontSize="14.667" FontWeight="Bold" Margin="8,0,0,0" />
+                                <TextBlock Text="ニコニコ静画（イラスト）" FontSize="14.667" FontWeight="Bold" Margin="8,0,0,0" />
                                 <Border BorderBrush="{DynamicResource MetroBlue}" BorderThickness="0,1,0,0" />
                             </StackPanel>
                             <StackPanel>
