@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Windows;
 using System.Windows.Navigation;
+using ImageViewer.ViewModels;
 
 namespace ImageViewer.Views
 {
@@ -21,12 +22,20 @@ namespace ImageViewer.Views
         public SettingsWindow()
         {
             InitializeComponent();
+
+            Loaded += (sender, args) => VM.View = this;
+
             Menu.Focus();
         }
 
         private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
         {
             Process.Start(e.Uri.AbsoluteUri);
+        }
+
+        public SettingsWindowViewModel VM
+        {
+            get { return DataContext as SettingsWindowViewModel; }
         }
     }
 }

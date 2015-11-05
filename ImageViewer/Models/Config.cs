@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Reflection;
 using System.Windows;
 using System.Xml.Serialization;
@@ -22,6 +21,7 @@ namespace ImageViewer.Models
 
         public bool? IsUsePixivWebScraping;
 
+        // ReSharper disable once InconsistentNaming
         public bool? IsWarningTwitter30secMovie;
 
         public double? MouseSensibility;
@@ -36,9 +36,9 @@ namespace ImageViewer.Models
     /// </summary>
     internal static class Config
     {
-        private static readonly string appPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-        private static readonly string fileName = @"Settings.xml";
-        private static readonly string filePath = Path.Combine(appPath, fileName);
+        private static readonly string AppPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+        private const string FileName = @"Settings.xml";
+        private static readonly string FilePath = Path.Combine(AppPath, FileName);
 
         /// <summary>
         ///     ファイルから設定を読み込む
@@ -47,14 +47,15 @@ namespace ImageViewer.Models
         {
             var xmlSettings = new Settings();
             var xs = new XmlSerializer(typeof (Settings));
-            if (File.Exists(filePath))
+            if (File.Exists(FilePath))
             {
-                using (var fs = new FileStream(filePath, FileMode.Open))
+                using (var fs = new FileStream(FilePath, FileMode.Open))
                 {
                     try
                     {
                         xmlSettings = (Settings) xs.Deserialize(fs);
                     }
+                    // ReSharper disable once EmptyGeneralCatchClause
                     catch { }
                     finally
                     {
@@ -102,7 +103,7 @@ namespace ImageViewer.Models
             };
 
             var xs = new XmlSerializer(typeof (Settings));
-            using (var fs = new FileStream(filePath, FileMode.Create, FileAccess.Write))
+            using (var fs = new FileStream(FilePath, FileMode.Create, FileAccess.Write))
             {
                 xs.Serialize(fs, xmls);
             }
@@ -113,6 +114,7 @@ namespace ImageViewer.Models
         /// <summary>
         ///     実際の設定値はここに記憶される
         /// </summary>
+        // ReSharper disable InconsistentNaming
         private static class _Config
         {
             public static string _DefaultBrowserPath { get; set; }
@@ -125,7 +127,7 @@ namespace ImageViewer.Models
             public static bool _IsUsePixivWebScraping { get; set; }
             public static PixivAccount _PixivAccount { get; set; }
         }
-
+        // ReSharper restore InconsistentNaming
         #endregion
 
         #region Accessor
@@ -166,6 +168,7 @@ namespace ImageViewer.Models
             set { _Config._IsFallbackTwitterGifMovie = value; }
         }
 
+        // ReSharper disable once InconsistentNaming
         public static bool IsWarningTwitter30secMovie
         {
             get { return _Config._IsWarningTwitter30secMovie; }
