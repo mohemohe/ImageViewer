@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Reflection;
 using System.Windows;
 using System.Xml.Serialization;
@@ -50,10 +51,17 @@ namespace ImageViewer.Models
             if (File.Exists(FilePath))
             {
                 using (var fs = new FileStream(FilePath, FileMode.Open))
+                using (var sr = new StreamReader(fs))
+                using (var r = new StringReader(sr.ReadToEnd()))
                 {
                     try
                     {
-                        xmlSettings = (Settings) xs.Deserialize(fs);
+                        xmlSettings = (Settings) xs.Deserialize(r);
+                    }
+                    catch (InvalidOperationException e)
+                    {
+                        var ex = new InvalidOperationException("設定ファイルの読み込みに失敗しました。\nSettings.xml が不正な可能性があります。", e);
+                        throw ex;
                     }
                     // ReSharper disable once EmptyGeneralCatchClause
                     catch { }

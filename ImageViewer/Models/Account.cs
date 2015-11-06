@@ -8,11 +8,10 @@ namespace ImageViewer.Models
 {
     public class Account
     {
-        [XmlElement(IsNullable = true)]
         public string Id { get; set; }
 
         [XmlIgnore]
-        public SecureString Password { get; set; }
+        private SecureString Password { get; set; }
 
         [XmlIgnore]
         public unsafe string RawPassword
@@ -44,7 +43,6 @@ namespace ImageViewer.Models
             }
         }
 
-        [XmlElement(IsNullable = true)]
         public string EncryptedPassword
         {
             get { return RawPassword != null ? Encrypt.EncryptString(RawPassword) : null; }

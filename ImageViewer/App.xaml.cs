@@ -146,11 +146,13 @@ namespace ImageViewer
         //集約エラーハンドラ
         private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
-            _mainWindow?.Hide();
-
             var window = new ExceptionWindow(e);
-            window.Owner = Current.MainWindow;
-            window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+            if (Current.MainWindow?.DataContext != null)
+            {
+                _mainWindow?.Hide();
+                window.Owner = Current.MainWindow;
+                window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+            }
 
             // true: 続行, false: 終了
             var result = window.ShowDialog();
