@@ -1,20 +1,18 @@
-﻿using Livet;
+﻿using ImageViewer.Models;
+using ImageViewer.Views;
+using Livet;
 using Livet.Commands;
+using Livet.Messaging;
 using Livet.Messaging.IO;
+using Livet.Messaging.Windows;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows;
-using System.Windows.Media.Imaging;
-using Livet.Converters;
-using ImageViewer.Models;
-using System.Collections.ObjectModel;
-using Livet.Messaging.Windows;
-using ImageViewer.Views;
 using System.Windows.Controls;
-using System.Threading.Tasks;
 
 namespace ImageViewer.ViewModels
 {
@@ -64,7 +62,6 @@ namespace ImageViewer.ViewModels
 
         public void Initialize()
         {
-            
         }
 
         public async void AddTab(string imageUri, string originalUri = null)
@@ -79,21 +76,24 @@ namespace ImageViewer.ViewModels
             {
                 View.WindowState = WindowState.Normal;
             }
-            for(var i = 0; i < 50; i++)
+            for (var i = 0; i < 50; i++)
             {
                 if (Application.Current.MainWindow.Activate())
                 {
                     break;
                 }
             }
-            
+
             var template = View.TabControl.Template;
-            var sv = (ScrollViewer)template.FindName("ScrollableTab", View.TabControl);
+            var sv = (ScrollViewer) template.FindName("ScrollableTab", View.TabControl);
             sv.ScrollToRightEnd();
 
-            await DeferredImageItems[DeferredImageItems.Count - 1].DownloadDataAsync();
+            await DeferredImageItems[DeferredImageItems.Count - 1].DownloadDataAsync(
+                DeferredImageItems[DeferredImageItems.Count - 1].ImageUri,
+                DeferredImageItems[DeferredImageItems.Count - 1].OriginalUri);
             SelectedImageWidth = DeferredImageItems[SelectedIndex].Width;
             SelectedImageHeight = DeferredImageItems[SelectedIndex].Height;
+            DeferredImageItems[DeferredImageItems.Count - 1].Zoom = 1.0;
         }
 
         private void CalcZoom()
@@ -102,31 +102,47 @@ namespace ImageViewer.ViewModels
             {
                 var imageSize = DeferredImageItems[_SelectedIndex].Width;
                 var renderSize = ImageRenderWidth;
-                if(imageSize == 0)
+                if (imageSize == 0)
                 {
                     return;
                 }
+                var zoomBase = (renderSize / (double)imageSize);
+                Zoom = Convert.ToInt32(zoomBase * 100);
+            }
+        }
 
-                Zoom = Convert.ToInt32((renderSize/(double)imageSize)*100);
+        private void CalcActualZoom()
+        {
+            if (_SelectedIndex != -1 && DeferredImageItems[_SelectedIndex].Bitmap != null)
+            {
+                var imageSize = DeferredImageItems[_SelectedIndex].Width;
+                var renderSize = ImageRenderWidth;
+                if (imageSize == 0)
+                {
+                    return;
+                }
+                var zoomBase = (renderSize / (double)imageSize);
+                DeferredImageItems[_SelectedIndex].ActualZoom = zoomBase;
             }
         }
 
         #region View変更通知プロパティ
+
         private MainWindow _View;
 
         public MainWindow View
         {
-            get
-            { return _View; }
+            get { return _View; }
             set
-            { 
+            {
                 if (_View == value)
                     return;
                 _View = value;
                 RaisePropertyChanged();
             }
         }
-        #endregion
+
+        #endregion View変更通知プロパティ
 
         #region ステータスバーにバインディング
 
@@ -144,27 +160,29 @@ namespace ImageViewer.ViewModels
                 _ImageRenderWidth = value;
                 RaisePropertyChanged();
                 CalcZoom();
+                CalcActualZoom();
             }
         }
 
         #endregion ImageRenderWidth変更通知プロパティ
 
         #region ImageRenderHeight変更通知プロパティ
+
         private int _ImageRenderHeight;
 
         public int ImageRenderHeight
         {
-            get
-            { return _ImageRenderHeight; }
+            get { return _ImageRenderHeight; }
             set
-            { 
+            {
                 if (_ImageRenderHeight == value)
                     return;
                 _ImageRenderHeight = value;
                 RaisePropertyChanged();
             }
         }
-        #endregion
+
+        #endregion ImageRenderHeight変更通知プロパティ
 
         #region SelectedImageWidth変更通知プロパティ
 
@@ -182,7 +200,7 @@ namespace ImageViewer.ViewModels
             }
         }
 
-        #endregion ImageRenderWidth変更通知プロパティ
+        #endregion SelectedImageWidth変更通知プロパティ
 
         #region SelectedImageHeight変更通知プロパティ
 
@@ -201,7 +219,7 @@ namespace ImageViewer.ViewModels
             }
         }
 
-        #endregion ImageRenderHeight変更通知プロパティ
+        #endregion SelectedImageHeight変更通知プロパティ
 
         #region Zoom変更通知プロパティ
 
@@ -232,12 +250,16 @@ namespace ImageViewer.ViewModels
             get { return _SelectedIndex; }
             set
             {
-                _SelectedIndex = value;
-                if (value != -1)
+                if (DeferredImageItems != null && value < DeferredImageItems.Count)
                 {
-                    SelectedImageWidth = DeferredImageItems[value].Width;
-                    SelectedImageHeight = DeferredImageItems[value].Height;
-                    CalcZoom();
+                    _SelectedIndex = value;
+
+                    if (value != -1)
+                    {
+                        SelectedImageWidth = DeferredImageItems[value].Width;
+                        SelectedImageHeight = DeferredImageItems[value].Height;
+                        CalcZoom();
+                    }
                 }
                 RaisePropertyChanged();
             }
@@ -263,6 +285,52 @@ namespace ImageViewer.ViewModels
 
         #endregion DeferredImageItems変更通知プロパティ
 
+        #region MaximizeZoomCommand
+        private ViewModelCommand _MaximizeZoomCommand;
+
+        public ViewModelCommand MaximizeZoomCommand
+        {
+            get
+            {
+                if (_MaximizeZoomCommand == null)
+                {
+                    _MaximizeZoomCommand = new ViewModelCommand(MaximizeZoom);
+                }
+                return _MaximizeZoomCommand;
+            }
+        }
+
+        public void MaximizeZoom()
+        {
+            DeferredImageItems[SelectedIndex].Zoom = 1.0;
+            CalcZoom();
+        }
+        #endregion
+
+        #region ResetZoomCommand
+        private ViewModelCommand _ResetZoomCommand;
+
+        public ViewModelCommand ResetZoomCommand
+        {
+            get
+            {
+                if (_ResetZoomCommand == null)
+                {
+                    _ResetZoomCommand = new ViewModelCommand(ResetZoom);
+                }
+                return _ResetZoomCommand;
+            }
+        }
+
+        public void ResetZoom()
+        {
+            DeferredImageItems[SelectedIndex].Zoom /= DeferredImageItems[SelectedIndex].ActualZoom;
+            Zoom = 100;
+            ImageRenderWidth = DeferredImageItems[SelectedIndex].Width;
+            ImageRenderHeight = DeferredImageItems[SelectedIndex].Height;
+        }
+        #endregion
+
         #region SaveImageCommand
 
         private ViewModelCommand _SaveImageCommand;
@@ -287,29 +355,28 @@ namespace ImageViewer.ViewModels
             }
 
             var fileName = Path.GetFileNameWithoutExtension(DeferredImageItems[SelectedIndex].Name);
-            var ext = Path.GetExtension(DeferredImageItems[SelectedIndex].Name);
+            var ext = Path.GetExtension(DeferredImageItems[SelectedIndex].FileExtension);
 
             var tmpList = new List<string>
             {
-                "JPEG(*.jpg;*.jpeg)|*.jpg;*.jpeg|",
+                "JPEG(*.jpg;*.jpeg;*.jfif)|*.jpg;*.jpeg;*.jfif|",
                 "Bitmap(*.bmp)|*.bmp|",
                 "PNG(*.png)|*.png|",
                 "GIF(*.gif)|*.gif|"
             };
 
             var filterList = new List<string>();
-            filterList.AddRange(tmpList.Where(x => x.Contains(ext)));
+            filterList.AddRange(tmpList.Where(x => ext != null && x.Contains(ext)));
 
             var filter = "";
             filterList.ForEach(x => filter += x);
-            filter = filter.Remove(filter.Length - 1, 1);
-            filter += "|All Files(*.*)|*.*";
+            filter += "All Files(*.*)|*.*";
 
             var message = new SavingFileSelectionMessage("Save")
             {
                 AddExtension = true,
                 FileName = fileName + ext,
-                Filter = filter,
+                Filter = filter
             };
             Messenger.Raise(message);
             if (message.Response == null)
@@ -319,9 +386,11 @@ namespace ImageViewer.ViewModels
 
             DeferredImageItems[SelectedIndex].Save(message.Response[0]);
         }
+
         #endregion SaveImageCommand
 
         #region CopyToClipboardCommand
+
         private ViewModelCommand _CopyToClipboardCommand;
 
         public ViewModelCommand CopyToClipboardCommand
@@ -343,9 +412,11 @@ namespace ImageViewer.ViewModels
                 Clipboard.SetImage(DeferredImageItems[SelectedIndex].Bitmap);
             }
         }
+
         #endregion CopyToClipboardCommand
 
         #region OpenInBrowserCommand
+
         private ViewModelCommand _OpenInBrowserCommand;
 
         public ViewModelCommand OpenInBrowserCommand
@@ -362,14 +433,25 @@ namespace ImageViewer.ViewModels
 
         public void OpenInBrowser()
         {
-            var uri = (DeferredImageItems[SelectedIndex].Bitmap != null) ?
-                DeferredImageItems[SelectedIndex].ImageUri :
-                DeferredImageItems[SelectedIndex].OriginalUri;
-            Process.Start(uri);
+            var uri = (DeferredImageItems[SelectedIndex].IsError)
+                ? DeferredImageItems[SelectedIndex].OriginalUri
+                : DeferredImageItems[SelectedIndex].ImageUri;
+
+            if (Config.DefaultBrowserPath == null)
+            {
+                Process.Start(uri);
+            }
+            else
+            {
+                var psi = new ProcessStartInfo {Arguments = uri, FileName = Config.DefaultBrowserPath};
+                Process.Start(psi);
+            }
         }
+
         #endregion OpenInBrowserCommand
 
         #region SearchByGoogleCommand
+
         private ViewModelCommand _SearchByGoogleCommand;
 
         public ViewModelCommand SearchByGoogleCommand
@@ -388,12 +470,25 @@ namespace ImageViewer.ViewModels
         {
             if (DeferredImageItems[SelectedIndex].Bitmap != null)
             {
-                Process.Start(@"https://www.google.com/searchbyimage?image_url=" + DeferredImageItems[SelectedIndex].ImageUri);
+                var uri = @"https://www.google.com/searchbyimage?image_url=" +
+                          DeferredImageItems[SelectedIndex].ImageUri;
+
+                if (Config.DefaultBrowserPath == null)
+                {
+                    Process.Start(uri);
+                }
+                else
+                {
+                    var psi = new ProcessStartInfo { Arguments = uri, FileName = Config.DefaultBrowserPath };
+                    Process.Start(psi);
+                }
             }
         }
-        #endregion
+
+        #endregion SearchByGoogleCommand
 
         #region TabCloseCommand
+
         private ListenerCommand<int> _TabCloseCommand;
 
         public ListenerCommand<int> TabCloseCommand
@@ -417,10 +512,38 @@ namespace ImageViewer.ViewModels
             }
 
             var currentIndex = SelectedIndex;
-            DeferredImageItems.RemoveAt(parameter);
-            SelectedIndex = currentIndex < DeferredImageItems.Count ? currentIndex : DeferredImageItems.Count - 1;
-        }
-        #endregion
+            SelectedIndex = -1;
 
+            DeferredImageItems.RemoveAt(parameter);
+
+            SelectedIndex = currentIndex < DeferredImageItems.Count
+                ? currentIndex
+                : DeferredImageItems.Count - 1;
+        }
+
+        #endregion TabCloseCommand
+
+        #region OpenSettingsWindowCommand
+
+        private ViewModelCommand _OpenSettingsWindowCommand;
+
+        public ViewModelCommand OpenSettingsWindowCommand
+        {
+            get
+            {
+                if (_OpenSettingsWindowCommand == null)
+                {
+                    _OpenSettingsWindowCommand = new ViewModelCommand(OpenSettingsWindow);
+                }
+                return _OpenSettingsWindowCommand;
+            }
+        }
+
+        public void OpenSettingsWindow()
+        {
+            Messenger.Raise(new TransitionMessage(new SettingsWindowViewModel(), "OpenMessage"));
+        }
+
+        #endregion OpenSettingsWindowCommand
     }
 }

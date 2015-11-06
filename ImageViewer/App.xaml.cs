@@ -1,7 +1,9 @@
 ﻿using ImageViewer.Helpers;
+using ImageViewer.Infrastructures;
 using ImageViewer.Models;
 using ImageViewer.Views;
 using Livet;
+using QuickConverter;
 using System;
 using System.Diagnostics;
 using System.Runtime.Remoting;
@@ -10,142 +12,171 @@ using System.Runtime.Remoting.Channels.Ipc;
 using System.Threading;
 using System.Windows;
 using System.Windows.Interop;
-using System.Windows.Threading;
+using System.Windows.Media;
 
 namespace ImageViewer
 {
     /// <summary>
     ///     App.xaml の相互作用ロジック
     /// </summary>
+    // ReSharper disable once RedundantExtendsListEntry
     public partial class App : Application
     {
-        private static Mutex mutex = new Mutex(false, Application.ResourceAssembly.GetName().Name);
+        private MainWindow _mainWindow;
+        private Mutex _mutex = new Mutex(false, ResourceAssembly.GetName().Name);
 
-#if !DEBUG
-
-        private void Application_Startup(object sender, System.Windows.StartupEventArgs e)
+        public App()
         {
+            EquationTokenizer.AddAssembly(typeof (object).Assembly);
+            EquationTokenizer.AddNamespace(typeof (object));
+            EquationTokenizer.AddNamespace(typeof (string));
+            EquationTokenizer.AddNamespace(typeof (SolidColorBrush));
+            EquationTokenizer.AddNamespace(typeof (Colors));
+        }
+
+        ~App()
+        {
+            _mutex.Close();
+            _mutex.Dispose();
+            _mutex = null;
+        }
+
+        private void Application_Startup(object sender, StartupEventArgs e)
+        {
+#if !DEBUG
             if (e.Args.Length == 0)
             {
                 Environment.Exit(0);
             }
-
+#endif
             DispatcherHelper.UIDispatcher = Dispatcher;
-            //AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
+            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
 
-            if (mutex.WaitOne(0, false) == false)
+            Config.ReadConfig();
+            Exit += (s, a) => { Config.WriteConfig(); };
+
+            if (Config.IsEnablePseudoSingleInstance && _mutex.WaitOne(0, false) == false)
             {
-                IpcClientChannel ipc = new IpcClientChannel();
+                var ipc = new IpcClientChannel();
                 ChannelServices.RegisterChannel(ipc, true);
-                Message message = (Message)RemotingServices.Connect(typeof(Message), @"ipc://" + Application.ResourceAssembly.GetName().Name + @"/Message");
+                var message =
+                    (Message)
+                        RemotingServices.Connect(typeof (Message),
+                            @"ipc://" + ResourceAssembly.GetName().Name + @"/Message");
                 message.RaiseHandler(e.Args);
 
-                mutex.Close();
-                mutex = null;
-                this.Shutdown();
+                // Note: うまく終了しないことがある
+                //this.Shutdown();
+                Environment.Exit(0);
             }
 
-            string imageUri;
-            if (UriRouter.IsImageUri(e.Args[0], out imageUri))
+            var openInBrowser = new Func<string, int>(a =>
             {
-                var window = new MainWindow();
-                var wih = new WindowInteropHelper(window);
-                wih.Owner = Win32Helper.GetForegroundWindow();
-                window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
-                window.Show();
-
-                window.VM.AddTab(imageUri, e.Args[0]);
-
-                IpcServerChannel ipc = new IpcServerChannel(Application.ResourceAssembly.GetName().Name);
-                ChannelServices.RegisterChannel(ipc, true);
-                Message message = new Message();
-                message.MessageHandler += ((string[] args) =>
+                if (Config.DefaultBrowserPath == null)
                 {
-                    if (UriRouter.IsImageUri(args[0], out imageUri))
+                    Process.Start(a);
+                }
+                else
+                {
+                    var psi = new ProcessStartInfo {Arguments = a, FileName = Config.DefaultBrowserPath};
+                    Process.Start(psi);
+                }
+
+                return 0;
+            });
+
+#if !DEBUG
+            var uri = e.Args[0];
+#else
+            var uri = "http://pbs.twimg.com/media/CPFBu36VEAA16jI.png:orig";
+#endif
+
+            string imageUri;
+            if (UriRouter.IsImageUri(ref uri, out imageUri))
+            {
+                _mainWindow = new MainWindow();
+
+                if (Config.IsChildWindow)
+                {
+                    var wih = new WindowInteropHelper(_mainWindow);
+                    wih.Owner = Win32Helper.GetForegroundWindow();
+                    _mainWindow.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                }
+                else
+                {
+                    _mainWindow.WindowStartupLocation = WindowStartupLocation.Manual;
+                    _mainWindow.Top = Config.WindowPosition.Top;
+                    _mainWindow.Left = Config.WindowPosition.Left;
+                }
+
+                if ((int) Config.WindowPosition.Width != 0)
+                {
+                    _mainWindow.Width = Config.WindowPosition.Width;
+                    _mainWindow.Height = Config.WindowPosition.Height;
+                }
+                _mainWindow.Show();
+
+                _mainWindow.VM.AddTab(imageUri, uri);
+
+                if (Config.IsEnablePseudoSingleInstance)
+                {
+                    var ipc = new IpcServerChannel(ResourceAssembly.GetName().Name);
+                    ChannelServices.RegisterChannel(ipc, true);
+                    var message = new Message();
+                    message.MessageHandler += (args =>
                     {
-                        window.VM.AddTab(imageUri, args[0]);
-                    }
-                });
-                RemotingServices.Marshal(message, "Message");
+                        if (UriRouter.IsImageUri(ref args[0], out imageUri))
+                        {
+                            _mainWindow.VM.AddTab(imageUri, args[0]);
+                        }
+                        else
+                        {
+                            openInBrowser(args[0]);
+                        }
+                    });
+                    RemotingServices.Marshal(message, "Message");
+                }
             }
             else
             {
-                Process.Start(e.Args[0]);
-                Environment.Exit(0);
+                Environment.Exit(openInBrowser(uri));
             }
         }
-
-#endif
-#if DEBUG
-        private void Application_Startup(object sender, System.Windows.StartupEventArgs e)
-        {
-            DispatcherHelper.UIDispatcher = Dispatcher;
-            //AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
-
-            string testUri = "https://pbs.twimg.com/media/CDc-gf3VIAAD6q9.png:orig";
-
-            if (mutex.WaitOne(0, false) == false)
-            {
-                IpcClientChannel ipc = new IpcClientChannel();
-                ChannelServices.RegisterChannel(ipc, true);
-                Message message = (Message)RemotingServices.Connect(typeof(Message), @"ipc://" + Application.ResourceAssembly.GetName().Name + @"/Message");
-                message.RaiseHandler(new string[] { testUri });
-
-                mutex.Close();
-                mutex = null;
-                this.Shutdown();
-            }
-
-            
-            string imageUri;
-            if (UriRouter.IsImageUri(testUri, out imageUri))
-            {
-                var window = new MainWindow();
-                var wih = new WindowInteropHelper(window);
-                wih.Owner = Win32Helper.GetForegroundWindow();
-                window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
-                window.Show();
-
-                window.VM.AddTab(imageUri, testUri);
-
-                IpcServerChannel ipc = new IpcServerChannel(Application.ResourceAssembly.GetName().Name);
-                ChannelServices.RegisterChannel(ipc, true);
-                Message message = new Message();
-                message.MessageHandler += ((string[] args) =>
-                {
-                    if (UriRouter.IsImageUri(args[0], out imageUri))
-                    {
-                        window.VM.AddTab(imageUri, args[0]);
-                    }
-                });
-                RemotingServices.Marshal(message, "Message");
-            }
-        }
-#endif
 
         //集約エラーハンドラ
-        //private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
-        //{
-        //    //TODO:ロギング処理など
-        //    MessageBox.Show(
-        //        "不明なエラーが発生しました。アプリケーションを終了します。",
-        //        "エラー",
-        //        MessageBoxButton.OK,
-        //        MessageBoxImage.Error);
-        //
-        //    Environment.Exit(1);
-        //}
+        private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            _mainWindow?.Hide();
+
+            var window = new ExceptionWindow(e);
+            window.Owner = Current.MainWindow;
+            window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+
+            // true: 続行, false: 終了
+            var result = window.ShowDialog();
+            if (result != null)
+            {
+                // 遅い
+                //Environment.Exit(1);
+
+                // 終了コード-1を返したい
+                _mutex.Close();
+                _mutex.Dispose();
+                _mutex = null;
+                Process.GetCurrentProcess().Kill();
+            }
+        }
     }
 
-    delegate void MessageHandler(string[] args);
+    internal delegate void MessageHandler(string[] args);
 
-    class Message : MarshalByRefObject
+    internal class Message : MarshalByRefObject
     {
         public MessageHandler MessageHandler;
 
         public void RaiseHandler(string[] args)
         {
-            DispatcherHelper.UIDispatcher.BeginInvoke(MessageHandler, new object[] { args });
+            DispatcherHelper.UIDispatcher.BeginInvoke(MessageHandler, new object[] {args});
         }
 
         public override object InitializeLifetimeService()

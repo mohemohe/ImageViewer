@@ -1,11 +1,8 @@
 ﻿using ImageViewer.Helpers;
+using ImageViewer.Infrastructures;
 using Livet;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Net;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Imaging;
@@ -14,65 +11,6 @@ namespace ImageViewer.Models
 {
     public class ImageItem : Image
     {
-        public string Name { get; set; }
-        public string OriginalUri { get; private set; }
-        public string ImageUri { get; private set; }
-        public bool IsError { get; private set; }
-
-        #region IsLoading変更通知プロパティ
-        private Visibility _IsLoading;
-
-        public Visibility IsLoading
-        {
-            get
-            { return _IsLoading; }
-            set
-            { 
-                if (_IsLoading == value)
-                    return;
-                _IsLoading = value;
-                RaisePropertyChanged();
-            }
-        }
-        #endregion
-
-        #region Zoom変更通知プロパティ
-        private double _Zoom = 1.0;
-
-        public double Zoom
-        {
-            get
-            { return _Zoom; }
-            set
-            { 
-                if (_Zoom == value)
-                    return;
-                _Zoom = value;
-                RaisePropertyChanged();
-            }
-        }
-        #endregion
-
-        #region Translate変更通知プロパティ
-        private DimensionHelper.TwoDimension _Translate = new DimensionHelper.TwoDimension { X = 0.5, Y = 0.5 };
-
-        public DimensionHelper.TwoDimension Translate
-        {
-            get
-            { return _Translate; }
-            set
-            { 
-                if (_Translate == value)
-                    return;
-                _Translate = value;
-                RaisePropertyChanged();
-            }
-        }
-        #endregion
-
-        public int Width { get { return (!IsError && base.Bitmap != null) ? (int)base.Bitmap.Width : 0 ; } }
-        public int Height { get { return (!IsError && base.Bitmap != null) ? (int)base.Bitmap?.Height : 0 ; } }
-
         public ImageItem(string imageUri, string originalUri = null)
         {
             ImageUri = imageUri;
@@ -81,28 +19,201 @@ namespace ImageViewer.Models
             IsLoading = Visibility.Visible;
         }
 
-        public async new Task<BitmapImage> DownloadDataAsync(string imageUri = null, string originalUri = null)
+        public string OriginalUri { get; private set; }
+        public string ImageUri { get; private set; }
+        public bool IsError { get; private set; }
+        public bool IsMovie { get; private set; }
+
+        public int Width
         {
-            BitmapImage bi;
-            try {
-                if (imageUri != null)
+            get { return (!IsError && Bitmap != null) ? (int) Bitmap.Width : 0; }
+        }
+
+        public int Height
+        {
+            get { return (!IsError && Bitmap != null) ? (int) Bitmap?.Height : 0; }
+        }
+
+        public new async Task<BitmapImage> DownloadDataAsync(string imageUri, string originalUri)
+        {
+            var uri = imageUri;
+            var bi = new BitmapImage();
+
+            switch (uri)
+            {
+                case @"{Pixiv}":
+                    {
+                        ImageUri = originalUri;
+                        OriginalUri = originalUri;
+
+                        var imageInfo = await PixivCrawler.GetImage(originalUri);
+                        if (imageInfo.ImageData != null)
+                        {
+                            SetData(imageInfo.ImageData);
+                            Name = Path.GetFileName(imageInfo.ImageUri);
+                            IsLoading = Visibility.Hidden;
+                            return (BitmapImage) Bitmap;
+                        }
+                        IsError = true;
+                        break;
+                    }
+
+                case @"{Nijie}":
+                    {
+                        ImageUri = originalUri;
+                        OriginalUri = originalUri;
+
+                        var imageInfo = await NijieCrawler.GetImage(originalUri);
+                        if (imageInfo.ImageData != null)
+                        {
+                            SetData(imageInfo.ImageData);
+                            Name = Path.GetFileName(imageInfo.ImageUri);
+                            IsLoading = Visibility.Hidden;
+                            return (BitmapImage)Bitmap;
+                        }
+                        IsError = true;
+                        break;
+                    }
+
+                case @"{Seiga}":
+                    {
+                        ImageUri = originalUri;
+                        OriginalUri = originalUri;
+
+                        var imageInfo = await SeigaCrawler.GetImage(originalUri);
+                        if (imageInfo.ImageData != null)
+                        {
+                            SetData(imageInfo.ImageData);
+                            Name = Path.GetFileName(imageInfo.ImageUri);
+                            IsLoading = Visibility.Hidden;
+                            return (BitmapImage)Bitmap;
+                        }
+                        IsError = true;
+                        break;
+                    }
+            }
+
+
+            // TODO: いくらなんでもここに書くのは汚いので後で移す
+            IsMovie |= (Config.IsWarningTwitter30secMovie &&
+                        (uri.StartsWith(@"https://pbs.twimg.com/ext_tw_video_thumb/") ||
+                         uri.StartsWith(@"http://pbs.twimg.com/ext_tw_video_thumb/")));
+
+            try
+            {
+                if (!IsError && !IsMovie)
                 {
-                    bi = await base.DownloadDataAsync(imageUri, originalUri);
-                }
-                else
-                {
-                    bi = await base.DownloadDataAsync(ImageUri, OriginalUri);
+                    bi = await base.DownloadDataAsync(uri, originalUri);
                 }
             }
             catch
             {
-                bi = new BitmapImage(new Uri(@"pack://application:,,,/Resources/IcoMoon/warning.png", UriKind.Absolute));
-                base.Bitmap = bi;
                 IsError = true;
+            }
+
+            if (IsError)
+            {
+                bi = new BitmapImage(new Uri(@"pack://application:,,,/Resources/IcoMoon/warning.png", UriKind.Absolute));
+                Bitmap = bi;
+            }
+            else if (IsMovie)
+            {
+                bi = new BitmapImage(new Uri(@"pack://application:,,,/Resources/IcoMoon/file-play.png", UriKind.Absolute));
+                Bitmap = bi;
             }
             IsLoading = Visibility.Hidden;
 
             return bi;
         }
+
+        #region Name変更通知プロパティ
+
+        private string _Name;
+
+        public string Name
+        {
+            get { return _Name; }
+            set
+            {
+                if (_Name == value)
+                    return;
+                _Name = value;
+                RaisePropertyChanged();
+            }
+        }
+
+        #endregion Name変更通知プロパティ
+
+        #region IsLoading変更通知プロパティ
+
+        private Visibility _IsLoading;
+
+        public Visibility IsLoading
+        {
+            get { return _IsLoading; }
+            set
+            {
+                if (_IsLoading == value)
+                    return;
+                _IsLoading = value;
+                RaisePropertyChanged();
+            }
+        }
+
+        #endregion IsLoading変更通知プロパティ
+
+        #region Zoom変更通知プロパティ
+
+        private double _Zoom = 1.0;
+
+        public double Zoom
+        {
+            get { return _Zoom; }
+            set
+            {
+                if (_Zoom == value)
+                    return;
+                _Zoom = value;
+                RaisePropertyChanged();
+                ActualZoom *= value;
+            }
+        }
+
+        #endregion Zoom変更通知プロパティ
+
+        #region ActualZoom変更通知プロパティ
+        private double _ActualZoom;
+
+        public double ActualZoom
+        {
+            get
+            { return _ActualZoom; }
+            set
+            { 
+                if (_ActualZoom == value)
+                    return;
+                _ActualZoom = value;
+                RaisePropertyChanged();
+            }
+        }
+        #endregion
+
+        #region Translate変更通知プロパティ
+
+        private DimensionHelper.TwoDimension _Translate = new DimensionHelper.TwoDimension {X = 0.5, Y = 0.5};
+
+        public DimensionHelper.TwoDimension Translate
+        {
+            get { return _Translate; }
+            set
+            {
+                if (_Translate == value)
+                    return;
+                _Translate = value;
+                RaisePropertyChanged();
+            }
+        }
+
+        #endregion Translate変更通知プロパティ
     }
 }
