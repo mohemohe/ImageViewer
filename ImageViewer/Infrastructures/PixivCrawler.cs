@@ -16,7 +16,7 @@ namespace ImageViewer.Infrastructures
         private static CookieContainer _cookie;
         private const string Service = @"Pixiv";
 
-        private static async void Login()
+        private static async Task Login()
         {
             const string loginUri = @"https://www.secure.pixiv.net/login.php";
 
@@ -101,8 +101,12 @@ namespace ImageViewer.Infrastructures
             var html = await getHtml(uri);
             if (!html.Contains(@"ログアウト"))
             {
-                Login();
+                await Login();
                 html = await getHtml(uri);
+            }
+            else
+            {
+                CookieHelper.SaveCookie(_cookie, Service);
             }
 
             var doc = new HAP.HtmlDocument
