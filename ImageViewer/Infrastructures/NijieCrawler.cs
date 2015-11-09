@@ -19,7 +19,7 @@ namespace ImageViewer.Infrastructures
 
             var html = "";
 
-            var encoder = Encoding.GetEncoding("UTF-8");
+            var encoder = Encoding.GetEncoding(@"UTF-8");
             using (var res = await req.GetResponseAsync())
             using (var resStream = res.GetResponseStream())
                 if (resStream != null)

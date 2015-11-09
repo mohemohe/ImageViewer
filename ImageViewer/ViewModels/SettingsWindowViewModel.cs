@@ -31,6 +31,8 @@ namespace ImageViewer.ViewModels
             IsWarningTwitter30secMovie = Config.IsWarningTwitter30secMovie;
             IsUsePixivWebScraping = Config.IsUsePixivWebScraping;
             PixivAccount = Config.PixivAccount;
+            IsUseNicoSeigaWebScraping = Config.IsUseNicoSeigaWebScraping;
+            SeigaAccount = Config.NicovideoAccount;
             MouseSensibility = Config.MouseSensibility;
         }
 
@@ -232,6 +234,40 @@ namespace ImageViewer.ViewModels
 
         #endregion PixivAccount変更通知プロパティ
 
+        #region IsUseNicoSeigaWebScraping変更通知プロパティ
+        private bool _IsUseNicoSeigaWebScraping;
+
+        public bool IsUseNicoSeigaWebScraping
+        {
+            get
+            { return _IsUseNicoSeigaWebScraping; }
+            set
+            { 
+                if (_IsUseNicoSeigaWebScraping == value)
+                    return;
+                _IsUseNicoSeigaWebScraping = value;
+                RaisePropertyChanged();
+            }
+        }
+        #endregion
+
+        #region SeigaAccount変更通知プロパティ
+        private NicovideoAccount _SeigaAccount;
+
+        public NicovideoAccount SeigaAccount
+        {
+            get
+            { return _SeigaAccount; }
+            set
+            { 
+                if (_SeigaAccount == value)
+                    return;
+                _SeigaAccount = value;
+                RaisePropertyChanged();
+            }
+        }
+        #endregion
+
         #endregion サイト別設定
 
         #region 外部アプリケーション
@@ -351,6 +387,8 @@ namespace ImageViewer.ViewModels
             Config.IsWarningTwitter30secMovie = IsWarningTwitter30secMovie;
             Config.IsUsePixivWebScraping = IsUsePixivWebScraping;
             Config.PixivAccount = PixivAccount;
+            Config.IsUseNicoSeigaWebScraping = IsUseNicoSeigaWebScraping;
+            Config.NicovideoAccount = SeigaAccount;
             Config.MouseSensibility = MouseSensibility;
         }
 

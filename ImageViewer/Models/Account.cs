@@ -57,6 +57,11 @@ namespace ImageViewer.Models
 
     public class NijieAccount : Account
     {
+        
+    }
+
+    public class NicovideoAccount : Account
+    {
 
     }
 }

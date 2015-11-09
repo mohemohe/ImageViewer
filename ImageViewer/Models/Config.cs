@@ -29,6 +29,10 @@ namespace ImageViewer.Models
 
         public PixivAccount PixivAccount;
 
+        public bool? IsUseNicoSeigaWebScraping;
+
+        public NicovideoAccount NicovideoAccount;
+
         public Rect WindowPosition;
     }
 
@@ -81,6 +85,8 @@ namespace ImageViewer.Models
             _Config._IsWarningTwitter30secMovie = TryReadValue(xmlSettings.IsWarningTwitter30secMovie, null, false);
             _Config._IsUsePixivWebScraping = TryReadValue(xmlSettings.IsUsePixivWebScraping, null, false);
             _Config._PixivAccount = TryReadValue(xmlSettings.PixivAccount, null, new PixivAccount());
+            _Config._IsUseNicoSeigaWebScraping = TryReadValue(xmlSettings.IsUseNicoSeigaWebScraping, null, false);
+            _Config._NicovideoAccount = TryReadValue(xmlSettings.NicovideoAccount, null, new NicovideoAccount());
         }
 
         private static dynamic TryReadValue(dynamic source, dynamic check, dynamic defaultValue)
@@ -108,6 +114,8 @@ namespace ImageViewer.Models
                 IsWarningTwitter30secMovie = _Config._IsWarningTwitter30secMovie,
                 IsUsePixivWebScraping = _Config._IsUsePixivWebScraping,
                 PixivAccount = _Config._PixivAccount,
+                IsUseNicoSeigaWebScraping = _Config._IsUseNicoSeigaWebScraping,
+                NicovideoAccount = _Config._NicovideoAccount,
             };
 
             var xs = new XmlSerializer(typeof (Settings));
@@ -134,6 +142,8 @@ namespace ImageViewer.Models
             public static bool _IsWarningTwitter30secMovie { get; set; }
             public static bool _IsUsePixivWebScraping { get; set; }
             public static PixivAccount _PixivAccount { get; set; }
+            public static bool _IsUseNicoSeigaWebScraping { get; set; }
+            public static NicovideoAccount _NicovideoAccount { get; set; }
         }
         // ReSharper restore InconsistentNaming
         #endregion
@@ -193,6 +203,18 @@ namespace ImageViewer.Models
         {
             get { return _Config._PixivAccount; }
             set { _Config._PixivAccount = value; }
+        }
+
+        public static bool IsUseNicoSeigaWebScraping
+        {
+            get { return _Config._IsUsePixivWebScraping; }
+            set { _Config._IsUsePixivWebScraping = value; }
+        }
+
+        public static NicovideoAccount NicovideoAccount
+        {
+            get { return _Config._NicovideoAccount; }
+            set { _Config._NicovideoAccount = value; }
         }
 
         #endregion Accessor
