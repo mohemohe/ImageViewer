@@ -183,7 +183,17 @@
                                     </PasswordBox>
                                     <StackPanel Grid.Row="4" Grid.ColumnSpan="3">
                                         <TextBlock Text="入力されたアカウント情報は、ログイン処理、および画像の取得にのみ使用します。" />
-                                        <TextBlock Text="挙動に対して疑問がある場合は、ImageViewerのソースコードを確認してください。" />
+                                        <WrapPanel>
+                                            <TextBlock Text="挙動に対して疑問がある場合は、" />
+                                            <TextBlock HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="12">
+                                            <Hyperlink
+                                                NavigateUri="https://github.com/mohemohe/ImageViewer/blob/develop/ImageViewer/Infrastructures/PixivCrawler.cs"
+                                                RequestNavigate="Hyperlink_RequestNavigate">
+                                                ImageViewerのソースコード
+                                            </Hyperlink>
+                                            </TextBlock>
+                                            <TextBlock Text="を確認してください。" />
+                                        </WrapPanel>
                                     </StackPanel>
                                 </Grid>
                             </StackPanel>
@@ -227,7 +237,17 @@
                                     </PasswordBox>
                                     <StackPanel Grid.Row="4" Grid.ColumnSpan="3">
                                         <TextBlock Text="入力されたアカウント情報は、ログイン処理、および画像の取得にのみ使用します。" />
-                                        <TextBlock Text="挙動に対して疑問がある場合は、ImageViewerのソースコードを確認してください。" />
+                                        <WrapPanel>
+                                            <TextBlock Text="挙動に対して疑問がある場合は、" />
+                                            <TextBlock HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="12">
+                                            <Hyperlink
+                                                NavigateUri="https://github.com/mohemohe/ImageViewer/blob/develop/ImageViewer/Infrastructures/SeigaCrawler.cs"
+                                                RequestNavigate="Hyperlink_RequestNavigate">
+                                                ImageViewerのソースコード
+                                            </Hyperlink>
+                                            </TextBlock>
+                                            <TextBlock Text="を確認してください。" />
+                                        </WrapPanel>
                                     </StackPanel>
                                 </Grid>
                             </StackPanel>
@@ -334,7 +354,27 @@
                     </WrapPanel>
                     <WrapPanel>
                         <TextBlock
-                            Text="I would like to express my the biggest gratitude to @karno / Krile STARRYEYES ."
+                            Text="I would like to express my the biggest gratitude to "
+                            HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="12" />
+                        <TextBlock HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="12">
+                            <Hyperlink
+                                NavigateUri="https://github.com/karno/"
+                                RequestNavigate="Hyperlink_RequestNavigate">
+                                @karno
+                            </Hyperlink>
+                        </TextBlock>
+                        <TextBlock
+                            Text=" / "
+                            HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="12" />
+                        <TextBlock HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="12">
+                            <Hyperlink
+                                NavigateUri="http://krile.starwing.net/"
+                                RequestNavigate="Hyperlink_RequestNavigate">
+                                Krile StarryEyes
+                            </Hyperlink>
+                        </TextBlock>
+                        <TextBlock
+                            Text=" ."
                             HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="12" />
                     </WrapPanel>
                 </StackPanel>

@@ -43,16 +43,21 @@ namespace ImageViewer
 
         private void Application_Startup(object sender, StartupEventArgs e)
         {
+            Config.ReadConfig();
+
 #if !DEBUG
             if (e.Args.Length == 0)
             {
+                var settingsWindow = new SettingsWindow();
+                settingsWindow.ShowDialog();
+                Config.WriteConfig();
                 Environment.Exit(0);
             }
 #endif
             DispatcherHelper.UIDispatcher = Dispatcher;
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
 
-            Config.ReadConfig();
+            
             Exit += (s, a) => { Config.WriteConfig(); };
 
             if (Config.IsEnablePseudoSingleInstance && _mutex.WaitOne(0, false) == false)
