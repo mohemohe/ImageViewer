@@ -7,28 +7,31 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 using HAP = HtmlAgilityPack;
 
 namespace ImageViewer.Infrastructures
 {
-    public static class PixivCrawler
+    public static class SeigaCrawler
     {
-        private const string Service = @"Pixiv";
+        private const string Service = @"Nicovideo";
+        private const string BaseUri = @"http://seiga.nicovideo.jp";
+        private const string LohasUri = @"http://lohas.nicoseiga.jp";
         private static CookieContainer _cookie;
 
         private static async Task Login()
         {
-            const string loginUri = @"https://www.secure.pixiv.net/login.php";
+            const string loginUri = @"https://account.nicovideo.jp/api/v1/login";
 
-            var id = Config.PixivAccount.Id;
-            var password = Config.PixivAccount.RawPassword;
+            var enc = Encoding.GetEncoding(@"UTF-8");
+
+            var id = Config.NicovideoAccount.Id;
+            var password = HttpUtility.UrlEncode(Config.NicovideoAccount.RawPassword, enc);
 
             var dic = new Dictionary<string, string>
             {
-                [@"mode"] = @"login",
-                [@"pixiv_id"] = id,
-                [@"pass"] = password,
-                [@"skip"] = @"1"
+                [@"mail_tel"] = id,
+                [@"password"] = password
             };
 
             var param = "";
@@ -44,6 +47,7 @@ namespace ImageViewer.Infrastructures
             using (var reqStream = req.GetRequestStream())
             {
                 reqStream.Write(data, 0, data.Length);
+                reqStream.Close();
             }
 
             using (var res = await req.GetResponseAsync())
@@ -51,7 +55,6 @@ namespace ImageViewer.Infrastructures
             {
                 if (resStream != null)
                 {
-                    var enc = Encoding.GetEncoding(@"UTF-8");
                     using (var sr = new StreamReader(resStream, enc))
                     {
                         sr.ReadToEnd();
@@ -66,7 +69,7 @@ namespace ImageViewer.Infrastructures
         {
             var result = new ImagePack();
 
-            if (_cookie == null)
+            if (_cookie == null && Config.IsUseNicoSeigaWebScraping)
             {
                 var cookie = CookieHelper.LoadCookie(Service);
                 if (cookie != null)
@@ -99,12 +102,12 @@ namespace ImageViewer.Infrastructures
             });
 
             var html = await getHtml(uri);
-            if (!html.Contains(@"ログアウト"))
+            if (Config.IsUseNicoSeigaWebScraping && !html.Contains(@"ログアウト"))
             {
                 await Login();
                 html = await getHtml(uri);
             }
-            else
+            if (Config.IsUseNicoSeigaWebScraping)
             {
                 CookieHelper.SaveCookie(_cookie, Service);
             }
@@ -117,19 +120,38 @@ namespace ImageViewer.Infrastructures
 
             doc.LoadHtml(html);
 
-            var imageUri =
-                doc.DocumentNode.SelectSingleNode(@"//img[@class='original-image']")?
-                    .GetAttributeValue(@"data-src", null) ??
-                doc.DocumentNode.SelectSingleNode(@"//meta[@property='og:image']")?
-                    .GetAttributeValue(@"content", string.Empty)?
-                    .Replace(@"150x150", @"1200x1200");
+            string imageUri;
+            var fallbackUri = doc.DocumentNode.SelectSingleNode(@"//meta[@property='og:image']")?
+                .GetAttributeValue(@"content", string.Empty);
+            if (Config.IsUseNicoSeigaWebScraping)
+            {
+                var nextUri = doc.DocumentNode.SelectSingleNode(@"//a[@id='illust_link']")?
+                    .GetAttributeValue(@"href", null);
+                if (!string.IsNullOrEmpty(nextUri))
+                {
+                    html = await getHtml(BaseUri + nextUri);
+                    doc.LoadHtml(html);
+
+                    var origUri = doc.DocumentNode.SelectSingleNode(@"//div[@class='illust_view_big']")?
+                        .ChildNodes?.Where(x => x.Name == @"img").ElementAt(0)?
+                        .GetAttributeValue(@"src", string.Empty);
+                    imageUri = !string.IsNullOrEmpty(origUri) ? LohasUri + origUri : fallbackUri;
+                }
+                else
+                {
+                    imageUri = fallbackUri;
+                }
+            }
+            else
+            {
+                imageUri = fallbackUri;
+            }
+
             if (!string.IsNullOrEmpty(imageUri))
             {
                 result.ImageUri = imageUri;
 
                 var req = (HttpWebRequest) WebRequest.Create(imageUri);
-                req.CookieContainer = _cookie;
-                req.Referer = uri;
                 using (var res = await req.GetResponseAsync())
                 using (var resStream = res.GetResponseStream())
                 using (var ms = new MemoryStream())
@@ -138,6 +160,8 @@ namespace ImageViewer.Infrastructures
                     result.ImageData = ms.ToArray();
                 }
             }
+
+            CookieHelper.SaveCookie(_cookie, Service);
 
             return result;
         }

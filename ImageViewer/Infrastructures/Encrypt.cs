@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
@@ -62,6 +63,20 @@ namespace ImageViewer.Infrastructures
             }
         }
 
+        public static CryptoStream EncryptStream(Stream rawStream)
+        {
+            using (var aes = new AesCryptoServiceProvider
+            {
+                BlockSize = 128,
+                KeySize = 128,
+                IV = GenerateIvKey(512, 512),
+                Key = GenerateIvKey(2048, 2048),
+                Mode = CipherMode.CBC,
+                Padding = PaddingMode.PKCS7
+            })
+                return new CryptoStream(rawStream, aes.CreateEncryptor(), CryptoStreamMode.Write);
+        }
+
         public static string DecryptString(string encryptedString)
         {
             var src = Convert.FromBase64String(encryptedString);
@@ -80,6 +95,20 @@ namespace ImageViewer.Infrastructures
                 var dest = dec.TransformFinalBlock(src, 0, src.Length);
                 return Encoding.UTF8.GetString(dest);
             }
+        }
+
+        public static CryptoStream DecryptStream(Stream encStream)
+        {
+            using (var aes = new AesCryptoServiceProvider
+            {
+                BlockSize = 128,
+                KeySize = 128,
+                IV = GenerateIvKey(512, 512),
+                Key = GenerateIvKey(2048, 2048),
+                Mode = CipherMode.CBC,
+                Padding = PaddingMode.PKCS7
+            })
+                return new CryptoStream(encStream, aes.CreateDecryptor(), CryptoStreamMode.Read);
         }
 
         private static byte[] GenerateIvKey(int saltIterations, int passwordIterations, int deriveBytesIterations = 2048)

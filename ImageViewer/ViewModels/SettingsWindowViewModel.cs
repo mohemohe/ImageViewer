@@ -1,4 +1,5 @@
 ﻿using ImageViewer.Models;
+using ImageViewer.Views;
 using Livet;
 using Livet.Commands;
 using Livet.Messaging.IO;
@@ -30,6 +31,8 @@ namespace ImageViewer.ViewModels
             IsWarningTwitter30secMovie = Config.IsWarningTwitter30secMovie;
             IsUsePixivWebScraping = Config.IsUsePixivWebScraping;
             PixivAccount = Config.PixivAccount;
+            IsUseNicoSeigaWebScraping = Config.IsUseNicoSeigaWebScraping;
+            SeigaAccount = Config.NicovideoAccount;
             MouseSensibility = Config.MouseSensibility;
         }
 
@@ -74,6 +77,24 @@ namespace ImageViewer.ViewModels
          * LivetのViewModelではプロパティ変更通知(RaisePropertyChanged)やDispatcherCollectionを使ったコレクション変更通知は
          * 自動的にUIDispatcher上での通知に変換されます。変更通知に際してUIDispatcherを操作する必要はありません。
          */
+
+        #region View変更通知プロパティ
+
+        private SettingsWindow _View;
+
+        public SettingsWindow View
+        {
+            get { return _View; }
+            set
+            {
+                if (_View == value)
+                    return;
+                _View = value;
+                RaisePropertyChanged();
+            }
+        }
+
+        #endregion View変更通知プロパティ
 
         #region 保持
 
@@ -213,6 +234,42 @@ namespace ImageViewer.ViewModels
 
         #endregion PixivAccount変更通知プロパティ
 
+        #region IsUseNicoSeigaWebScraping変更通知プロパティ
+
+        private bool _IsUseNicoSeigaWebScraping;
+
+        public bool IsUseNicoSeigaWebScraping
+        {
+            get { return _IsUseNicoSeigaWebScraping; }
+            set
+            {
+                if (_IsUseNicoSeigaWebScraping == value)
+                    return;
+                _IsUseNicoSeigaWebScraping = value;
+                RaisePropertyChanged();
+            }
+        }
+
+        #endregion IsUseNicoSeigaWebScraping変更通知プロパティ
+
+        #region SeigaAccount変更通知プロパティ
+
+        private NicovideoAccount _SeigaAccount;
+
+        public NicovideoAccount SeigaAccount
+        {
+            get { return _SeigaAccount; }
+            set
+            {
+                if (_SeigaAccount == value)
+                    return;
+                _SeigaAccount = value;
+                RaisePropertyChanged();
+            }
+        }
+
+        #endregion SeigaAccount変更通知プロパティ
+
         #endregion サイト別設定
 
         #region 外部アプリケーション
@@ -322,6 +379,9 @@ namespace ImageViewer.ViewModels
 
         public void Apply()
         {
+            View.Focus();
+            RaisePropertyChanged();
+
             Config.DefaultBrowserPath = File.Exists(DefaultBrowserPath) ? DefaultBrowserPath : null;
             Config.IsEnablePseudoSingleInstance = IsEnablePseudoSingleInstance;
             Config.IsChildWindow = IsChildWindow;
@@ -329,6 +389,8 @@ namespace ImageViewer.ViewModels
             Config.IsWarningTwitter30secMovie = IsWarningTwitter30secMovie;
             Config.IsUsePixivWebScraping = IsUsePixivWebScraping;
             Config.PixivAccount = PixivAccount;
+            Config.IsUseNicoSeigaWebScraping = IsUseNicoSeigaWebScraping;
+            Config.NicovideoAccount = SeigaAccount;
             Config.MouseSensibility = MouseSensibility;
         }
 

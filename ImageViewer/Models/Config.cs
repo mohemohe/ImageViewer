@@ -11,8 +11,7 @@ namespace ImageViewer.Models
     /// </summary>
     public class Settings
     {
-        [XmlElement(IsNullable = true)]
-        public string DefaultBrowserPath;
+        [XmlElement(IsNullable = true)] public string DefaultBrowserPath;
 
         public bool? IsChildWindow;
 
@@ -20,11 +19,16 @@ namespace ImageViewer.Models
 
         public bool? IsFallbackTwitterGifMovie;
 
+        public bool? IsUseNicoSeigaWebScraping;
+
         public bool? IsUsePixivWebScraping;
 
+        // ReSharper disable once InconsistentNaming
         public bool? IsWarningTwitter30secMovie;
 
         public double? MouseSensibility;
+
+        public NicovideoAccount NicovideoAccount;
 
         public PixivAccount PixivAccount;
 
@@ -36,9 +40,9 @@ namespace ImageViewer.Models
     /// </summary>
     internal static class Config
     {
-        private static readonly string appPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-        private static readonly string fileName = @"Settings.xml";
-        private static readonly string filePath = Path.Combine(appPath, fileName);
+        private const string FileName = @"Settings.xml";
+        public static readonly string AppPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+        private static readonly string FilePath = Path.Combine(AppPath, FileName);
 
         /// <summary>
         ///     ファイルから設定を読み込む
@@ -47,15 +51,25 @@ namespace ImageViewer.Models
         {
             var xmlSettings = new Settings();
             var xs = new XmlSerializer(typeof (Settings));
-            if (File.Exists(filePath))
+            if (File.Exists(FilePath))
             {
-                using (var fs = new FileStream(filePath, FileMode.Open))
+                using (var fs = new FileStream(FilePath, FileMode.Open))
+                using (var sr = new StreamReader(fs))
+                using (var r = new StringReader(sr.ReadToEnd()))
                 {
                     try
                     {
-                        xmlSettings = (Settings) xs.Deserialize(fs);
+                        xmlSettings = (Settings) xs.Deserialize(r);
                     }
-                    catch { }
+                    catch (InvalidOperationException e)
+                    {
+                        var ex = new InvalidOperationException("設定ファイルの読み込みに失敗しました。\nSettings.xml が不正な可能性があります。", e);
+                        throw ex;
+                    }
+                        // ReSharper disable once EmptyGeneralCatchClause
+                    catch
+                    {
+                    }
                     finally
                     {
                         fs.Close();
@@ -72,6 +86,8 @@ namespace ImageViewer.Models
             _Config._IsWarningTwitter30secMovie = TryReadValue(xmlSettings.IsWarningTwitter30secMovie, null, false);
             _Config._IsUsePixivWebScraping = TryReadValue(xmlSettings.IsUsePixivWebScraping, null, false);
             _Config._PixivAccount = TryReadValue(xmlSettings.PixivAccount, null, new PixivAccount());
+            _Config._IsUseNicoSeigaWebScraping = TryReadValue(xmlSettings.IsUseNicoSeigaWebScraping, null, false);
+            _Config._NicovideoAccount = TryReadValue(xmlSettings.NicovideoAccount, null, new NicovideoAccount());
         }
 
         private static dynamic TryReadValue(dynamic source, dynamic check, dynamic defaultValue)
@@ -99,10 +115,12 @@ namespace ImageViewer.Models
                 IsWarningTwitter30secMovie = _Config._IsWarningTwitter30secMovie,
                 IsUsePixivWebScraping = _Config._IsUsePixivWebScraping,
                 PixivAccount = _Config._PixivAccount,
+                IsUseNicoSeigaWebScraping = _Config._IsUseNicoSeigaWebScraping,
+                NicovideoAccount = _Config._NicovideoAccount
             };
 
             var xs = new XmlSerializer(typeof (Settings));
-            using (var fs = new FileStream(filePath, FileMode.Create, FileAccess.Write))
+            using (var fs = new FileStream(FilePath, FileMode.Create, FileAccess.Write))
             {
                 xs.Serialize(fs, xmls);
             }
@@ -113,6 +131,7 @@ namespace ImageViewer.Models
         /// <summary>
         ///     実際の設定値はここに記憶される
         /// </summary>
+        // ReSharper disable InconsistentNaming
         private static class _Config
         {
             public static string _DefaultBrowserPath { get; set; }
@@ -124,7 +143,11 @@ namespace ImageViewer.Models
             public static bool _IsWarningTwitter30secMovie { get; set; }
             public static bool _IsUsePixivWebScraping { get; set; }
             public static PixivAccount _PixivAccount { get; set; }
+            public static bool _IsUseNicoSeigaWebScraping { get; set; }
+            public static NicovideoAccount _NicovideoAccount { get; set; }
         }
+
+        // ReSharper restore InconsistentNaming
 
         #endregion
 
@@ -166,6 +189,7 @@ namespace ImageViewer.Models
             set { _Config._IsFallbackTwitterGifMovie = value; }
         }
 
+        // ReSharper disable once InconsistentNaming
         public static bool IsWarningTwitter30secMovie
         {
             get { return _Config._IsWarningTwitter30secMovie; }
@@ -182,6 +206,18 @@ namespace ImageViewer.Models
         {
             get { return _Config._PixivAccount; }
             set { _Config._PixivAccount = value; }
+        }
+
+        public static bool IsUseNicoSeigaWebScraping
+        {
+            get { return _Config._IsUsePixivWebScraping; }
+            set { _Config._IsUsePixivWebScraping = value; }
+        }
+
+        public static NicovideoAccount NicovideoAccount
+        {
+            get { return _Config._NicovideoAccount; }
+            set { _Config._NicovideoAccount = value; }
         }
 
         #endregion Accessor

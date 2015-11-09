@@ -23,7 +23,7 @@
 第一引数のURLが画像の場合は内蔵ビューアで表示します。  
 そうでない場合は既定のブラウザで開きます。
 
-`\path\to\ImageVIewer.exe %1`
+`\path\to\ImageViewer.exe %1`
 
 ![](http://i.imgur.com/YG5QAn5.png)
 

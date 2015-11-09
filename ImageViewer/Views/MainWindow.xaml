@@ -183,7 +183,7 @@
                         <Border Name="Tab" WindowChrome.IsHitTestVisibleInChrome="True" MouseWheel="Tab_MouseWheel"
                                 PreviewMouseDown="Tab_PreviewMouseDown">
                             <WrapPanel>
-                                <TextBlock Text="{Binding Name}" Padding="12,0" />
+                                <TextBlock Text="{Binding Name}" Padding="12,0" TextTrimming="CharacterEllipsis" MaxWidth="{Binding ElementName=StatusBarElements, Path=ActualWidth, UpdateSourceTrigger=PropertyChanged, Converter={qc:QuickConverter '$P * 0.75'}}" />
                                 <Button
                                     x:Name="CloseButton"
                                     ToolTip="Close"
@@ -300,7 +300,7 @@
                     </DataTemplate>
                 </TabControl.ContentTemplate>
             </TabControl>
-            <WrapPanel HorizontalAlignment="Left" VerticalAlignment="Bottom">
+            <WrapPanel x:Name="LeftBottomButton" HorizontalAlignment="Left" VerticalAlignment="Bottom">
                 <Button Command="{Binding SaveImageCommand}" ToolTip="SaveAs" VerticalAlignment="Bottom"
                         HorizontalAlignment="Left" Template="{DynamicResource TransparentButton}">
                     <Image Source="/Resources/IcoMoon/save.png" Width="24" Height="24" />
@@ -320,7 +320,7 @@
                     <Image Source="/ImageViewer;component/Resources/IcoMoon/search.png" Width="24" Height="24" />
                 </Button>
             </WrapPanel>
-            <WrapPanel HorizontalAlignment="Right" VerticalAlignment="Bottom">
+            <WrapPanel x:Name="RightBottomButton" HorizontalAlignment="Right" VerticalAlignment="Bottom">
                 <Button Command="{Binding ResetZoomCommand}" ToolTip="dot by dot"
                         VerticalAlignment="Bottom" HorizontalAlignment="Left"
                         Template="{DynamicResource TransparentButton}">

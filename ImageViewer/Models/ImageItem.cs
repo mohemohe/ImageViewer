@@ -1,6 +1,5 @@
 ﻿using ImageViewer.Helpers;
 using ImageViewer.Infrastructures;
-using Livet;
 using System;
 using System.IO;
 using System.Threading.Tasks;
@@ -39,20 +38,58 @@ namespace ImageViewer.Models
             var uri = imageUri;
             var bi = new BitmapImage();
 
-            if (uri == @"{Pixiv}")
+            switch (uri)
             {
-                ImageUri = originalUri;
-                OriginalUri = originalUri;
-
-                var imageInfo = await PixivCrawler.GetImage(originalUri);
-                if (imageInfo.ImageData != null)
+                case @"{Pixiv}":
                 {
-                    SetData(imageInfo.ImageData);
-                    Name = Path.GetFileName(imageInfo.ImageUri);
-                    IsLoading = Visibility.Hidden;
-                    return (BitmapImage) Bitmap;
+                    ImageUri = originalUri;
+                    OriginalUri = originalUri;
+
+                    var imageInfo = await PixivCrawler.GetImage(originalUri);
+                    if (imageInfo.ImageData != null)
+                    {
+                        SetData(imageInfo.ImageData);
+                        Name = Path.GetFileName(imageInfo.ImageUri);
+                        IsLoading = Visibility.Hidden;
+                        return (BitmapImage) Bitmap;
+                    }
+                    IsError = true;
+                    break;
                 }
-                IsError = true;
+
+                case @"{Nijie}":
+                {
+                    ImageUri = originalUri;
+                    OriginalUri = originalUri;
+
+                    var imageInfo = await NijieCrawler.GetImage(originalUri);
+                    if (imageInfo.ImageData != null)
+                    {
+                        SetData(imageInfo.ImageData);
+                        Name = Path.GetFileName(imageInfo.ImageUri);
+                        IsLoading = Visibility.Hidden;
+                        return (BitmapImage) Bitmap;
+                    }
+                    IsError = true;
+                    break;
+                }
+
+                case @"{Seiga}":
+                {
+                    ImageUri = originalUri;
+                    OriginalUri = originalUri;
+
+                    var imageInfo = await SeigaCrawler.GetImage(originalUri);
+                    if (imageInfo.ImageData != null)
+                    {
+                        SetData(imageInfo.ImageData);
+                        Name = Path.GetFileName(imageInfo.ImageUri);
+                        IsLoading = Visibility.Hidden;
+                        return (BitmapImage) Bitmap;
+                    }
+                    IsError = true;
+                    break;
+                }
             }
 
             // TODO: いくらなんでもここに書くのは汚いので後で移す
@@ -79,7 +116,8 @@ namespace ImageViewer.Models
             }
             else if (IsMovie)
             {
-                bi = new BitmapImage(new Uri(@"pack://application:,,,/Resources/IcoMoon/file-play.png", UriKind.Absolute));
+                bi =
+                    new BitmapImage(new Uri(@"pack://application:,,,/Resources/IcoMoon/file-play.png", UriKind.Absolute));
                 Bitmap = bi;
             }
             IsLoading = Visibility.Hidden;
@@ -143,21 +181,22 @@ namespace ImageViewer.Models
         #endregion Zoom変更通知プロパティ
 
         #region ActualZoom変更通知プロパティ
+
         private double _ActualZoom;
 
         public double ActualZoom
         {
-            get
-            { return _ActualZoom; }
+            get { return _ActualZoom; }
             set
-            { 
+            {
                 if (_ActualZoom == value)
                     return;
                 _ActualZoom = value;
                 RaisePropertyChanged();
             }
         }
-        #endregion
+
+        #endregion ActualZoom変更通知プロパティ
 
         #region Translate変更通知プロパティ
 

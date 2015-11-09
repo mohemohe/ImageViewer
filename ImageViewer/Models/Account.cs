@@ -6,13 +6,12 @@ using System.Xml.Serialization;
 
 namespace ImageViewer.Models
 {
-    public class PixivAccount
+    public class Account
     {
-        [XmlElement(IsNullable = true)]
         public string Id { get; set; }
 
         [XmlIgnore]
-        public SecureString Password { get; set; }
+        private SecureString Password { get; set; }
 
         [XmlIgnore]
         public unsafe string RawPassword
@@ -24,7 +23,6 @@ namespace ImageViewer.Models
                 {
                     strPtr = Marshal.SecureStringToGlobalAllocUnicode(Password);
                     return Marshal.PtrToStringUni(strPtr);
-
                 }
                 catch
                 {
@@ -44,11 +42,22 @@ namespace ImageViewer.Models
             }
         }
 
-        [XmlElement(IsNullable = true)]
         public string EncryptedPassword
         {
             get { return RawPassword != null ? Encrypt.EncryptString(RawPassword) : null; }
             set { RawPassword = Encrypt.DecryptString(value); }
         }
+    }
+
+    public class PixivAccount : Account
+    {
+    }
+
+    public class NijieAccount : Account
+    {
+    }
+
+    public class NicovideoAccount : Account
+    {
     }
 }

@@ -16,7 +16,7 @@ namespace ImageViewer.Infrastructures
         private static readonly List<string> BlackList = new List<string>
         {
             @"http(s)?://(www.)?1drv.ms/.*",
-            @"http(s)?://(www.)?(nicovideo.jp|nico.ms)/.*",
+            @"http(s)?://(www.)?(nicovideo.jp|nico.ms)/(?!im).*",
             @"http(s)?://(www.)?(ustre.am|ustream.tv)/.*",
             @"http(s)?://(www.)?vine.co/.*",
             @"http(s)?://(www.)?vimeo.com/.*",
@@ -30,7 +30,9 @@ namespace ImageViewer.Infrastructures
             IsInstagramPhoto,
             IsGyazoPhoto,
             IsGamenNowPhoto,
-            IsPixivPhoto
+            IsPixivPhoto,
+            IsNijiePhoto,
+            IsSeigaPhoto
         };
 
         private static List<string> IsImageList
@@ -289,6 +291,41 @@ namespace ImageViewer.Infrastructures
                     result = true;
                     resultUri = @"{Pixiv}";
                 }
+            }
+            return result;
+        }
+
+        private static bool IsNijiePhoto(string uri, out string resultUri)
+        {
+            var result = false;
+            resultUri = null;
+
+            var regex = new Regex(@"(?<baseUri>http(s)?://(www.)?nijie.info/view.php)(?<args>.*)");
+            if (regex.IsMatch(uri))
+            {
+                result = true;
+                resultUri = @"{Nijie}";
+            }
+            return result;
+        }
+
+        private static bool IsSeigaPhoto(string uri, out string resultUri)
+        {
+            var result = false;
+            resultUri = null;
+
+            var regex1 = new Regex(@"(?<baseUri>http(s)?://seiga.nicovideo.jp/seiga/)(?<imageId>.*)");
+            if (regex1.IsMatch(uri))
+            {
+                result = true;
+                resultUri = @"{Seiga}";
+            }
+
+            var regex2 = new Regex(@"(?<baseUri>http(s)?://nico.ms/)(?<imageId>im.*)");
+            if (regex2.IsMatch(uri))
+            {
+                result = true;
+                resultUri = @"{Seiga}";
             }
             return result;
         }
