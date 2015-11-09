@@ -75,11 +75,13 @@ namespace ImageViewer.Infrastructures
                 }
             }
 
-            var req = (HttpWebRequest) WebRequest.Create(uri);
-            req.CookieContainer = _cookie;
-
-            var getHtml = new Func<Task<string>>(async () => 
+            var getHtml = new Func<string, Task<string>>(async (u) =>
             {
+                var r = string.Empty;
+
+                var req = (HttpWebRequest)WebRequest.Create(u);
+                req.CookieContainer = _cookie;
+
                 var encoder = Encoding.GetEncoding(@"UTF-8");
                 using (var res = await req.GetResponseAsync())
                 using (var resStream = res.GetResponseStream())
@@ -88,18 +90,19 @@ namespace ImageViewer.Infrastructures
                     {
                         using (var sr = new StreamReader(resStream, encoder))
                         {
-                            return sr.ReadToEnd();
+                            r = sr.ReadToEnd();
                         }
                     }
-                    return string.Empty;
                 }
+
+                return r;
             });
 
-            var html = await getHtml();
+            var html = await getHtml(uri);
             if (!html.Contains(@"ログアウト"))
             {
                 Login();
-                html = await getHtml();
+                html = await getHtml(uri);
             }
 
             var doc = new HAP.HtmlDocument
@@ -112,7 +115,7 @@ namespace ImageViewer.Infrastructures
 
             var imageUri =
                 doc.DocumentNode.SelectSingleNode(@"//img[@class='original-image']")?
-                    .GetAttributeValue(@"data-src", string.Empty) ??
+                    .GetAttributeValue(@"data-src", null) ??
                 doc.DocumentNode.SelectSingleNode(@"//meta[@property='og:image']")?
                     .GetAttributeValue(@"content", string.Empty)?
                     .Replace(@"150x150", @"1200x1200");
@@ -120,7 +123,7 @@ namespace ImageViewer.Infrastructures
             {
                 result.ImageUri = imageUri;
 
-                req = (HttpWebRequest) WebRequest.Create(imageUri);
+                var req = (HttpWebRequest) WebRequest.Create(imageUri);
                 req.CookieContainer = _cookie;
                 req.Referer = uri;
                 using (var res = await req.GetResponseAsync())
