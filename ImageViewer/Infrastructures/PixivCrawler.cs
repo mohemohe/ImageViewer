@@ -1,10 +1,12 @@
-﻿using ImageViewer.Models;
+﻿using System;
+using ImageViewer.Models;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using ImageViewer.Helpers;
 using HAP = HtmlAgilityPack;
 
 namespace ImageViewer.Infrastructures
@@ -12,6 +14,7 @@ namespace ImageViewer.Infrastructures
     public static class PixivCrawler
     {
         private static CookieContainer _cookie;
+        private const string Service = @"Pixiv";
 
         private static async void Login()
         {
@@ -55,6 +58,8 @@ namespace ImageViewer.Infrastructures
                     }
                 }
             }
+
+            CookieHelper.SaveCookie(_cookie, Service);
         }
 
         public static async Task<ImagePack> GetImage(string uri)
@@ -63,24 +68,39 @@ namespace ImageViewer.Infrastructures
 
             if (_cookie == null)
             {
-                Login();
+                var cookie = CookieHelper.LoadCookie(Service);
+                if (cookie != null)
+                {
+                    _cookie = cookie;
+                }
             }
 
             var req = (HttpWebRequest) WebRequest.Create(uri);
             req.CookieContainer = _cookie;
 
-            var html = "";
-
-            var encoder = Encoding.GetEncoding("UTF-8");
-            using (var res = await req.GetResponseAsync())
-            using (var resStream = res.GetResponseStream())
-                if (resStream != null)
+            var getHtml = new Func<Task<string>>(async () => 
+            {
+                var encoder = Encoding.GetEncoding(@"UTF-8");
+                using (var res = await req.GetResponseAsync())
+                using (var resStream = res.GetResponseStream())
                 {
-                    using (var sr = new StreamReader(resStream, encoder))
+                    if (resStream != null)
                     {
-                        html = sr.ReadToEnd();
+                        using (var sr = new StreamReader(resStream, encoder))
+                        {
+                            return sr.ReadToEnd();
+                        }
                     }
+                    return string.Empty;
                 }
+            });
+
+            var html = await getHtml();
+            if (!html.Contains(@"ログアウト"))
+            {
+                Login();
+                html = await getHtml();
+            }
 
             var doc = new HAP.HtmlDocument
             {

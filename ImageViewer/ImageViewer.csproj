@@ -101,6 +101,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Helpers\CookieHelper.cs" />
     <Compile Include="Infrastructures\Encrypt.cs" />
     <Compile Include="Infrastructures\SeigaCrawler.cs" />
     <Compile Include="Infrastructures\NijieCrawler.cs" />

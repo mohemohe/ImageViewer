@@ -37,7 +37,7 @@ namespace ImageViewer.Models
     /// </summary>
     internal static class Config
     {
-        private static readonly string AppPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+        public static readonly string AppPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
         private const string FileName = @"Settings.xml";
         private static readonly string FilePath = Path.Combine(AppPath, FileName);
 
