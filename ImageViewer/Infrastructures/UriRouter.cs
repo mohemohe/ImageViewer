@@ -32,7 +32,7 @@ namespace ImageViewer.Infrastructures
             IsGamenNowPhoto,
             IsPixivPhoto,
             IsNijiePhoto,
-            IsSeigaPhoto,
+            IsSeigaPhoto
         };
 
         private static List<string> IsImageList

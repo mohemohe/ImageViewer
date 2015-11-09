@@ -1,7 +1,7 @@
-﻿using System.Diagnostics;
+﻿using ImageViewer.ViewModels;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Navigation;
-using ImageViewer.ViewModels;
 
 namespace ImageViewer.Views
 {
@@ -28,14 +28,14 @@ namespace ImageViewer.Views
             Menu.Focus();
         }
 
-        private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
-        {
-            Process.Start(e.Uri.AbsoluteUri);
-        }
-
         public SettingsWindowViewModel VM
         {
             get { return DataContext as SettingsWindowViewModel; }
+        }
+
+        private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
+        {
+            Process.Start(e.Uri.AbsoluteUri);
         }
     }
 }

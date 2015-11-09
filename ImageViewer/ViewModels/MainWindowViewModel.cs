@@ -106,8 +106,8 @@ namespace ImageViewer.ViewModels
                 {
                     return;
                 }
-                var zoomBase = (renderSize / (double)imageSize);
-                Zoom = Convert.ToInt32(zoomBase * 100);
+                var zoomBase = (renderSize/(double) imageSize);
+                Zoom = Convert.ToInt32(zoomBase*100);
             }
         }
 
@@ -121,7 +121,7 @@ namespace ImageViewer.ViewModels
                 {
                     return;
                 }
-                var zoomBase = (renderSize / (double)imageSize);
+                var zoomBase = (renderSize/(double) imageSize);
                 DeferredImageItems[_SelectedIndex].ActualZoom = zoomBase;
             }
         }
@@ -286,6 +286,7 @@ namespace ImageViewer.ViewModels
         #endregion DeferredImageItems変更通知プロパティ
 
         #region MaximizeZoomCommand
+
         private ViewModelCommand _MaximizeZoomCommand;
 
         public ViewModelCommand MaximizeZoomCommand
@@ -305,9 +306,11 @@ namespace ImageViewer.ViewModels
             DeferredImageItems[SelectedIndex].Zoom = 1.0;
             CalcZoom();
         }
-        #endregion
+
+        #endregion MaximizeZoomCommand
 
         #region ResetZoomCommand
+
         private ViewModelCommand _ResetZoomCommand;
 
         public ViewModelCommand ResetZoomCommand
@@ -329,7 +332,8 @@ namespace ImageViewer.ViewModels
             ImageRenderWidth = DeferredImageItems[SelectedIndex].Width;
             ImageRenderHeight = DeferredImageItems[SelectedIndex].Height;
         }
-        #endregion
+
+        #endregion ResetZoomCommand
 
         #region SaveImageCommand
 
@@ -479,7 +483,7 @@ namespace ImageViewer.ViewModels
                 }
                 else
                 {
-                    var psi = new ProcessStartInfo { Arguments = uri, FileName = Config.DefaultBrowserPath };
+                    var psi = new ProcessStartInfo {Arguments = uri, FileName = Config.DefaultBrowserPath};
                     Process.Start(psi);
                 }
             }

@@ -11,14 +11,15 @@ namespace ImageViewer.Models
     /// </summary>
     public class Settings
     {
-        [XmlElement(IsNullable = true)]
-        public string DefaultBrowserPath;
+        [XmlElement(IsNullable = true)] public string DefaultBrowserPath;
 
         public bool? IsChildWindow;
 
         public bool? IsEnablePseudoSingleInstance;
 
         public bool? IsFallbackTwitterGifMovie;
+
+        public bool? IsUseNicoSeigaWebScraping;
 
         public bool? IsUsePixivWebScraping;
 
@@ -27,11 +28,9 @@ namespace ImageViewer.Models
 
         public double? MouseSensibility;
 
-        public PixivAccount PixivAccount;
-
-        public bool? IsUseNicoSeigaWebScraping;
-
         public NicovideoAccount NicovideoAccount;
+
+        public PixivAccount PixivAccount;
 
         public Rect WindowPosition;
     }
@@ -41,8 +40,8 @@ namespace ImageViewer.Models
     /// </summary>
     internal static class Config
     {
-        public static readonly string AppPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
         private const string FileName = @"Settings.xml";
+        public static readonly string AppPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
         private static readonly string FilePath = Path.Combine(AppPath, FileName);
 
         /// <summary>
@@ -67,8 +66,10 @@ namespace ImageViewer.Models
                         var ex = new InvalidOperationException("設定ファイルの読み込みに失敗しました。\nSettings.xml が不正な可能性があります。", e);
                         throw ex;
                     }
-                    // ReSharper disable once EmptyGeneralCatchClause
-                    catch { }
+                        // ReSharper disable once EmptyGeneralCatchClause
+                    catch
+                    {
+                    }
                     finally
                     {
                         fs.Close();
@@ -115,7 +116,7 @@ namespace ImageViewer.Models
                 IsUsePixivWebScraping = _Config._IsUsePixivWebScraping,
                 PixivAccount = _Config._PixivAccount,
                 IsUseNicoSeigaWebScraping = _Config._IsUseNicoSeigaWebScraping,
-                NicovideoAccount = _Config._NicovideoAccount,
+                NicovideoAccount = _Config._NicovideoAccount
             };
 
             var xs = new XmlSerializer(typeof (Settings));
@@ -145,7 +146,9 @@ namespace ImageViewer.Models
             public static bool _IsUseNicoSeigaWebScraping { get; set; }
             public static NicovideoAccount _NicovideoAccount { get; set; }
         }
+
         // ReSharper restore InconsistentNaming
+
         #endregion
 
         #region Accessor

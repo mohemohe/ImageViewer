@@ -1,20 +1,20 @@
-﻿using System;
+﻿using ImageViewer.Helpers;
 using ImageViewer.Models;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
-using ImageViewer.Helpers;
 using HAP = HtmlAgilityPack;
 
 namespace ImageViewer.Infrastructures
 {
     public static class PixivCrawler
     {
-        private static CookieContainer _cookie;
         private const string Service = @"Pixiv";
+        private static CookieContainer _cookie;
 
         private static async Task Login()
         {
@@ -75,11 +75,11 @@ namespace ImageViewer.Infrastructures
                 }
             }
 
-            var getHtml = new Func<string, Task<string>>(async (u) =>
+            var getHtml = new Func<string, Task<string>>(async u =>
             {
                 var r = string.Empty;
 
-                var req = (HttpWebRequest)WebRequest.Create(u);
+                var req = (HttpWebRequest) WebRequest.Create(u);
                 req.CookieContainer = _cookie;
 
                 var encoder = Encoding.GetEncoding(@"UTF-8");

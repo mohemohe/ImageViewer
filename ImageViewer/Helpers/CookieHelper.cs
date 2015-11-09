@@ -1,18 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using ImageViewer.Infrastructures;
+using ImageViewer.Models;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.Text;
-using System.Threading.Tasks;
-using ImageViewer.Infrastructures;
-using ImageViewer.Models;
 
 namespace ImageViewer.Helpers
 {
-    static class CookieHelper
+    internal static class CookieHelper
     {
         private const string Ext = @".edat";
 
@@ -31,7 +25,7 @@ namespace ImageViewer.Helpers
                 using (var rawStream = Encrypt.DecryptStream(encStream))
                 {
                     var formatter = new BinaryFormatter();
-                    return (CookieContainer)formatter.Deserialize(rawStream);
+                    return (CookieContainer) formatter.Deserialize(rawStream);
                 }
             }
             catch

@@ -1,7 +1,5 @@
 ﻿using ImageViewer.Models;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
@@ -39,8 +37,8 @@ namespace ImageViewer.Infrastructures
             doc.LoadHtml(html);
 
             var imageUri = doc.DocumentNode.SelectSingleNode(@"//meta[@property='og:image']")?
-                                           .GetAttributeValue(@"content", string.Empty)?
-                                           .Replace(@"/sp/", @"/");
+                .GetAttributeValue(@"content", string.Empty)?
+                .Replace(@"/sp/", @"/");
             if (!string.IsNullOrEmpty(imageUri))
             {
                 result.ImageUri = imageUri;

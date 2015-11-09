@@ -1,22 +1,23 @@
-﻿using System;
+﻿using ImageViewer.Helpers;
 using ImageViewer.Models;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
-using ImageViewer.Helpers;
+using System.Web;
 using HAP = HtmlAgilityPack;
 
 namespace ImageViewer.Infrastructures
 {
     public static class SeigaCrawler
     {
-        private static CookieContainer _cookie;
         private const string Service = @"Nicovideo";
         private const string BaseUri = @"http://seiga.nicovideo.jp";
         private const string LohasUri = @"http://lohas.nicoseiga.jp";
+        private static CookieContainer _cookie;
 
         private static async Task Login()
         {
@@ -25,12 +26,12 @@ namespace ImageViewer.Infrastructures
             var enc = Encoding.GetEncoding(@"UTF-8");
 
             var id = Config.NicovideoAccount.Id;
-            var password = System.Web.HttpUtility.UrlEncode(Config.NicovideoAccount.RawPassword, enc);
+            var password = HttpUtility.UrlEncode(Config.NicovideoAccount.RawPassword, enc);
 
             var dic = new Dictionary<string, string>
             {
                 [@"mail_tel"] = id,
-                [@"password"] = password,
+                [@"password"] = password
             };
 
             var param = "";
@@ -38,7 +39,7 @@ namespace ImageViewer.Infrastructures
             var data = Encoding.ASCII.GetBytes(param);
 
             _cookie = new CookieContainer();
-            var req = (HttpWebRequest)WebRequest.Create(loginUri);
+            var req = (HttpWebRequest) WebRequest.Create(loginUri);
             req.Method = @"POST";
             req.ContentType = @"application/x-www-form-urlencoded";
             req.ContentLength = data.Length;
@@ -56,7 +57,6 @@ namespace ImageViewer.Infrastructures
                 {
                     using (var sr = new StreamReader(resStream, enc))
                     {
-                        var s = 
                         sr.ReadToEnd();
                     }
                 }
@@ -78,11 +78,11 @@ namespace ImageViewer.Infrastructures
                 }
             }
 
-            var getHtml = new Func<string, Task<string>>(async (u) =>
+            var getHtml = new Func<string, Task<string>>(async u =>
             {
                 var r = string.Empty;
 
-                var req = (HttpWebRequest)WebRequest.Create(u);
+                var req = (HttpWebRequest) WebRequest.Create(u);
                 req.CookieContainer = _cookie;
 
                 var encoder = Encoding.GetEncoding(@"UTF-8");
@@ -107,7 +107,7 @@ namespace ImageViewer.Infrastructures
                 await Login();
                 html = await getHtml(uri);
             }
-            if(Config.IsUseNicoSeigaWebScraping)
+            if (Config.IsUseNicoSeigaWebScraping)
             {
                 CookieHelper.SaveCookie(_cookie, Service);
             }
@@ -122,7 +122,7 @@ namespace ImageViewer.Infrastructures
 
             string imageUri;
             var fallbackUri = doc.DocumentNode.SelectSingleNode(@"//meta[@property='og:image']")?
-                                              .GetAttributeValue(@"content", string.Empty);
+                .GetAttributeValue(@"content", string.Empty);
             if (Config.IsUseNicoSeigaWebScraping)
             {
                 var nextUri = doc.DocumentNode.SelectSingleNode(@"//a[@id='illust_link']")?
@@ -133,16 +133,9 @@ namespace ImageViewer.Infrastructures
                     doc.LoadHtml(html);
 
                     var origUri = doc.DocumentNode.SelectSingleNode(@"//div[@class='illust_view_big']")?
-                        .ChildNodes?.Where(x => x.Name == @"img")?.ElementAt(0)?
+                        .ChildNodes?.Where(x => x.Name == @"img").ElementAt(0)?
                         .GetAttributeValue(@"src", string.Empty);
-                    if (!string.IsNullOrEmpty(origUri))
-                    {
-                        imageUri = LohasUri + origUri;
-                    }
-                    else
-                    {
-                        imageUri = fallbackUri;
-                    }
+                    imageUri = !string.IsNullOrEmpty(origUri) ? LohasUri + origUri : fallbackUri;
                 }
                 else
                 {

@@ -1,11 +1,11 @@
 ﻿using ImageViewer.Models;
+using ImageViewer.Views;
 using Livet;
 using Livet.Commands;
 using Livet.Messaging.IO;
 using Livet.Messaging.Windows;
 using System.IO;
 using System.Reflection;
-using ImageViewer.Views;
 
 namespace ImageViewer.ViewModels
 {
@@ -235,38 +235,40 @@ namespace ImageViewer.ViewModels
         #endregion PixivAccount変更通知プロパティ
 
         #region IsUseNicoSeigaWebScraping変更通知プロパティ
+
         private bool _IsUseNicoSeigaWebScraping;
 
         public bool IsUseNicoSeigaWebScraping
         {
-            get
-            { return _IsUseNicoSeigaWebScraping; }
+            get { return _IsUseNicoSeigaWebScraping; }
             set
-            { 
+            {
                 if (_IsUseNicoSeigaWebScraping == value)
                     return;
                 _IsUseNicoSeigaWebScraping = value;
                 RaisePropertyChanged();
             }
         }
-        #endregion
+
+        #endregion IsUseNicoSeigaWebScraping変更通知プロパティ
 
         #region SeigaAccount変更通知プロパティ
+
         private NicovideoAccount _SeigaAccount;
 
         public NicovideoAccount SeigaAccount
         {
-            get
-            { return _SeigaAccount; }
+            get { return _SeigaAccount; }
             set
-            { 
+            {
                 if (_SeigaAccount == value)
                     return;
                 _SeigaAccount = value;
                 RaisePropertyChanged();
             }
         }
-        #endregion
+
+        #endregion SeigaAccount変更通知プロパティ
 
         #endregion サイト別設定
 

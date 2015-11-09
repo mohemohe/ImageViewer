@@ -23,7 +23,6 @@ namespace ImageViewer.Models
                 {
                     strPtr = Marshal.SecureStringToGlobalAllocUnicode(Password);
                     return Marshal.PtrToStringUni(strPtr);
-
                 }
                 catch
                 {
@@ -52,16 +51,13 @@ namespace ImageViewer.Models
 
     public class PixivAccount : Account
     {
-
     }
 
     public class NijieAccount : Account
     {
-        
     }
 
     public class NicovideoAccount : Account
     {
-
     }
 }

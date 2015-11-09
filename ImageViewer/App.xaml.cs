@@ -57,7 +57,6 @@ namespace ImageViewer
             DispatcherHelper.UIDispatcher = Dispatcher;
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
 
-            
             Exit += (s, a) => { Config.WriteConfig(); };
 
             if (Config.IsEnablePseudoSingleInstance && _mutex.WaitOne(0, false) == false)
