@@ -104,6 +104,8 @@ namespace ImageViewer.Models
         /// </summary>
         public static void WriteConfig()
         {
+            var backupFilePath = Path.Combine(AppPath, FileName + @".bak");
+
             var xmls = new Settings
             {
                 DefaultBrowserPath = _Config._DefaultBrowserPath,
@@ -119,10 +121,24 @@ namespace ImageViewer.Models
                 NicovideoAccount = _Config._NicovideoAccount
             };
 
+            if (File.Exists(FilePath))
+            {
+                File.Move(FilePath, backupFilePath);
+            }
+
             var xs = new XmlSerializer(typeof (Settings));
             using (var fs = new FileStream(FilePath, FileMode.Create, FileAccess.Write))
             {
                 xs.Serialize(fs, xmls);
+            }
+
+            if (File.Exists(FilePath))
+            {
+                File.Delete(backupFilePath);
+            }
+            else
+            {
+                File.Move(backupFilePath, FilePath);
             }
         }
 
@@ -210,8 +226,8 @@ namespace ImageViewer.Models
 
         public static bool IsUseNicoSeigaWebScraping
         {
-            get { return _Config._IsUsePixivWebScraping; }
-            set { _Config._IsUsePixivWebScraping = value; }
+            get { return _Config._IsUseNicoSeigaWebScraping; }
+            set { _Config._IsUseNicoSeigaWebScraping = value; }
         }
 
         public static NicovideoAccount NicovideoAccount
