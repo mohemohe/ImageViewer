@@ -226,8 +226,8 @@ namespace ImageViewer.Models
 
         public static bool IsUseNicoSeigaWebScraping
         {
-            get { return _Config._IsUsePixivWebScraping; }
-            set { _Config._IsUsePixivWebScraping = value; }
+            get { return _Config._IsUseNicoSeigaWebScraping; }
+            set { _Config._IsUseNicoSeigaWebScraping = value; }
         }
 
         public static NicovideoAccount NicovideoAccount
