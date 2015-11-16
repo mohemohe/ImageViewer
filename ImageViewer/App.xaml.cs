@@ -69,7 +69,21 @@ namespace ImageViewer
                     (Message)
                         RemotingServices.Connect(typeof (Message),
                             @"ipc://" + ResourceAssembly.GetName().Name + @"/Message");
-                message.RaiseHandler(e.Args);
+                for (var i = 1;; i++)
+                {
+                    try
+                    {
+                        message.RaiseHandler(e.Args);
+                        break;
+                    }
+                    catch (Exception ex)
+                    {
+                        if (i > 10)
+                        {
+                            throw ex;
+                        }
+                    }
+                }
 
                 // Note: うまく終了しないことがある
                 //this.Shutdown();
