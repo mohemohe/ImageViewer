@@ -13,6 +13,7 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using ImageViewer.Views.ViewWindow;
 
 namespace ImageViewer.ViewModels
 {
@@ -84,9 +85,16 @@ namespace ImageViewer.ViewModels
                 }
             }
 
-            var template = View.TabControl.Template;
-            var sv = (ScrollViewer) template.FindName("ScrollableTab", View.TabControl);
-            sv.ScrollToRightEnd();
+            if (View.GetType() == typeof (TabWindow))
+            {
+                var template = View.TabControl.Template;
+                var sv = (ScrollViewer) template.FindName("ScrollableTab", View.TabControl);
+                sv.ScrollToRightEnd();
+            }
+            else
+            {
+                SelectedIndex = 0;
+            }
 
             await DeferredImageItems[DeferredImageItems.Count - 1].DownloadDataAsync(
                 DeferredImageItems[DeferredImageItems.Count - 1].ImageUri,
@@ -128,9 +136,9 @@ namespace ImageViewer.ViewModels
 
         #region View変更通知プロパティ
 
-        private MainWindow _View;
+        private dynamic _View;
 
-        public MainWindow View
+        public dynamic View
         {
             get { return _View; }
             set
@@ -256,9 +264,11 @@ namespace ImageViewer.ViewModels
 
                     if (value != -1)
                     {
+                        SelectedItemName = DeferredImageItems[value].Name;
                         SelectedImageWidth = DeferredImageItems[value].Width;
                         SelectedImageHeight = DeferredImageItems[value].Height;
                         CalcZoom();
+                        
                     }
                 }
                 RaisePropertyChanged();
@@ -284,6 +294,25 @@ namespace ImageViewer.ViewModels
         }
 
         #endregion DeferredImageItems変更通知プロパティ
+
+        #region SelectedItemName変更通知プロパティ
+        private string _SelectedItemName = string.Empty;
+
+        public string SelectedItemName
+        {
+            get
+            { return _SelectedItemName; }
+            set
+            { 
+                if (DeferredImageItems == null || DeferredImageItems.Count == 0 || SelectedIndex == -1)
+                {
+                    return;
+                }
+                _SelectedItemName = @" - " + value;
+                RaisePropertyChanged();
+            }
+        }
+        #endregion
 
         #region MaximizeZoomCommand
 

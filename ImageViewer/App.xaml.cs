@@ -13,6 +13,7 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Media;
+using ImageViewer.Views.ViewWindow;
 
 namespace ImageViewer
 {
@@ -22,7 +23,7 @@ namespace ImageViewer
     // ReSharper disable once RedundantExtendsListEntry
     public partial class App : Application
     {
-        private MainWindow _mainWindow;
+        private WindowBase _mainWindow;
         private Mutex _mutex = new Mutex(false, ResourceAssembly.GetName().Name);
 
         public App()
@@ -55,8 +56,9 @@ namespace ImageViewer
             }
 #endif
             DispatcherHelper.UIDispatcher = Dispatcher;
+#if !DEBUG
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
-
+#endif
             Exit += (s, a) => { Config.WriteConfig(); };
 
             if (Config.IsEnablePseudoSingleInstance && _mutex.WaitOne(0, false) == false)
@@ -98,7 +100,7 @@ namespace ImageViewer
             string imageUri;
             if (UriRouter.IsImageUri(ref uri, out imageUri))
             {
-                _mainWindow = new MainWindow();
+                _mainWindow = Config.IsEnablePseudoSingleInstance ? (WindowBase) new TabWindow() : new PlainWindow();
 
                 if (Config.IsChildWindow)
                 {
