@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using HUSauth.Helpers;
 using ImageViewer.Helpers;
 using ImageViewer.Models;
 using ImageViewer.ViewModels;
@@ -23,7 +24,7 @@ namespace ImageViewer.Views.ViewWindow
         private System.Drawing.Point _mousePosition;
         public double DPI = 1;
 
-        protected void Initialize(dynamic window)
+        protected void Initialize(dynamic window, bool isCreateNotifyIcon = false)
         {
             StateChanged +=
                 (sender, args) =>
@@ -48,23 +49,25 @@ namespace ImageViewer.Views.ViewWindow
                 Win32Helper.MainWindowAppendMenu(Win32Helper.MenuFlags.STRING, @"Force Full GC", () =>
                 {
                     var selectedIndex = VM.SelectedIndex;
-                    //HACK: 2ループ（4回）GCを呼び出すと回収された　何故？
-                    //NOTE: GCLargeObjectHeapCompactionMode.CompactOnce か GC.WaitForPendingFinalizers() が2回必要？
-                    for (var i = 0; i < 2; i++)
-                    {
-                        var tmpImageItems = new ObservableCollection<ImageItem>(VM.DeferredImageItems);
-                        VM.DeferredImageItems = null;
-                        GCSettings.LargeObjectHeapCompactionMode = GCLargeObjectHeapCompactionMode.CompactOnce;
-                        GC.Collect();
-                        GC.WaitForPendingFinalizers();
-                        GC.Collect();
-                        VM.DeferredImageItems = tmpImageItems;
-                    }
+                    ForceFullGC();
                     VM.SelectedIndex = selectedIndex;
                 });
+
+                if (isCreateNotifyIcon)
+                {
+                    NotifyIconHelper.Initialize(window);
+                }
             };
 
-            Closing += (sender, args) => { Config.WindowPosition = RestoreBounds; };
+            Closing += (sender, args) =>
+            {
+                Config.WindowPosition = RestoreBounds;
+                if (NotifyIconHelper.Window != null)
+                {
+                    args.Cancel = !NotifyIconHelper.IsClosable;
+                    NotifyIconHelper.Close();
+                }
+            };
         }
 
         //HACK: 最高にやばい
@@ -202,6 +205,22 @@ namespace ImageViewer.Views.ViewWindow
                     VM.TabClose(index);
                 }
                 e.Handled = true;
+            }
+        }
+
+        internal void ForceFullGC()
+        {
+            //HACK: 2ループ（4回）GCを呼び出すと回収された　何故？
+            //NOTE: GCLargeObjectHeapCompactionMode.CompactOnce か GC.WaitForPendingFinalizers() が2回必要？
+            for (var i = 0; i < 2; i++)
+            {
+                var tmpImageItems = new ObservableCollection<ImageItem>(VM.DeferredImageItems);
+                VM.DeferredImageItems = null;
+                GCSettings.LargeObjectHeapCompactionMode = GCLargeObjectHeapCompactionMode.CompactOnce;
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
+                GC.Collect();
+                VM.DeferredImageItems = tmpImageItems;
             }
         }
     }

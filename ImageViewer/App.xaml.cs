@@ -6,7 +6,6 @@ using ImageViewer.Views.ViewWindow;
 using Livet;
 using QuickConverter;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.Remoting;
@@ -16,6 +15,7 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Media;
+using HUSauth.Helpers;
 
 namespace ImageViewer
 {
@@ -123,7 +123,7 @@ namespace ImageViewer
                         string imageUri;
                         if (UriRouter.IsImageUri(ref args[0], out imageUri))
                         {
-                            if (_mainWindow.VM.DeferredImageItems.Count != 0)
+                            if (_mainWindow.VM.Initialized)
                             {
                                 _mainWindow.VM.AddTab(imageUri, args[0]);
                             }
@@ -151,7 +151,9 @@ namespace ImageViewer
                 string imageUri;
                 if (UriRouter.IsImageUri(ref uri, out imageUri))
                 {
-                    _mainWindow = Config.IsEnablePseudoSingleInstance ? (WindowBase) new TabWindow() : new PlainWindow();
+                    _mainWindow = Config.IsEnablePseudoSingleInstance
+                        ? (WindowBase) new TabWindow(Config.IsEnableAggressiveMode)
+                        : new PlainWindow();
 
                     if (Config.IsChildWindow)
                     {
@@ -218,6 +220,8 @@ namespace ImageViewer
             var result = window.ShowDialog();
             if (result != null)
             {
+                NotifyIconHelper.TryDispose();
+
                 // 遅い
                 //Environment.Exit(1);
 

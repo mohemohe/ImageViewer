@@ -28,9 +28,9 @@ namespace ImageViewer.Views.ViewWindow
     /// </summary>
     public partial class TabWindow : WindowBase
     {
-        public TabWindow()
+        public TabWindow(bool isCreateNotifyIcon = false)
         {
-            base.Initialize(this);
+            base.Initialize(this, isCreateNotifyIcon);
             InitializeComponent();
         }
 

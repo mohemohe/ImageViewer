@@ -17,6 +17,8 @@ namespace ImageViewer.Models
 
         public bool? IsEnablePseudoSingleInstance;
 
+        public bool? IsEnableAggressiveMode;
+
         public bool? IsFallbackTwitterGifMovie;
 
         public bool? IsUseNicoSeigaWebScraping;
@@ -81,6 +83,7 @@ namespace ImageViewer.Models
             _Config._WindowPosition = TryReadValue(xmlSettings.WindowPosition, null, null);
             _Config._MouseSensibility = TryReadValue(xmlSettings.MouseSensibility, null, 2.0);
             _Config._IsEnablePseudoSingleInstance = TryReadValue(xmlSettings.IsEnablePseudoSingleInstance, null, true);
+            _Config._IsEnableAggressiveMode = TryReadValue(xmlSettings.IsEnableAggressiveMode, null, false);
             _Config._IsChildWindow = TryReadValue(xmlSettings.IsChildWindow, null, true);
             _Config._IsFallbackTwitterGifMovie = TryReadValue(xmlSettings.IsFallbackTwitterGifMovie, null, true);
             _Config._IsWarningTwitter30secMovie = TryReadValue(xmlSettings.IsWarningTwitter30secMovie, null, false);
@@ -112,6 +115,7 @@ namespace ImageViewer.Models
                 WindowPosition = _Config._WindowPosition,
                 MouseSensibility = _Config._MouseSensibility,
                 IsEnablePseudoSingleInstance = _Config._IsEnablePseudoSingleInstance,
+                IsEnableAggressiveMode = _Config._IsEnableAggressiveMode,
                 IsChildWindow = _Config._IsChildWindow,
                 IsFallbackTwitterGifMovie = _Config._IsFallbackTwitterGifMovie,
                 IsWarningTwitter30secMovie = _Config._IsWarningTwitter30secMovie,
@@ -154,6 +158,7 @@ namespace ImageViewer.Models
             public static Rect _WindowPosition { get; set; }
             public static double _MouseSensibility { get; set; }
             public static bool _IsEnablePseudoSingleInstance { get; set; }
+            public static bool _IsEnableAggressiveMode { get; set; }
             public static bool _IsChildWindow { get; set; }
             public static bool _IsFallbackTwitterGifMovie { get; set; }
             public static bool _IsWarningTwitter30secMovie { get; set; }
@@ -191,6 +196,12 @@ namespace ImageViewer.Models
         {
             get { return _Config._IsEnablePseudoSingleInstance; }
             set { _Config._IsEnablePseudoSingleInstance = value; }
+        }
+
+        public static bool IsEnableAggressiveMode
+        {
+            get { return _Config._IsEnableAggressiveMode; }
+            set { _Config._IsEnableAggressiveMode = value; }
         }
 
         public static bool IsChildWindow

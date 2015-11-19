@@ -26,6 +26,7 @@ namespace ImageViewer.ViewModels
         {
             DefaultBrowserPath = Config.DefaultBrowserPath ?? string.Empty;
             IsEnablePseudoSingleInstance = Config.IsEnablePseudoSingleInstance;
+            IsEnableAggressiveMode = Config.IsEnableAggressiveMode;
             IsChildWindow = Config.IsChildWindow;
             IsFallbackTwitterGifMovie = Config.IsFallbackTwitterGifMovie;
             IsWarningTwitter30secMovie = Config.IsWarningTwitter30secMovie;
@@ -117,6 +118,23 @@ namespace ImageViewer.ViewModels
         }
 
         #endregion IsEnablePseudoSingleInstance変更通知プロパティ
+
+        #region IsEnableAggressiveMode変更通知プロパティ
+        private bool _IsEnableAggressiveMode;
+
+        public bool IsEnableAggressiveMode
+        {
+            get
+            { return _IsEnableAggressiveMode; }
+            set
+            { 
+                if (_IsEnableAggressiveMode == value)
+                    return;
+                _IsEnableAggressiveMode = value;
+                RaisePropertyChanged();
+            }
+        }
+        #endregion
 
         #region IsChildWindow変更通知プロパティ
 
@@ -384,6 +402,7 @@ namespace ImageViewer.ViewModels
 
             Config.DefaultBrowserPath = File.Exists(DefaultBrowserPath) ? DefaultBrowserPath : null;
             Config.IsEnablePseudoSingleInstance = IsEnablePseudoSingleInstance;
+            Config.IsEnableAggressiveMode = IsEnableAggressiveMode;
             Config.IsChildWindow = IsChildWindow;
             Config.IsFallbackTwitterGifMovie = IsFallbackTwitterGifMovie;
             Config.IsWarningTwitter30secMovie = IsWarningTwitter30secMovie;

@@ -13,6 +13,7 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using HUSauth.Helpers;
 using ImageViewer.Views.ViewWindow;
 
 namespace ImageViewer.ViewModels
@@ -61,13 +62,17 @@ namespace ImageViewer.ViewModels
          * 自動的にUIDispatcher上での通知に変換されます。変更通知に際してUIDispatcherを操作する必要はありません。
          */
 
+        public bool Initialized { get; set; }
+
         public void Initialize()
         {
+            Initialized = true;
         }
 
         public async void AddTab(string imageUri, string originalUri = null)
         {
-            //HACK: タブを切り替えたあとにSelectedIndexを変更してもアクティブなタブが変更されない
+            NotifyIconHelper.TryShow();
+            // HACK: タブを切り替えたあとにSelectedIndexを変更してもアクティブなタブが変更されない
             View.Focus();
 
             DeferredImageItems.Add(new ImageItem(imageUri, originalUri));
