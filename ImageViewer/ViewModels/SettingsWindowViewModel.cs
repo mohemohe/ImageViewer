@@ -27,6 +27,8 @@ namespace ImageViewer.ViewModels
             DefaultBrowserPath = Config.DefaultBrowserPath ?? string.Empty;
             IsEnablePseudoSingleInstance = Config.IsEnablePseudoSingleInstance;
             IsEnableAggressiveMode = Config.IsEnableAggressiveMode;
+            IsDisableNotificationWhenAggressiveMode = Config.IsDisableNotificationWhenAggressiveMode;
+            IsKeepingTabsWhenAggressiveMode = Config.IsKeepingTabsWhenAggressiveMode;
             IsChildWindow = Config.IsChildWindow;
             IsFallbackTwitterGifMovie = Config.IsFallbackTwitterGifMovie;
             IsWarningTwitter30secMovie = Config.IsWarningTwitter30secMovie;
@@ -131,6 +133,40 @@ namespace ImageViewer.ViewModels
                 if (_IsEnableAggressiveMode == value)
                     return;
                 _IsEnableAggressiveMode = value;
+                RaisePropertyChanged();
+            }
+        }
+        #endregion
+
+        #region IsDisableNotificationWhenAggressiveMode変更通知プロパティ
+        private bool _IsDisableNotificationWhenAggressiveMode;
+
+        public bool IsDisableNotificationWhenAggressiveMode
+        {
+            get
+            { return _IsDisableNotificationWhenAggressiveMode; }
+            set
+            { 
+                if (_IsDisableNotificationWhenAggressiveMode == value)
+                    return;
+                _IsDisableNotificationWhenAggressiveMode = value;
+                RaisePropertyChanged();
+            }
+        }
+        #endregion
+
+        #region IsKeepingTabsWhenAggressiveMode変更通知プロパティ
+        private bool _IsKeepingTabsWhenAggressiveMode;
+
+        public bool IsKeepingTabsWhenAggressiveMode
+        {
+            get
+            { return _IsKeepingTabsWhenAggressiveMode; }
+            set
+            { 
+                if (_IsKeepingTabsWhenAggressiveMode == value)
+                    return;
+                _IsKeepingTabsWhenAggressiveMode = value;
                 RaisePropertyChanged();
             }
         }
@@ -403,6 +439,8 @@ namespace ImageViewer.ViewModels
             Config.DefaultBrowserPath = File.Exists(DefaultBrowserPath) ? DefaultBrowserPath : null;
             Config.IsEnablePseudoSingleInstance = IsEnablePseudoSingleInstance;
             Config.IsEnableAggressiveMode = IsEnableAggressiveMode;
+            Config.IsDisableNotificationWhenAggressiveMode = IsDisableNotificationWhenAggressiveMode;
+            Config.IsKeepingTabsWhenAggressiveMode = IsKeepingTabsWhenAggressiveMode;
             Config.IsChildWindow = IsChildWindow;
             Config.IsFallbackTwitterGifMovie = IsFallbackTwitterGifMovie;
             Config.IsWarningTwitter30secMovie = IsWarningTwitter30secMovie;

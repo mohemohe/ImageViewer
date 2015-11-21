@@ -105,6 +105,25 @@
                                   Margin="0,10,0,0" />
                             <TextBlock Text="タスクトレイに常駐して起動直後のプロセス間通信 (IPC) 関連のエラーを軽減します" Margin="32,0,0,0" />
                             <TextBlock Text="設定の反映にはImageViewerの再起動が必要です" Margin="32,0,0,0" />
+
+                            <StackPanel Margin="32,0,0,0">
+                                <StackPanel>
+                                    <CheckBox Content="通知を非表示にする"
+                                  IsEnabled="{Binding IsEnableAggressiveMode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                  IsChecked="{Binding IsDisableNotificationWhenAggressiveMode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                  Margin="0,10,0,0" />
+                                    <TextBlock Text="常駐時の煩わしい通知を表示させないようにします" Margin="32,0,0,0" />
+                                </StackPanel>
+                                
+                                <StackPanel>
+                                    <CheckBox Content="タブの状態を保持する"
+                                  IsEnabled="{Binding IsEnableAggressiveMode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                  IsChecked="{Binding IsKeepingTabsWhenAggressiveMode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                  Margin="0,10,0,0" />
+                                    <TextBlock Text="ウィンドウを閉じても開いているタブを保持し続けます" Margin="32,0,0,0" />
+                                    <TextBlock Text="メモリが解放されないので 32GB 以上のRAMを積んでいる環境を推奨します" Margin="32,0,0,0" />
+                                </StackPanel>
+                            </StackPanel>
                         </StackPanel>
                     </StackPanel>
 
@@ -192,7 +211,7 @@
                                         </i:Interaction.Behaviors>
                                     </PasswordBox>
                                     <StackPanel Grid.Row="4" Grid.ColumnSpan="3">
-                                        <TextBlock Text="入力されたアカウント情報は、ログイン処理、および画像の取得にのみ使用します。" />
+                                        <TextBlock Text="入力されたアカウント情報は、ログイン処理、および画像の取得にのみ使用します" />
                                         <WrapPanel>
                                             <TextBlock Text="挙動に対して疑問がある場合は、" />
                                             <TextBlock HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="12">
@@ -202,7 +221,7 @@
                                                 ImageViewerのソースコード
                                             </Hyperlink>
                                             </TextBlock>
-                                            <TextBlock Text="を確認してください。" />
+                                            <TextBlock Text="を確認してください" />
                                         </WrapPanel>
                                     </StackPanel>
                                 </Grid>
@@ -246,7 +265,7 @@
                                         </i:Interaction.Behaviors>
                                     </PasswordBox>
                                     <StackPanel Grid.Row="4" Grid.ColumnSpan="3">
-                                        <TextBlock Text="入力されたアカウント情報は、ログイン処理、および画像の取得にのみ使用します。" />
+                                        <TextBlock Text="入力されたアカウント情報は、ログイン処理、および画像の取得にのみ使用します" />
                                         <WrapPanel>
                                             <TextBlock Text="挙動に対して疑問がある場合は、" />
                                             <TextBlock HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="12">
@@ -256,7 +275,7 @@
                                                 ImageViewerのソースコード
                                             </Hyperlink>
                                             </TextBlock>
-                                            <TextBlock Text="を確認してください。" />
+                                            <TextBlock Text="を確認してください" />
                                         </WrapPanel>
                                     </StackPanel>
                                 </Grid>

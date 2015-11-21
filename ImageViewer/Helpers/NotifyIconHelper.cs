@@ -53,12 +53,19 @@ namespace HUSauth.Helpers
         public static void Close()
         {
             Window.Hide();
-            Window.VM.DeferredImageItems = new ObservableCollection<ImageItem>();
-            Window.ForceFullGC();
 
-            ShowNotifyBaloon(
-                @"Aggressive Mode",
-                @"You have to right click the icon and select Exit in order to truly close it.");
+            if (!Config.IsKeepingTabsWhenAggressiveMode)
+            {
+                Window.VM.DeferredImageItems = new ObservableCollection<ImageItem>();
+                Window.ForceFullGC();
+            }
+
+            if (!Config.IsDisableNotificationWhenAggressiveMode)
+            {
+                ShowNotifyBaloon(
+                    @"Aggressive Mode",
+                    @"You have to right click the icon and select Exit in order to truly close it.");
+            }
         }
 
         public static void Exit()
