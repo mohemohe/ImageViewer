@@ -90,6 +90,23 @@ namespace ImageViewer.Models
                     IsError = true;
                     break;
                 }
+
+                case @"{piapro}":
+                {
+                    ImageUri = originalUri;
+                    OriginalUri = originalUri;
+
+                    var imageInfo = await PiaproCrawler.GetImage(originalUri);
+                    if (imageInfo.ImageData != null)
+                    {
+                        SetData(imageInfo.ImageData);
+                        Name = Path.GetFileName(imageInfo.ImageUri);
+                        IsLoading = Visibility.Hidden;
+                        return (BitmapImage)Bitmap;
+                    }
+                    IsError = true;
+                    break;
+                }
             }
 
             // TODO: いくらなんでもここに書くのは汚いので後で移す

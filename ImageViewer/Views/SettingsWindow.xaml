@@ -281,6 +281,59 @@
                                 </Grid>
                             </StackPanel>
                         </StackPanel>
+                        <StackPanel Margin="0,0,0,24">
+                            <StackPanel>
+                                <TextBlock Text="piapro" FontSize="14.667" FontWeight="Bold" Margin="8,0,0,0" />
+                                <Border BorderBrush="{DynamicResource MetroBlue}" BorderThickness="0,1,0,0" />
+                            </StackPanel>
+                            <StackPanel>
+                                <TextBlock Text="取得ソース（よく分からない場合は変更しないでください）" Margin="2,10,0,0" />
+                                <RadioButton Content="ギャラリープレビュー" IsChecked="True" Margin="16,4,0,0" />
+                                <RadioButton x:Name="PiaproWebScrapingRadioButton" Content="独自Webスクレイピング"
+                                             IsChecked="{Binding IsUsePiaproWebScraping, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                             Margin="16,4,0,0" IsEnabled="False" />
+                                <Grid Margin="48,4,0,0">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="auto" />
+                                        <RowDefinition Height="4" />
+                                        <RowDefinition Height="auto" />
+                                        <RowDefinition Height="4" />
+                                        <RowDefinition Height="*" />
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="auto" />
+                                        <ColumnDefinition Width="8" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="0" Grid.Row="0" Text="ID" />
+                                    <TextBox Grid.Column="2" Grid.Row="0"
+                                             Text="{Binding PiaproAccount.Id, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                             IsEnabled="{Binding ElementName=PiaproWebScrapingRadioButton, Path=IsChecked}" />
+                                    <TextBlock Grid.Column="0" Grid.Row="2" Text="Password" />
+                                    <PasswordBox Grid.Column="2" Grid.Row="2"
+                                                 IsEnabled="{Binding ElementName=PiaproWebScrapingRadioButton, Path=IsChecked}">
+                                        <i:Interaction.Behaviors>
+                                            <l:PasswordBoxBindingSupportBehavior
+                                                Password="{Binding PiaproAccount.RawPassword, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                        </i:Interaction.Behaviors>
+                                    </PasswordBox>
+                                    <StackPanel Grid.Row="4" Grid.ColumnSpan="3">
+                                        <TextBlock Text="入力されたアカウント情報は、ログイン処理、および画像の取得にのみ使用します" />
+                                        <WrapPanel>
+                                            <TextBlock Text="挙動に対して疑問がある場合は、" />
+                                            <TextBlock HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="12">
+                                            <Hyperlink
+                                                NavigateUri="https://github.com/mohemohe/ImageViewer/blob/develop/ImageViewer/Infrastructures/PiaproCrawler.cs"
+                                                RequestNavigate="Hyperlink_RequestNavigate">
+                                                ImageViewerのソースコード
+                                            </Hyperlink>
+                                            </TextBlock>
+                                            <TextBlock Text="を確認してください" />
+                                        </WrapPanel>
+                                    </StackPanel>
+                                </Grid>
+                            </StackPanel>
+                        </StackPanel>
                     </StackPanel>
                 </ScrollViewer>
             </TabItem>

@@ -324,6 +324,41 @@ namespace ImageViewer.ViewModels
 
         #endregion SeigaAccount変更通知プロパティ
 
+        #region IsUsePiaproWebScraping変更通知プロパティ
+        private bool _IsUsePiaproWebScraping;
+
+        public bool IsUsePiaproWebScraping
+        {
+            get
+            { return _IsUsePiaproWebScraping; }
+            set
+            { 
+                if (_IsUsePiaproWebScraping == value)
+                    return;
+                _IsUsePiaproWebScraping = value;
+                RaisePropertyChanged();
+            }
+        }
+        #endregion
+
+        #region PiaproAccount変更通知プロパティ
+
+        private PiaproAccount _PiaproAccount;
+
+        public PiaproAccount PiaproAccount
+        {
+            get { return _PiaproAccount; }
+            set
+            {
+                if (_PiaproAccount == value)
+                    return;
+                _PiaproAccount = value;
+                RaisePropertyChanged();
+            }
+        }
+
+        #endregion SeigaAccount変更通知プロパティ
+
         #endregion サイト別設定
 
         #region 外部アプリケーション

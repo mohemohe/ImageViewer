@@ -106,6 +106,7 @@
     <Compile Include="Helpers\CookieHelper.cs" />
     <Compile Include="Helpers\NotifyIconHelper.cs" />
     <Compile Include="Infrastructures\Encrypt.cs" />
+    <Compile Include="Infrastructures\PiaproCrawler.cs" />
     <Compile Include="Infrastructures\SeigaCrawler.cs" />
     <Compile Include="Infrastructures\NijieCrawler.cs" />
     <Compile Include="Infrastructures\PixivCrawler.cs" />

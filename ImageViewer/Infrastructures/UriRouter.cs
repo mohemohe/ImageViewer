@@ -32,7 +32,8 @@ namespace ImageViewer.Infrastructures
             IsGamenNowPhoto,
             IsPixivPhoto,
             IsNijiePhoto,
-            IsSeigaPhoto
+            IsSeigaPhoto,
+            IsPiaproPhoto
         };
 
         private static List<string> IsImageList
@@ -327,6 +328,21 @@ namespace ImageViewer.Infrastructures
                 result = true;
                 resultUri = @"{Seiga}";
             }
+            return result;
+        }
+
+        private static bool IsPiaproPhoto(string uri, out string resultUri)
+        {
+            var result = false;
+            resultUri = null;
+
+            var regex = new Regex(@"(?<baseUri>http(s)?://piapro.jp/t/)(?<imageId>.*)");
+            if (regex.IsMatch(uri))
+            {
+                result = true;
+                resultUri = @"{piapro}";
+            }
+
             return result;
         }
 
