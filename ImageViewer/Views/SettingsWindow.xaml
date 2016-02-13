@@ -114,7 +114,7 @@
                                   Margin="0,10,0,0" />
                                     <TextBlock Text="常駐時の煩わしい通知を表示させないようにします" Margin="32,0,0,0" />
                                 </StackPanel>
-                                
+
                                 <StackPanel>
                                     <CheckBox Content="タブの状態を保持する"
                                   IsEnabled="{Binding IsEnableAggressiveMode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
@@ -384,9 +384,11 @@
                             <StackPanel Orientation="Vertical">
                                 <TextBlock Text="ImageViewer" HorizontalAlignment="Left" VerticalAlignment="Top"
                                            FontSize="64" Foreground="{DynamicResource MatteBlack}" />
+                                <TextBlock Text="happy valentine !" HorizontalAlignment="Center" VerticalAlignment="Top"
+                                           FontSize="16" Margin="45,-16,0,0" Foreground="#FFFF64A0" />
                                 <TextBlock Text="{Binding Version, TargetNullValue=NaN}" HorizontalAlignment="Right"
                                            VerticalAlignment="Top" FontSize="12"
-                                           Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" />
+                                           Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" Margin="0,-16,0,0" />
                             </StackPanel>
                         </Grid>
                     </Grid>
