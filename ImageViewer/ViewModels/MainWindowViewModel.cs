@@ -387,13 +387,14 @@ namespace ImageViewer.ViewModels
 
         public void SaveImage()
         {
-            if (DeferredImageItems[SelectedIndex].Bitmap == null)
+            var imageItem = DeferredImageItems[SelectedIndex];
+            if (imageItem.Bitmap == null)
             {
                 return;
             }
 
-            var fileName = Path.GetFileNameWithoutExtension(DeferredImageItems[SelectedIndex].Name);
-            var ext = Path.GetExtension(DeferredImageItems[SelectedIndex].FileExtension);
+            var fileName = Path.GetFileNameWithoutExtension(imageItem.Name);
+            var ext = Path.GetExtension(imageItem.FileExtension);
 
             var tmpList = new List<string>
             {
@@ -422,7 +423,7 @@ namespace ImageViewer.ViewModels
                 return;
             }
 
-            DeferredImageItems[SelectedIndex].Save(message.Response[0]);
+            imageItem.Save(message.Response[0]);
         }
 
         #endregion SaveImageCommand
