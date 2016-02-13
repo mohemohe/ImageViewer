@@ -89,7 +89,7 @@
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition />
                             </Grid.RowDefinitions>
-                            <Grid Grid.Row="0" Panel.ZIndex="1">
+                            <Grid Grid.Row="0" Panel.ZIndex="1" Background="{DynamicResource MatteBlack}">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*" />
                                     <ColumnDefinition
