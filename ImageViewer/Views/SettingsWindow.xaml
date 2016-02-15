@@ -384,11 +384,11 @@
                             <StackPanel Orientation="Vertical">
                                 <TextBlock Text="ImageViewer" HorizontalAlignment="Left" VerticalAlignment="Top"
                                            FontSize="64" Foreground="{DynamicResource MatteBlack}" />
-                                <TextBlock Text="happy valentine !" HorizontalAlignment="Center" VerticalAlignment="Top"
-                                           FontSize="16" Margin="45,-16,0,0" Foreground="#FFFF64A0" />
+                                <TextBlock Text="end of life" HorizontalAlignment="Left" VerticalAlignment="Top"
+                                           FontSize="16" Margin="146,-16,0,0" Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" />
                                 <TextBlock Text="{Binding Version, TargetNullValue=NaN}" HorizontalAlignment="Right"
                                            VerticalAlignment="Top" FontSize="12"
-                                           Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" Margin="0,-16,0,0" />
+                                           Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" Margin="0,0,0,0" />
                             </StackPanel>
                         </Grid>
                     </Grid>
