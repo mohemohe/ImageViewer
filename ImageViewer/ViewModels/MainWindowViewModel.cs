@@ -13,6 +13,8 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using HUSauth.Helpers;
+using ImageViewer.Views.ViewWindow;
 
 namespace ImageViewer.ViewModels
 {
@@ -60,13 +62,17 @@ namespace ImageViewer.ViewModels
          * 自動的にUIDispatcher上での通知に変換されます。変更通知に際してUIDispatcherを操作する必要はありません。
          */
 
+        public bool Initialized { get; set; }
+
         public void Initialize()
         {
+            Initialized = true;
         }
 
         public async void AddTab(string imageUri, string originalUri = null)
         {
-            //HACK: タブを切り替えたあとにSelectedIndexを変更してもアクティブなタブが変更されない
+            NotifyIconHelper.TryShow();
+            // HACK: タブを切り替えたあとにSelectedIndexを変更してもアクティブなタブが変更されない
             View.Focus();
 
             DeferredImageItems.Add(new ImageItem(imageUri, originalUri));
@@ -84,9 +90,16 @@ namespace ImageViewer.ViewModels
                 }
             }
 
-            var template = View.TabControl.Template;
-            var sv = (ScrollViewer) template.FindName("ScrollableTab", View.TabControl);
-            sv.ScrollToRightEnd();
+            if (View.GetType() == typeof (TabWindow))
+            {
+                var template = View.TabControl.Template;
+                var sv = (ScrollViewer) template.FindName("ScrollableTab", View.TabControl);
+                sv.ScrollToRightEnd();
+            }
+            else
+            {
+                SelectedIndex = 0;
+            }
 
             await DeferredImageItems[DeferredImageItems.Count - 1].DownloadDataAsync(
                 DeferredImageItems[DeferredImageItems.Count - 1].ImageUri,
@@ -128,9 +141,9 @@ namespace ImageViewer.ViewModels
 
         #region View変更通知プロパティ
 
-        private MainWindow _View;
+        private dynamic _View;
 
-        public MainWindow View
+        public dynamic View
         {
             get { return _View; }
             set
@@ -256,9 +269,11 @@ namespace ImageViewer.ViewModels
 
                     if (value != -1)
                     {
+                        SelectedItemName = DeferredImageItems[value].Name;
                         SelectedImageWidth = DeferredImageItems[value].Width;
                         SelectedImageHeight = DeferredImageItems[value].Height;
                         CalcZoom();
+                        
                     }
                 }
                 RaisePropertyChanged();
@@ -284,6 +299,25 @@ namespace ImageViewer.ViewModels
         }
 
         #endregion DeferredImageItems変更通知プロパティ
+
+        #region SelectedItemName変更通知プロパティ
+        private string _SelectedItemName = string.Empty;
+
+        public string SelectedItemName
+        {
+            get
+            { return _SelectedItemName; }
+            set
+            { 
+                if (DeferredImageItems == null || DeferredImageItems.Count == 0 || SelectedIndex == -1)
+                {
+                    return;
+                }
+                _SelectedItemName = @" - " + value;
+                RaisePropertyChanged();
+            }
+        }
+        #endregion
 
         #region MaximizeZoomCommand
 
@@ -353,13 +387,14 @@ namespace ImageViewer.ViewModels
 
         public void SaveImage()
         {
-            if (DeferredImageItems[SelectedIndex].Bitmap == null)
+            var imageItem = DeferredImageItems[SelectedIndex];
+            if (imageItem.Bitmap == null)
             {
                 return;
             }
 
-            var fileName = Path.GetFileNameWithoutExtension(DeferredImageItems[SelectedIndex].Name);
-            var ext = Path.GetExtension(DeferredImageItems[SelectedIndex].FileExtension);
+            var fileName = Path.GetFileNameWithoutExtension(imageItem.Name);
+            var ext = Path.GetExtension(imageItem.FileExtension);
 
             var tmpList = new List<string>
             {
@@ -388,7 +423,7 @@ namespace ImageViewer.ViewModels
                 return;
             }
 
-            DeferredImageItems[SelectedIndex].Save(message.Response[0]);
+            imageItem.Save(message.Response[0]);
         }
 
         #endregion SaveImageCommand

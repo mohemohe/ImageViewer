@@ -66,16 +66,12 @@ namespace ImageViewer.ViewModels
 
         private static class ButtonState
         {
-            internal static string Maximize
-            {
-                get { return "1"; }
-            }
+            internal static string Maximize => @"1";
 
-            internal static string Normal
-            {
-                get { return "2"; }
-            }
+            internal static string Normal => @"2";
         }
+
+        const string WindowMessage = @"WindowMessage";
 
         #region CloseCommand
 
@@ -95,7 +91,7 @@ namespace ImageViewer.ViewModels
 
         public void Close()
         {
-            Messenger.Raise(new WindowActionMessage(WindowAction.Close, "WindowMessage"));
+            Messenger.Raise(new WindowActionMessage(WindowAction.Close, WindowMessage));
         }
 
         #endregion CloseCommand
@@ -118,7 +114,7 @@ namespace ImageViewer.ViewModels
 
         public void Minimize()
         {
-            Messenger.Raise(new WindowActionMessage(WindowAction.Minimize, "WindowMessage"));
+            Messenger.Raise(new WindowActionMessage(WindowAction.Minimize, WindowMessage));
         }
 
         #endregion MinimizeCommand
@@ -143,11 +139,11 @@ namespace ImageViewer.ViewModels
         {
             if (WindowState == WindowState.Normal)
             {
-                Messenger.Raise(new WindowActionMessage(WindowAction.Maximize, "WindowMessage"));
+                Messenger.Raise(new WindowActionMessage(WindowAction.Maximize, WindowMessage));
             }
             else if (WindowState == WindowState.Maximized)
             {
-                Messenger.Raise(new WindowActionMessage(WindowAction.Normal, "WindowMessage"));
+                Messenger.Raise(new WindowActionMessage(WindowAction.Normal, WindowMessage));
             }
         }
 

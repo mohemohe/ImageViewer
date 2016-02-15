@@ -26,6 +26,9 @@ namespace ImageViewer.ViewModels
         {
             DefaultBrowserPath = Config.DefaultBrowserPath ?? string.Empty;
             IsEnablePseudoSingleInstance = Config.IsEnablePseudoSingleInstance;
+            IsEnableAggressiveMode = Config.IsEnableAggressiveMode;
+            IsDisableNotificationWhenAggressiveMode = Config.IsDisableNotificationWhenAggressiveMode;
+            IsKeepingTabsWhenAggressiveMode = Config.IsKeepingTabsWhenAggressiveMode;
             IsChildWindow = Config.IsChildWindow;
             IsFallbackTwitterGifMovie = Config.IsFallbackTwitterGifMovie;
             IsWarningTwitter30secMovie = Config.IsWarningTwitter30secMovie;
@@ -117,6 +120,57 @@ namespace ImageViewer.ViewModels
         }
 
         #endregion IsEnablePseudoSingleInstance変更通知プロパティ
+
+        #region IsEnableAggressiveMode変更通知プロパティ
+        private bool _IsEnableAggressiveMode;
+
+        public bool IsEnableAggressiveMode
+        {
+            get
+            { return _IsEnableAggressiveMode; }
+            set
+            { 
+                if (_IsEnableAggressiveMode == value)
+                    return;
+                _IsEnableAggressiveMode = value;
+                RaisePropertyChanged();
+            }
+        }
+        #endregion
+
+        #region IsDisableNotificationWhenAggressiveMode変更通知プロパティ
+        private bool _IsDisableNotificationWhenAggressiveMode;
+
+        public bool IsDisableNotificationWhenAggressiveMode
+        {
+            get
+            { return _IsDisableNotificationWhenAggressiveMode; }
+            set
+            { 
+                if (_IsDisableNotificationWhenAggressiveMode == value)
+                    return;
+                _IsDisableNotificationWhenAggressiveMode = value;
+                RaisePropertyChanged();
+            }
+        }
+        #endregion
+
+        #region IsKeepingTabsWhenAggressiveMode変更通知プロパティ
+        private bool _IsKeepingTabsWhenAggressiveMode;
+
+        public bool IsKeepingTabsWhenAggressiveMode
+        {
+            get
+            { return _IsKeepingTabsWhenAggressiveMode; }
+            set
+            { 
+                if (_IsKeepingTabsWhenAggressiveMode == value)
+                    return;
+                _IsKeepingTabsWhenAggressiveMode = value;
+                RaisePropertyChanged();
+            }
+        }
+        #endregion
 
         #region IsChildWindow変更通知プロパティ
 
@@ -270,6 +324,41 @@ namespace ImageViewer.ViewModels
 
         #endregion SeigaAccount変更通知プロパティ
 
+        #region IsUsePiaproWebScraping変更通知プロパティ
+        private bool _IsUsePiaproWebScraping;
+
+        public bool IsUsePiaproWebScraping
+        {
+            get
+            { return _IsUsePiaproWebScraping; }
+            set
+            { 
+                if (_IsUsePiaproWebScraping == value)
+                    return;
+                _IsUsePiaproWebScraping = value;
+                RaisePropertyChanged();
+            }
+        }
+        #endregion
+
+        #region PiaproAccount変更通知プロパティ
+
+        private PiaproAccount _PiaproAccount;
+
+        public PiaproAccount PiaproAccount
+        {
+            get { return _PiaproAccount; }
+            set
+            {
+                if (_PiaproAccount == value)
+                    return;
+                _PiaproAccount = value;
+                RaisePropertyChanged();
+            }
+        }
+
+        #endregion SeigaAccount変更通知プロパティ
+
         #endregion サイト別設定
 
         #region 外部アプリケーション
@@ -384,6 +473,9 @@ namespace ImageViewer.ViewModels
 
             Config.DefaultBrowserPath = File.Exists(DefaultBrowserPath) ? DefaultBrowserPath : null;
             Config.IsEnablePseudoSingleInstance = IsEnablePseudoSingleInstance;
+            Config.IsEnableAggressiveMode = IsEnableAggressiveMode;
+            Config.IsDisableNotificationWhenAggressiveMode = IsDisableNotificationWhenAggressiveMode;
+            Config.IsKeepingTabsWhenAggressiveMode = IsKeepingTabsWhenAggressiveMode;
             Config.IsChildWindow = IsChildWindow;
             Config.IsFallbackTwitterGifMovie = IsFallbackTwitterGifMovie;
             Config.IsWarningTwitter30secMovie = IsWarningTwitter30secMovie;

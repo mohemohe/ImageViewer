@@ -17,6 +17,12 @@ namespace ImageViewer.Models
 
         public bool? IsEnablePseudoSingleInstance;
 
+        public bool? IsEnableAggressiveMode;
+
+        public bool? IsDisableNotificationWhenAggressiveMode;
+
+        public bool? IsKeepingTabsWhenAggressiveMode;
+
         public bool? IsFallbackTwitterGifMovie;
 
         public bool? IsUseNicoSeigaWebScraping;
@@ -81,6 +87,9 @@ namespace ImageViewer.Models
             _Config._WindowPosition = TryReadValue(xmlSettings.WindowPosition, null, null);
             _Config._MouseSensibility = TryReadValue(xmlSettings.MouseSensibility, null, 2.0);
             _Config._IsEnablePseudoSingleInstance = TryReadValue(xmlSettings.IsEnablePseudoSingleInstance, null, true);
+            _Config._IsEnableAggressiveMode = TryReadValue(xmlSettings.IsEnableAggressiveMode, null, false);
+            _Config._IsDisableNotificationWhenAggressiveMode = TryReadValue(xmlSettings.IsDisableNotificationWhenAggressiveMode, null, false);
+            _Config._IsKeepingTabsWhenAggressiveMode = TryReadValue(xmlSettings.IsKeepingTabsWhenAggressiveMode, null, false);
             _Config._IsChildWindow = TryReadValue(xmlSettings.IsChildWindow, null, true);
             _Config._IsFallbackTwitterGifMovie = TryReadValue(xmlSettings.IsFallbackTwitterGifMovie, null, true);
             _Config._IsWarningTwitter30secMovie = TryReadValue(xmlSettings.IsWarningTwitter30secMovie, null, false);
@@ -104,12 +113,17 @@ namespace ImageViewer.Models
         /// </summary>
         public static void WriteConfig()
         {
+            var backupFilePath = Path.Combine(AppPath, FileName + @".bak");
+
             var xmls = new Settings
             {
                 DefaultBrowserPath = _Config._DefaultBrowserPath,
                 WindowPosition = _Config._WindowPosition,
                 MouseSensibility = _Config._MouseSensibility,
                 IsEnablePseudoSingleInstance = _Config._IsEnablePseudoSingleInstance,
+                IsEnableAggressiveMode = _Config._IsEnableAggressiveMode,
+                IsDisableNotificationWhenAggressiveMode = _Config._IsDisableNotificationWhenAggressiveMode,
+                IsKeepingTabsWhenAggressiveMode = _Config._IsKeepingTabsWhenAggressiveMode,
                 IsChildWindow = _Config._IsChildWindow,
                 IsFallbackTwitterGifMovie = _Config._IsFallbackTwitterGifMovie,
                 IsWarningTwitter30secMovie = _Config._IsWarningTwitter30secMovie,
@@ -119,10 +133,24 @@ namespace ImageViewer.Models
                 NicovideoAccount = _Config._NicovideoAccount
             };
 
+            if (File.Exists(FilePath))
+            {
+                File.Move(FilePath, backupFilePath);
+            }
+
             var xs = new XmlSerializer(typeof (Settings));
             using (var fs = new FileStream(FilePath, FileMode.Create, FileAccess.Write))
             {
                 xs.Serialize(fs, xmls);
+            }
+
+            if (File.Exists(FilePath))
+            {
+                File.Delete(backupFilePath);
+            }
+            else
+            {
+                File.Move(backupFilePath, FilePath);
             }
         }
 
@@ -138,6 +166,9 @@ namespace ImageViewer.Models
             public static Rect _WindowPosition { get; set; }
             public static double _MouseSensibility { get; set; }
             public static bool _IsEnablePseudoSingleInstance { get; set; }
+            public static bool _IsEnableAggressiveMode { get; set; }
+            public static bool _IsDisableNotificationWhenAggressiveMode { get; set; }
+            public static bool _IsKeepingTabsWhenAggressiveMode { get; set; }
             public static bool _IsChildWindow { get; set; }
             public static bool _IsFallbackTwitterGifMovie { get; set; }
             public static bool _IsWarningTwitter30secMovie { get; set; }
@@ -177,6 +208,24 @@ namespace ImageViewer.Models
             set { _Config._IsEnablePseudoSingleInstance = value; }
         }
 
+        public static bool IsEnableAggressiveMode
+        {
+            get { return _Config._IsEnableAggressiveMode; }
+            set { _Config._IsEnableAggressiveMode = value; }
+        }
+
+        public static bool IsDisableNotificationWhenAggressiveMode
+        {
+            get { return _Config._IsDisableNotificationWhenAggressiveMode; }
+            set { _Config._IsDisableNotificationWhenAggressiveMode = value; }
+        }
+
+        public static bool IsKeepingTabsWhenAggressiveMode
+        {
+            get { return _Config._IsKeepingTabsWhenAggressiveMode; }
+            set { _Config._IsKeepingTabsWhenAggressiveMode = value; }
+        }
+
         public static bool IsChildWindow
         {
             get { return _Config._IsChildWindow; }
@@ -210,8 +259,8 @@ namespace ImageViewer.Models
 
         public static bool IsUseNicoSeigaWebScraping
         {
-            get { return _Config._IsUsePixivWebScraping; }
-            set { _Config._IsUsePixivWebScraping = value; }
+            get { return _Config._IsUseNicoSeigaWebScraping; }
+            set { _Config._IsUseNicoSeigaWebScraping = value; }
         }
 
         public static NicovideoAccount NicovideoAccount

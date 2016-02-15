@@ -59,5 +59,14 @@ namespace ImageViewer.Properties {
                 resourceCulture = value;
             }
         }
+        
+        /// <summary>
+        ///   Restore に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string NotifyIconHelper_Initialize_Restore {
+            get {
+                return ResourceManager.GetString("NotifyIconHelper_Initialize_Restore", resourceCulture);
+            }
+        }
     }
 }

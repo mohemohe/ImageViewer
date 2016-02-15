@@ -1,16 +1,16 @@
-﻿using ImageViewer.Helpers;
-using ImageViewer.Models;
-using ImageViewer.ViewModels;
-using System;
+﻿using System;
 using System.Collections.ObjectModel;
 using System.Runtime;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using ImageViewer.Helpers;
+using ImageViewer.Models;
+using ImageViewer.ViewModels;
 using Image = System.Windows.Controls.Image;
 using POINT = System.Drawing.Point;
 
-namespace ImageViewer.Views
+namespace ImageViewer.Views.MainWindow
 {
     /*
      * ViewModelからの変更通知などの各種イベントを受け取る場合は、PropertyChangedWeakEventListenerや
@@ -24,7 +24,7 @@ namespace ImageViewer.Views
     ///     MainWindow.xaml の相互作用ロジック
     /// </summary>
     // ReSharper disable once RedundantExtendsListEntry
-    public partial class MainWindow : Window
+    public partial class TabWindow : WindowBase
     {
         private bool _isMove;
         private bool _isTranslate;
@@ -32,7 +32,7 @@ namespace ImageViewer.Views
         private POINT _mousePosition;
         public double DPI = 1;
 
-        public MainWindow()
+        public TabWindow()
         {
             InitializeComponent();
 

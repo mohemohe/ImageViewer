@@ -60,4 +60,8 @@ namespace ImageViewer.Models
     public class NicovideoAccount : Account
     {
     }
+
+    public class PiaproAccount : Account
+    {
+    }
 }
